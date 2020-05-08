@@ -1,0 +1,164 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+
+
+{% if messages %}
+      {% for message in messages %}
+
+        <div style="border-radius:0;" {% if message.tags %} id="success-alert" class="alert alert-icon alert-{{ message.tags }} alert-dismissible fade show mb-0" role="alert" {% endif %}>
+          {{ message }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+      {% endfor %}
+
+    {% endif %}
+
+
+
+	<section class="panel">
+							<header class="panel-heading">
+								<div class="panel-actions">
+								 <button  type="button" class="create btn btn-sm btn-success"  name="button">
+      								<span class="fa fa-plus"></span></button>
+									<!--<a href="#" class="fa fa-times"></a>-->
+								</div>
+
+								<h2 class="panel-title">Gestión Cuarto Nivel</h2>
+							</header>
+							<div class="panel-body">
+								<table class="table table-bordered table-striped mb-none" id="datatable-default">
+									<thead>
+										<tr>
+                                             <th>Descripción Nivel</th>
+                                             <th>Dependencia</th>
+
+
+
+
+
+											 <th>Opciones</th>
+                                            <th>Objetivos</th>
+										</tr>
+									</thead>
+									<tbody>
+
+                                            {% for nivel in object_list %}
+                                                <tr>
+                                                    <td> {{ nivel.descripcion_nivel }}</td>
+                                                     <td> {{ nivel.tercer_nivel.descripcion_nivel }}</td>
+
+
+
+
+
+                                                    <td style="width:90px; text-align:center;">
+                                                     <!--   <button class="btn btn-primary"  onclick="abrir_modal_edicion('{% url 'SegundoNivelEditar' nivel.id %}')">Editar</button>-->
+ 														<button type="button" class="update btn btn-sm btn-primary" data-id="{% url 'CuartoNivelEditar' nivel.id %}">
+															<span class="fa fa-pencil"></span></button>
+														 <button type="button" class="delete btn btn-sm btn-danger" data-id="{% url 'CuartoNivelDelete' nivel.id %}">
+      													  <span class="fa fa-trash-o"></span></button>
+
+                                                    </td>
+                                                     <td style="width:90px; text-align:center;">
+    														<a type="button" title="Objetivos Asociados" class="objetivos btn btn-sm btn-success"  href="{% url 'ObjetivosOperativosDetail' nivel.id  %}"  >
+      													  <span class="fa fa-bars"></span></a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+
+
+									</tbody>
+
+								</table>
+
+							</div>
+						</section>
+
+
+
+
+
+
+
+<!--Cabecera del modal -->
+<div class="modal fade" tabindex="-1" role="dialog" id="modalCreate">
+  <div class="modal-dialog modal-lg" role="document">
+	<div class="modal-content">
+
+    </div>
+  </div>
+</div>
+<div class="modal fade" tabindex="-1" role="dialog" id="modalUpdate">
+  <div class="modal-dialog modal-lg" role="document">
+	<div class="modal-content">
+
+    </div>
+  </div>
+</div>
+<div class="modal fade" tabindex="-1" role="dialog" id="modalDelete">
+  <div class="modal-dialog modal-xs" role="document">
+	<div class="modal-content">
+
+    </div>
+  </div>
+</div>
+<!--Fin cabecera del modal -->
+
+
+	{% block extrajs %}
+
+
+
+
+
+<script type="text/javascript">
+
+
+
+//$(".create").click(function(){ // esto funciona a medias ya que hay que hacer click dos veces
+//});
+
+
+
+	// JS modal crea Registro
+  	 $(".create").modalForm(  {formURL: "{% url 'CuartoNivelCrear' %}", modalID: $("#modalCreate")});
+
+
+
+   	 // JS modal actualiza Registro
+   $(".update").each(function () {
+      $(this).modalForm({formURL: $(this).data('id'),  modalID: $("#modalUpdate")});
+
+    });
+
+
+    // JS modal elimina Registro
+    $(".delete").each(function () {
+      $(this).modalForm({formURL: $(this).data('id'),  modalID: $("#modalDelete")});
+	});
+
+
+     // Js Muestra/Oculta Mensaje Success
+   	 $(".alert").fadeTo(4000, 500).slideUp( "slow", function() {
+     $(this).remove();
+  });
+
+
+
+
+
+
+
+
+</script>
+
+
+		{% endblock %}
+
+
+
+{% endblock %}

@@ -1,0 +1,28 @@
+<header class="panel-heading">
+	<div class="panel-actions">
+		<a class="fa fa-times" data-dismiss="modal"></a>
+	</div>
+        <h2 class="panel-title">Rechazo de Plan</h2>
+</header>
+
+<form method="post" action="">
+    {% csrf_token %}
+
+<div class="panel-body">
+    <div class="modal-wrapper">
+        <div class="modal-icon">
+            <i class="fa fa-warning"></i>
+        </div>
+            <div class="modal-text">
+                <h4>Atención</h4>
+                <p>¿Está seguro de rechazar el plan?. Recuerde que una vez rechazado saldrá de su bandeja. </p>
+            </div>
+    </div>
+</div>
+
+  <div class="modal-footer">
+    <button class="btn btn-danger" type="submit" >Rechazar</button>
+     <button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
+  </div>
+
+</form>

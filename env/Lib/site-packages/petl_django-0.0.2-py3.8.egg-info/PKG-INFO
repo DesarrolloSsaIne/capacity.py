@@ -1,0 +1,21 @@
+Metadata-Version: 1.1
+Name: petl-django
+Version: 0.0.2
+Summary: A petl view class for django model data.
+Home-page: https://github.com/PGower/petl_django
+Author: Paul Gower
+Author-email: p.gower@gmail.com
+License: MIT
+Download-URL: https://github.com/PGower/petl_django/releases
+Description: Please see the documentation at the `project page <https://github.com/PGower/petl_django>`_ .
+Keywords: petl,django
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Environment :: Web Environment
+Classifier: Programming Language :: Python
+Classifier: Framework :: Django
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: System :: Systems Administration :: Authentication/Directory
+Classifier: Topic :: Software Development :: Libraries :: Python Modules

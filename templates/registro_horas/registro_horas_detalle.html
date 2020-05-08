@@ -1,0 +1,146 @@
+
+	<header class="panel-heading">
+				<div class="panel-actions">
+				<a class="fa fa-times" data-dismiss="modal"></a>
+				</div>
+				<h2 class="panel-title">Cuadro Resumen </h2>
+			</header>
+
+
+
+
+
+			<div class="panel-body"><section class="panel">
+
+									<div class="panel-body">
+										<div class="table-responsive">
+											<table class="table mb-none">
+
+												<tbody>
+
+												<thead>
+													<tr>
+
+														<th></th>
+														<th>Días</th>
+														<th>Horas</th>
+														<th>Familia</th>
+
+													</tr>
+												</thead>
+
+													<tr>
+
+														<td>Jefe Departamento</td>
+														<td> {% if calculo.jefe_departamento_totales == None %}0{% else %}{{calculo.jefe_departamento_totales}}{%endif%}</td>
+														<td> {{ calculo.jefe_departamento_horas }}</td>
+														<td> {{ calculo.jefe_departamento_count }}</td>
+													</tr>
+
+                                                	<tr>
+
+														<td>Jefe Subdepartamento</td>
+														<td > {% if calculo.jefe_subdepartamento_totales == None %}0{% else %}{{calculo.jefe_subdepartamento_totales}}{%endif%}</td>
+														<td> {{ calculo.jefe_subdepartamento_horas }}</td>
+														<td> {{ calculo.jefe_subdepartamento_count }}</td>
+													</tr>
+
+                                                 	<tr>
+
+														<td>Coordinador</td>
+														<td > {% if calculo.coordinadores_totales == None %}0{% else %}{{calculo.coordinadores_totales}}{%endif%}</td>
+														<td> {{ calculo.coordinadores_horas }}</td>
+														<td> {{ calculo.coordinadores_count }}</td>
+
+
+
+													</tr>
+                                                    	<tr>
+
+														<td>Supervisores</td>
+														<td > {% if calculo.supervisores_totales == None %}0{% else %}{{calculo.supervisores_totales}}{%endif%}</td>
+														<td> {{ calculo.supervisores_horas }}</td>
+															<td> {{ calculo.supervisores_count }}</td>
+
+													</tr>
+                                                     	<tr>
+
+														<td>Analistas Especialistas</td>
+														<td > {% if calculo.analistas_especialistar_totales == None %}0{% else %}{{calculo.analistas_especialistar_totales}}{%endif%}</td>
+															<td> {{ calculo.analistas_especialistar_horas }}</td>
+															<td> {{ calculo.analistas_especialistar_count }}</td>
+													</tr>
+
+                                                                              	<tr>
+
+														<td>Analistas</td>
+														<td > {% if calculo.analistas_totales == None %}0{% else %}{{calculo.analistas_totales}}{%endif%}</td>
+														<td> {{ calculo.analistas_horas }}</td>
+														<td> {{ calculo.analistas_count }}</td>
+													</tr>
+
+                                                                              	<tr>
+
+														<td>Supervisores Operativos</td>
+														<td > {% if calculo.supervisores_operativos_totales == None %}0{% else %}{{calculo.supervisores_operativos_totales}}{%endif%}</td>
+														<td> {{ calculo.supervisores_operativos_horas }}</td>
+														<td> {{ calculo.supervisores_operativos_count }}</td>
+													</tr>
+
+                                                                              	<tr>
+
+														<td>Operativos</td>
+														<td > {% if calculo.operativos_totales == None %}0{% else %}{{calculo.operativos_totales}}{%endif%}</td>
+														<td> {{ calculo.operativos_horas }}</td>
+														<td> {{ calculo.operativos_count }}</td>
+													</tr>
+
+                                                                              	<tr>
+
+														<td>Asistentes</td>
+														<td > {% if calculo.asistentes_totales == None %}0{% else %}{{calculo.asistentes_totales}}{%endif%}</td>
+														<td> {{ calculo.asistentes_horas }}</td>
+														<td> {{ calculo.asistentes_count }}</td>
+
+													</tr>
+                                                                               	<tr>
+
+														<td>Auxiliares</td>
+														<td > {% if calculo.auxiliares_totales == None %}0{% else %}{{calculo.auxiliares_totales}}{%endif%}</td>
+														<td> {{ calculo.auxiliares_horas }}</td>
+														<td> {{ calculo.auxiliares_count}}</td>
+
+													</tr>
+													<tr>
+
+														<td style="background-color: #ecedf0;"><b>Totales</b> </td>
+														<td style="background-color: #ecedf0;"> <b>{% if calculo.dias_totales == None %}0{% else %}{{calculo.dias_totales}}{%endif%}</b></td>
+														<td style="background-color: #ecedf0;"> <b>{% if calculo.horas_totales == None %}0{% else %}{{calculo.horas_totales}}{%endif%}</b></td>
+														<td style="background-color: #ecedf0;"> <b>{% if calculo.total_familia == None %}0{% else %}{{calculo.total_familia}}{%endif%}</b></td>
+													</tr>
+
+
+
+
+
+
+
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</section>
+
+			<div class="modal-footer">
+
+				<button class="btn btn-default" type="button" data-dismiss="modal">Cerrar</button>
+			</div>
+
+
+
+
+
+
+
+
+

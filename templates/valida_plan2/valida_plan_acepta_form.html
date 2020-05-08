@@ -1,0 +1,66 @@
+<header class="panel-heading">
+    <div class="panel-actions">
+        <a class="fa fa-times" data-dismiss="modal"></a>
+    </div>
+    <h2 class="panel-title">Aprobar Plan</h2>
+</header>
+
+<form method="post" action="">
+
+    <div class="panel-body">
+        {% csrf_token %}
+
+        <div class="{% if form.non_field_errors %}invalid{% endif %} mb-2">
+            {% for error in form.non_field_errors %} {{ error }} {% endfor %}
+        </div>
+
+        <div class="col-md-12">
+
+            <div class="modal-wrapper">
+                <div class="modal-icon">
+                    <i class="fa fa-warning"></i>
+                        </div>
+                    <div class="modal-text">
+                        <strong><h4>Atención</h4></strong>
+                        <p><strong>¿Está seguro que desea aceptar el plan?</strong>. <br>El plan se enviará a revisión del <strong>SubDpto. de Planificación Institucional</strong>.</p>
+                    </div>
+                </div>
+
+                <br>
+
+            <div class="form-group" style="display:none;"> <!--style="display:none;"-->
+                <label>Estado</label>
+                <div>{{ form.estado_flujo }}</div>
+                <!--<div>{{ form.id_user }}</div>-->
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="modal-footer">
+        <button class="estado btn btn-danger" type="submit" id="confirmar">Confirmar</button>
+        <button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
+    </div>
+
+    <div class="alert alert-danger" style="display:none;" id="mjeError">
+
+        <p id="textError"></p>
+    </div>
+
+</form>
+
+{% block extrajs %}
+    <script type="text/javascript">
+valor = 0
+    $(".estado").click(function () {
+        if (valor == 0){
+            $('#id_estado_flujo').val('6'); //Revisión Planificación
+        }
+    })
+
+
+
+    </script>
+{% endblock %}
+

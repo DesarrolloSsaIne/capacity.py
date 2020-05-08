@@ -1,0 +1,244 @@
+{% extends 'base/base.html' %}
+{% block title %}
+Actividades Asociadas al Objetivo
+{% endblock %}
+{% block content %}
+
+{% if messages %}
+		  {% for message in messages %}
+
+			<div style="border-radius:0;" {% if message.tags %} id="danger-alert" class="{{request.session.message_class}} fade show mb-0" role="alert" {% endif %}>
+			  {{ message }}
+			  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			  </button>
+			</div>
+
+		  {% endfor %}
+
+	{% endif %}
+
+
+
+	<section class="panel">
+							<header class="panel-heading">
+								<div class="panel-actions">
+								    <button type="button" class="volver btn btn-sm btn-info"  name="button" title="Volver"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
+      								<span class="fa fa-reply"></span></button>
+									<button  type="button" class="create btn btn-sm btn-success" id="create" name="button" title="Agregar Nueva Actividad"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >
+      								<span class="fa fa-plus"></span></button>
+									</div>
+
+									<h2 class="panel-title" style="font-size:16px;"> {{nombre_objetivo.nombre}} </h2>
+									<!--{% for objetivo in object_list|slice:":1" %}
+
+								<h2 class="panel-title" style="font-size:16px;"><b>Detalle Actividades</b>  - <b>Objetivo Asociado : </b>  {% if objetivo.id_objetivo_tactico != NULL %} {{ objetivo.id_objetivo_tactico}} {% elif  objetivo.id_objetivo_operativo != NULL %}  {{ objetivo.id_objetivo_operativo}} {% else %}  {{ objetivo.id_objetivo_tacticotn}}  {% endif %}</h2>
+
+  								{% endfor %}-->
+							</header>
+							<div class="panel-body">
+								<table class="table table-bordered table-striped mb-none" id="datatable-default">
+									<thead>
+										<tr>
+											<th>ID</th>
+											<th>Descripción Actividad</th>
+											<th>Periodicidad</th>
+											<th>Horas Asoc.</th>
+											<th>Volumen</th>
+											<th>Personas Asig.</th>
+											<th>Total Horas</th>
+											<th>Familia Cargo</th>
+											<th>Producto Est.</th>
+											<th title="Fecha de Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Inicio Actividad</th>
+											<th title="Fecha de Término de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Termino Actividad</th>
+											<th title="Total de Observaciones Asociadas a la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Obs. Total</th>
+											<th>Opciones</th>
+											<th>Obs.</th>
+										</tr>
+									</thead>
+									<tbody>
+
+                                            {% for  objetivo in object_list %}
+
+                                                <tr>
+
+													<td> {{ forloop.counter }}</td>
+													<td class="descripcion_actividad"  style="cursor:pointer; max-width: 10px; overflow: hidden;  display: table-cell;  text-overflow: ellipsis;  border: solid 1px #dddddd; white-space: nowrap;">{{ objetivo.descripcion_actividad}}</td>
+													<td style="width:80px;"> {{ objetivo.id_periodicidad}}</td>
+													<td style="width:60px;"> {{ objetivo.horas_actividad}}</td>
+													<td style="width:60px;"> {{ objetivo.volumen}}</td>
+													<td style="width:80px;"> {{ objetivo.personas_asignadas}}</td>
+													<td style="width:60px;"> {{ objetivo.total_horas}}</td>
+													<td style="width:90px;"> {{ objetivo.id_familia_cargo}}</td>
+													<td style="width:60px;" > {{ objetivo.id_producto_estadistico}}</td>
+													<td style="width:80px;" > {{ objetivo.fecha_inicio_actividad}}</td>
+													<td style="width:80px;"> {{ objetivo.fecha_termino_actividad}}</td>
+													<td style="width:50px;"> {% if objetivo.count_observaciones == none %} 0 {% else %} {{ objetivo.count_observaciones}} {%endif%}</td>
+
+                                                    <td style="width:80px; align:center;" >
+
+														 <button type="button" title="Editar Actividad" title="Fecha de Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" class="update btn btn-sm btn-primary" data-id="{% url 'RegistroActividadEditar' objetivo.id %}" >
+														<span class="fa fa-pencil"></span></button>
+														 <button type="button" title="Eliminar Actividad" title="Fecha de Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" class="delete btn btn-sm btn-danger" data-id="{% url 'RegistroActividadesEliminar' objetivo.id %}">
+      													  <span class="fa fa-trash-o"></span></button>
+													</td>
+<!--													<td style="width:60px; align:center;" >-->
+
+<!--														<a  type="button" title="Observaciones Asociadas a la Actividad" id="notification" class="objetivos btn btn-sm btn-primary"  href="">-->
+<!--														<span class="fa fa-comments" ></span>-->
+<!--							 							{% if objetivo.count_no_vistos != 0 and objetivo.count_no_vistos != none %} <span class="badge" title="Nuevas Observaciones" >{{ objetivo.count_no_vistos }}</span> {% endif %}-->
+<!--														</a>-->
+
+<!--                                                    </td>-->
+
+													  <td style="width:40px; text-align:center;">
+
+
+                                                          <button type="button"  title="Observaciones a la Actividad" title="Fecha de Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" id="notification"  class="update btn btn-sm btn-primary"  data-id="{% url 'gestionobservacionactividades' objetivo.id %}"  >
+														  <span class="fa fa-comments" ></span>
+                                                               {% if objetivo.count_no_vistos != 0 and objetivo.count_no_vistos != none %} <span class="badge" title="Nuevas Observaciones a la actividad" >{{ objetivo.count_no_vistos }}</span> {% endif %}
+														  </button>
+                                                    </td>
+
+
+                                                </tr>
+
+                                            {% endfor %}
+
+
+									</tbody>
+								</table>
+																<div align="right" style="margin-right:100px;" >
+							<h5 style="color:#1e7799;">Total Horas Programadas:	<b>{{total_disponible.total_horas}}</b> | Total Horas Disponibles: <b>{{total_disponible.total_utilizado}}</b> | Porcentaje de Carga Planificada: <b>{{total_disponible.consumidas}}({{total_disponible.avance_porcentaje}}%)</b></h5>
+								<input id="total_disponible_id"  type="hidden" value="{{ total_disponible.total_utilizado }}">
+																</div>
+							</div>
+						</section>
+
+
+
+
+<!--Cabecera del modal -->
+
+<div class="modal fade"  tabindex="-1" role="dialog" id="modalCreate">
+  <div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" tabindex="-1" data-backdrop="static"
+  data-keyboard="false" role="dialog"  id="modalUpdate">
+  <div class="modal-dialog modal-lg" role="document">
+	<div class="modal-content">
+
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" tabindex="-1" role="dialog" id="modalDelete">
+  <div class="modal-dialog modal-xs" role="document">
+	<div class="modal-content">
+
+    </div>
+  </div>
+</div>
+
+
+
+
+<!--Fin cabecera del modal -->
+        <div class="modal fade" id="observacion_center" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+
+				<header class="panel-heading">
+				<div class="panel-actions">
+				<a class="fa fa-times" data-dismiss="modal"></a>
+				</div>
+				<h2 class="panel-title">Detalle Nota</h2>
+			</header>
+
+              <div class="modal-body">
+               	<textarea id="txt_obs_campo_expand" rows="15" cols="80" class="form-control" style="width:100%;resize: none; " maxlength="5000" readonly  ></textarea>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+
+
+
+
+	{% block extrajs %}
+
+
+
+
+<script type="text/javascript">
+
+$(".volver").click(function() {
+    window.location.href = '{% url 'ActividadesObjetivosListar'  %}';
+    return false;
+});
+
+	// JS modal crea Registro
+  	 $(".create").modalForm(  {formURL: "{% url 'ActividadesCrear' %}", modalID: $("#modalCreate")});
+
+    // JS modal crear Registro
+   // $(".create").each(function () {
+   // $(this).modalForm({formURL: $(this).data('id'),  modalID: $("#modalCreate")});
+	//});
+
+
+   	 // JS modal actualiza Registro
+   $(".update").each(function () {
+   $(this).modalForm({formURL: $(this).data('id'),  modalID: $("#modalUpdate")});
+
+    });
+
+
+
+
+    // JS modal elimina Registro
+    $(".delete").each(function () {
+    $(this).modalForm({formURL: $(this).data('id'),  modalID: $("#modalDelete")});
+	});
+
+
+
+
+
+     // Js Muestra/Oculta Mensaje Success
+   	 $(".alert").fadeTo(8000, 500).slideUp( "slow", function() {
+     $(this).remove();
+  });
+
+
+
+$('#datatable-default').on('click', '.descripcion_actividad', function () {
+
+    $('#txt_obs_campo_expand').val($(this).parents('tr').find('td:nth-child(2)').text())
+    $('#observacion_center').modal('toggle');
+});
+
+$('#datatable-default').DataTable({
+"ordering": false //desactiva el ordenamiento de la tabla para que el order_by del queryset funcione. ("order": [[ 3, "desc" ]]) para ordenar desde jquery.
+});
+
+
+</script>
+
+		{% endblock %}
+
+
+
+{% endblock %}

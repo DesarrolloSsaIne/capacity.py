@@ -1,0 +1,39 @@
+
+			<header class="panel-heading">
+				<div class="panel-actions">
+				<a class="fa fa-times" data-dismiss="modal"></a>
+				</div>
+				<h2 class="panel-title">Gestión Primer Nivel</h2>
+			</header>
+
+			<form  method="post"  action="" >
+
+				<div class="panel-body">
+					{% csrf_token %}
+
+
+				<div class="form-group">
+					<label >Nivel Jerárquico</label>
+					{{ form.descripcion_nivel }}
+				</div>
+
+
+
+
+				<div class="checkbox-custom checkbox-primary" style="display:none;" aria-checked="true">
+					{{ form.estado }}
+				<label>Estado</label>
+				</div>
+
+
+
+				</div>
+
+
+
+			<div class="modal-footer">
+				<button class="btn btn-primary" type="submit"  >Confirmar</button>
+				<button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
+			</div>
+
+			</form>

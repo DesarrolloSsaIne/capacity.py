@@ -1,0 +1,56 @@
+<header class="panel-heading">
+    <div class="panel-actions">
+<!--        <a class="fa fa-times" data-dismiss="modal"></a>-->
+    </div>
+    <h2 class="panel-title">Detalle Observación</h2>
+</header>
+
+<form method="post" action="">
+
+
+    <div class="panel-body">
+        {% csrf_token %}
+
+
+
+	<br>
+
+		<div class="container">
+			<div class="row">
+				<div class="col-md-6">
+                    	<div class="form-group" >
+						<label>Fecha Observación</label>
+						<div  >{{ form.fecha_registro }}</div>
+					</div>
+
+					<div class="form-group">
+						<label>Jefatura Observa</label>
+							<div>{{ form.user_observa }}</div>
+							<div style="display:none;">{{ form.user_observa }}</div>
+					</div>
+
+					<div class="form-group">
+						<label>Ingrese Observación</label>
+						{{ form.observacion }}
+
+					</div>
+				</div>
+				<div class="col-md-6"></div>
+			</div>
+			<div class="row">
+
+			</div>
+		</div>
+
+		<br><br>
+
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="submit">Cerrar</button>
+<!-- <button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>-->
+
+    </div>
+
+</form>
+

@@ -1,0 +1,66 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+
+
+
+	<section class="panel">
+							<header class="panel-heading">
+								<div class="panel-actions">
+
+
+
+												<!--<a href="#" class="fa fa-times"></a>-->
+								</div>
+
+
+								<h2 class="panel-title">  Listado de Perfiles </h2>
+
+							</header>
+							<div class="panel-body">
+								<table class="table table-bordered table-striped mb-none" id="datatable-default">
+									<thead>
+										<tr>
+
+<!--											<th>Nombre Jefatura</th>-->
+											<th>Perfil</th>
+
+                                            <th>Opciones</th>
+										</tr>
+									</thead>
+									<tbody>
+
+                                            {% for perfil in object_list %}
+                                                <tr>
+
+<!--                                                    <td> {{ perfil.first_name }} {{ perfil.last_name }}</td>-->
+
+													<td> {{ perfil.name}}</td>
+
+
+
+    												 <td style="width:40px; text-align:center;">
+
+														 <a type="button"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" title="Usuarios Asociados al Perfil" class="perfiles btn btn-sm btn-success" href="{% url 'PerfilListarUsuarios' perfil.id %}">
+      													  <span class="fa fa-bars" ></span></a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+
+
+									</tbody>
+								</table>
+
+							</div>
+						</section>
+
+
+
+
+
+
+
+
+
+
+{% endblock %}

@@ -1,0 +1,320 @@
+			<header class="panel-heading">
+				<div class="panel-actions">
+				<a class="fa fa-times" data-dismiss="modal"></a>
+				</div>
+				<h2 class="panel-title">Gestión Actividades</h2>
+			</header>
+
+			<form  method="post"  action="" >
+
+				<div class="panel-body">
+					{% csrf_token %}
+
+					 <div class="{% if form.non_field_errors %}invalid{% endif %} mb-2">
+    					  {% for error in form.non_field_errors %}
+        					{{ error }}
+     					 {% endfor %}
+    				</div>
+
+
+
+<div class="row show-grid">
+
+    				<div class="col-md-12">
+
+                <span class="show-grid-block">
+
+                    <div class="form-group">
+					<label >Descripción Actividad</label>
+					{{ form.descripcion_actividad }}
+				</div>
+
+                </span>
+                </div>
+
+</div>
+<br>
+<div class="row show-grid">
+
+                    <div class="col-md-6">
+                        <span class="show-grid-block">
+
+                           <div class="form-group">
+					<label >Periodicidad</label>
+					{{ form.id_periodicidad}}
+				</div>
+
+                         <div class="form-group">
+					<label >Volumen</label>
+					{{ form.volumen}}
+				</div>
+
+                  <div class="form-group">
+					<label >Familia de Cargo</label>
+					{{ form.id_familia_cargo}}
+				</div>
+
+                   <label >Fecha Inicio Actividad </label>
+				<div class="input-group">
+				<span class="input-group-addon">
+					<i class="fa fa-calendar"></i>
+				</span>
+					{{ form.fecha_inicio_actividad }}
+
+				</div>
+
+                   </span>
+						<br>
+					<div class="form-group">
+					<label >Total Horas:</label>
+					{{ form.total_horas}}
+				</div>
+                    </div>
+
+     <div class="col-md-6">
+                        <span class="show-grid-block">
+
+                   <div class="form-group" >
+					<label >Horas Actividad</label>
+
+					 {{ form.horas_actividad }}
+				</div>
+
+
+                  <div class="form-group">
+					<label >Personas Asignadas</label>
+					{{ form.personas_asignadas}}
+				</div>
+
+                  <div class="form-group">
+					<label >Producto Estadístico</label>
+					{{ form.id_producto_estadistico}}
+				</div>
+
+
+                 <label >Fecha Término Actividad </label>
+				<div class="input-group">
+				<span class="input-group-addon">
+					<i class="fa fa-calendar"></i>
+				</span>
+				{{ form.fecha_termino_actividad }}
+				</div>
+
+     </span>
+
+                    </div>
+
+
+
+<br>
+
+
+
+
+</div>
+</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-primary" type="submit" id="confirmar" >Confirmar</button>
+				<button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
+			</div>
+
+								<div class="alert alert-danger" style="display:none;" id="mjeError">
+
+										<p id="textError"></p>
+								</div>
+			</form>
+<script>
+
+$("#confirmar").click(function(){
+
+var horas_actividad;
+var horas_disponibles;
+
+
+
+horas_actividad= $('#total_horas_id').val();
+horas_disponibles = $('#total_disponible_id').val()
+
+horas_actividad= parseInt(horas_actividad)
+horas_disponibles = parseInt(horas_disponibles)
+
+if (horas_actividad>horas_disponibles){
+	$("#mjeError").css("display","block");
+	$("#textError").text("Error : No cuenta con saldo de horas disponibles para asignar a la actividad.");
+return false
+}
+
+/*if (horas_actividad==0){
+	$("#mjeError").css("display","block");
+	$("#textError").text("Error : El total de horas no puede ser igual a 0.");
+return false
+}*/
+
+
+var anio_actual= moment().year();
+
+fecha_inicio = $("#fecha_inicio_actividad").val();
+fecha_termino = $("#fecha_termino_actividad").val();
+
+
+
+
+var valuesStart = fecha_inicio.split("-");
+var anio_inicio = valuesStart[0];
+
+var valuesStart = fecha_termino.split("-");
+var anio_termino = valuesStart[0];
+
+
+if (anio_inicio==anio_actual && anio_termino==anio_actual){
+	//alert('ok');
+}else{
+	$("#mjeError").css("display","block");
+	$("#textError").text("Error : Las fechas seleccionadas deben corresponder al año en curso.");
+return false
+}
+
+
+if (moment(fecha_inicio).isBefore(fecha_termino) || moment(fecha_inicio).isSameOrBefore(fecha_termino)){
+	//alert('ok');
+}else{
+	$("#mjeError").css("display","block");
+	$("#textError").text("Error : La fecha de inicio no puede ser superior a la fecha de término.");
+return false
+}
+
+
+});
+
+$(document).ready(function() {
+    $("#horas_actividad_id").keydown(function(event) {
+        // Allow: backspace, delete, tab, escape, and enter
+        if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
+            // Allow: Ctrl+A
+            (event.keyCode == 65 && event.ctrlKey === true) ||
+            // Allow: home, end, left, right
+            (event.keyCode >= 35 && event.keyCode <= 39)) {
+            // let it happen, don't do anything
+            return;
+        } else {
+            // Ensure that it is a number and stop the keypress
+            if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)) {
+                event.preventDefault();
+            }
+        }
+    });
+});
+
+$(document).ready(function() {
+    $("#volumen_id").keydown(function(event) {
+        // Allow: backspace, delete, tab, escape, and enter
+        if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
+            // Allow: Ctrl+A
+            (event.keyCode == 65 && event.ctrlKey === true) ||
+            // Allow: home, end, left, right
+            (event.keyCode >= 35 && event.keyCode <= 39)) {
+            // let it happen, don't do anything
+            return;
+        } else {
+            // Ensure that it is a number and stop the keypress
+            if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)) {
+                event.preventDefault();
+            }
+        }
+    });
+});
+
+$(document).ready(function() {
+    $("#personas_asignadas_id").keydown(function(event) {
+        // Allow: backspace, delete, tab, escape, and enter
+        if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
+            // Allow: Ctrl+A
+            (event.keyCode == 65 && event.ctrlKey === true) ||
+            // Allow: home, end, left, right
+            (event.keyCode >= 35 && event.keyCode <= 39)) {
+            // let it happen, don't do anything
+            return;
+        } else {
+            // Ensure that it is a number and stop the keypress
+            if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)) {
+                event.preventDefault();
+            }
+        }
+    });
+});
+
+Date.prototype.getWeekNumber = function(){
+  var d = new Date(Date.UTC(this.getFullYear(), this.getMonth(), this.getDate()));
+  var dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+  return Math.ceil((((d - yearStart) / 86400000) + 1)/7)
+};
+
+function checkWeek($fecha) {
+  var s = $fecha;
+  var m = moment(s, 'YYYY-MM-DD');
+  //alert(m.format('W'));
+  var $semana = m.toDate().getWeekNumber()
+  return $semana
+}
+
+$(function() {
+     var total;
+    $('#personas_asignadas_id, #fecha_termino_actividad, #horas_actividad_id, #volumen_id, #id_id_periodicidad,#fecha_inicio_actividad').focusout(function () {
+        var horas = $('#horas_actividad_id').val();
+        var volumen = $('#volumen_id').val();
+        var personas = $('#personas_asignadas_id').val();
+ 		var periocidad = $('#id_id_periodicidad option:selected').text();
+ 		periocidad = periocidad.replace(/ /g, "")
+
+		if (periocidad != "Semanal" && periocidad != "Quincenal"){
+ 		 total = (+horas) * (+volumen) * (+personas);
+
+ 		}//fin condicion
+
+		if(periocidad == "Semanal")
+ 		{
+			//var dia_semanas = semanadelano($('#fecha_inicio_actividad').val())
+			var dia_semana0 = checkWeek($('#fecha_inicio_actividad').val())
+			var dia_semana1 = checkWeek($('#fecha_termino_actividad').val())
+			var num_semana = (dia_semana1- dia_semana0) + 1
+ 			total = parseInt((+horas) * (+volumen) * (+personas) * (+num_semana)) || 0;
+
+ 		}//fin condicion
+
+ 			if(periocidad == "Quincenal")
+ 		{
+
+ 			total = parseInt((+horas) * (+volumen) * (+personas) * (+calcularQuincena($('#fecha_inicio_actividad').val(), $('#fecha_termino_actividad').val()))) || 0;
+
+ 		}//fin condicion
+
+ 		function calcularQuincena($fechaInicio, $fechaTermino)
+ 		{
+		  $fechaInicio  =  $fechaInicio.split("-");
+		  $fechaTermino	=  $fechaTermino.split("-");
+		  $dia0   =  eval($fechaInicio[2]);
+		  $mes0   =  eval($fechaInicio[1]);
+		  $dia1   =  eval($fechaTermino[2]);
+		  $mes1   =  eval($fechaTermino[1]);
+          var dian1;
+          if ($dia0 <=15){dian1 = 2}else{dian1 = 1}
+          var dian2;
+          if ($dia1 <=15){dian2 = 1}else{dian2 = 2}
+
+		  var quincena = (($mes1 - $mes0 -1) * 2 + dian1 + dian2)
+		  return quincena
+ 		}
+
+      $('#total_horas_id').val(total);
+    });
+});
+
+
+
+
+</script>
+
+

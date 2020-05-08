@@ -1,0 +1,20 @@
+Metadata-Version: 1.1
+Name: petl-ldap3
+Version: 0.0.6
+Summary: A petl view class for ldap data.
+Home-page: https://github.com/PGower/petl_ldap3
+Author: Paul Gower
+Author-email: p.gower@gmail.com
+License: MIT
+Download-URL: https://github.com/PGower/petl_ldap3/releases
+Description: Please see the documentation at the `project page <https://github.com/PGower/petl_ldap3>`_ .
+Keywords: petl,ldap3
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Environment :: Web Environment
+Classifier: Programming Language :: Python
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: System :: Systems Administration :: Authentication/Directory
+Classifier: Topic :: Software Development :: Libraries :: Python Modules

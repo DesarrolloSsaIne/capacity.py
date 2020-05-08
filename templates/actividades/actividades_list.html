@@ -1,0 +1,390 @@
+{% extends 'base/base.html' %}
+
+{% block title %}
+ Listado de Objetivos
+{% endblock %}
+
+
+{% block content %}
+{% if messages %} {% for message in messages %}
+
+	<div style="border-radius:0;" {% if message.tags %} id="danger-alert" class="{{request.session.message_class}} fade show mb-0" role="alert" {% endif %}>
+		{{ message }}
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+
+{% endfor %} {% endif %}
+
+{% if error.id == 1 %}
+
+    <div class="alert alert-warning" id="success-warning" role="alert">
+        <b>Estimado Usuario:</b> Su perfil no posee atriburos para ingresar a esta opción, comuníquese con el administrador.
+    </div>
+
+{% else %}
+
+
+
+			<div >
+			  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			  </button>
+			</div>
+
+
+
+
+	<section class="panel">
+							<header class="panel-heading">
+								<div class="panel-actions">
+
+                                    <div style=" text-align:right; display:inline; background:#1e7799; padding-top:5px; padding-bottom:5px; padding-left:5px; padding-right:5px;  margin-top:-3px;  border-radius:3px;  vertical-align: middle; font-size:15px; color:white;  " title="Estado Actual del Flujo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top"> {{ estado_flujo.estado}}</div>
+
+
+								 <button type="button" class="confirm btn btn-sm btn-warning" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top"  name="button" title="Iniciar plan" {% if total_disponible.id_controlador.estado_flujo_id > 2 %} disabled   {% endif %}  >
+      								<span class="fa fa-coffee"></span></button>
+                                <button type="button" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top"  title="Enviar plan para su revisión" class="enviar btn btn-sm btn-success" {% if total_disponible.id_controlador.estado_flujo_id > 3 and total_disponible.id_controlador.estado_flujo_id <= 7 or total_disponible.id_controlador.estado_flujo_id == 2 %} disabled   {% endif %} data-id="{% url 'controlador_editar' total_disponible.id_controlador.id %}" >
+      													  <span class="fa fa-paper-plane"></span></button>
+
+
+									<!--<a href="#" class="fa fa-times"></a>-->
+								</div>
+
+								{% for nivel_usuario in nivel_usuario|slice:":1" %}
+								<h2 class="panel-title"   >{{ nivel_usuario.descripcion_nivel }} </h2>
+								{% endfor %}
+							</header>
+							<div class="panel-body">
+
+                                <input id="txt_jefarura_id"  type="hidden"  value="{{ total_disponible.id_jefatura.id }}">
+                                <table class="table table-bordered table-striped mb-none" id="datatable-default">
+									<thead>
+										<tr>
+                                          {% if orden.orden_nivel == 2 %}
+
+     											<th>Objetivo Táctico Segundo Nivel</th>
+
+                                              <th title="Total de observaciones asociadas a la(s) actividad(es) de este objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >Obs. Actividades Total</th>
+                                             <th title="Total de observaciones asociadas al objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >Obs. Objetivos Total</th>
+					                            <th title="Total de actividades relacionadas a este objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >Actividades Total</th>
+                                            <th>Actividades</th>
+                                            <th style="{%if estado_flujo.estado.id != 9%} display:none; {% endif %} " >Observaciones</th>
+                                          {% endif %}
+
+                                          {% if orden.orden_nivel == 3 %}
+
+     											<th>Objetivo Táctico Tercer Nivel</th>
+                                           <th title="Total de observaciones asociadas a la(s) actividad(es) de este objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >Obs. Actividades Total</th>
+                                             <th title="Total de observaciones asociadas al objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >Obs. Objetivos Total</th>
+					                            <th title="Total de actividades relacionadas a este objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >Actividades Total</th>
+                                                <th>Actividades</th>
+                                            <th style="{%if estado_flujo.estado.id != 9%} display:none; {% endif %} " >Observaciones</th>
+
+
+                                          {% endif %}
+
+                                          {% if orden.orden_nivel == 4 %}
+
+     											<th>Objetivo Operativo</th>
+                                            <th title="Total de observaciones asociadas a la(s) actividad(es) de este objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >Obs. Actividades Total</th>
+                                             <th title="Total de observaciones asociadas al objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Obs. Objetivos Total</th>
+					                            <th title="Total de actividades relacionadas a este objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >Actividades Total</th>
+                                                <th>Actividades</th>
+                                            <th  style="{%if estado_flujo.estado.id != 9%} display:none; {% endif %} " >Observaciones</th>
+
+
+                                          {% endif %}
+
+
+										</tr>
+									</thead>
+									<tbody>
+
+                                      {% if orden.orden_nivel == 2 %}
+                                                {% for objetivos in niveles %}
+													<tr>
+
+                                                        <td> {{ objetivos.descripcion_objetivo }}</td>
+                                                        <td> {% if objetivos.count_observaciones == none %} 0 {% else %} {{ objetivos.count_observaciones}} {%endif%}</td>
+                                                         <td>{% if objetivos.count_observaciones_obj == none %} 0 {% else %} {{ objetivos.count_observaciones_obj}} {%endif%}</td>
+
+
+
+								                        <td>{% if objetivos.count_actividad == None %}0{% else %}{{ objetivos.count_actividad }}{%endif%} </td>
+                                                     <td style="width:60px; text-align:center;">
+
+
+
+                                                            <a  type="button" title="Actividades Asociadas al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom"  id="notification" class="objetivos btn btn-sm btn-success"  {% if total_disponible.id_controlador.estado_flujo_id > 3 and total_disponible.id_controlador.estado_flujo_id <= 7 or total_disponible.id_controlador.estado_flujo_id == 2 %} disabled tabindex="-1"  {% endif %} href="{% url 'ActividadesDetail' objetivos.id %}"  >
+                                                            <span class="fa fa-bars" ></span>
+                                                             {% if objetivos.count_no_vistos != 0 and objetivos.count_no_vistos != none %} <span class="badge" title="Nuevas Observaciones" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top"  >{{ objetivos.count_no_vistos }}</span> {% endif %}
+                                                            </a>
+
+                                                   </td>
+                                                              <td style="width:40px; text-align:center; {%if estado_flujo.estado.id != 9%} display:none; {% endif %} "  >
+
+
+                                                          <button type="button"  title="Observaciones Asociadas al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" id="notification"  class="update btn btn-sm btn-primary" {% if total_disponible.id_controlador.estado_flujo_id > 3 and total_disponible.id_controlador.estado_flujo_id <= 7 or total_disponible.id_controlador.estado_flujo_id == 2 %} disabled tabindex="-1"  {% endif %} data-id="{% url 'gestionobservacionobjetivos' objetivos.id %}"  >
+														  <span class="fa fa-comments" ></span>
+                                                               {% if objetivos.count_no_vistos_obs != 0 and objetivos.count_no_vistos_obs != none %} <span class="badge" title="Nuevas Observaciones al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >{{ objetivos.count_no_vistos_obs }}</span> {% endif %}
+														  </button>
+                                                    </td>
+
+													</tr>
+                                      {% endfor %}
+                                             {% endif %}
+
+
+
+                                      {% if orden.orden_nivel == 3 %}
+                                                {% for objetivos in niveles %}
+													<tr>
+
+                                                        <td> {{ objetivos.descripcion_objetivo}}</td>
+                                                        <td> {% if objetivos.count_observaciones == none %} 0 {% else %} {{ objetivos.count_observaciones}} {%endif%}</td>
+							                            <td>{% if objetivos.count_observaciones_obj == none %} 0 {% else %} {{ objetivos.count_observaciones_obj}} {%endif%}</td>
+                                                        <td>{% if objetivos.count_actividad == None %}0{% else %}{{ objetivos.count_actividad }}{%endif%} </td>
+
+                                                           <td style="width:60px; text-align:center;">
+
+
+
+                                                            <a  type="button" title="Actividades Asociadas al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom"  id="notification" class="objetivos btn btn-sm btn-success"  {% if total_disponible.id_controlador.estado_flujo_id > 3 and total_disponible.id_controlador.estado_flujo_id <= 7 or total_disponible.id_controlador.estado_flujo_id == 2 %} disabled tabindex="-1"  {% endif %} href="{% url 'ActividadesDetail' objetivos.id %}"  >
+                                                            <span class="fa fa-bars" ></span>
+                                                             {% if objetivos.count_no_vistos != 0 and objetivos.count_no_vistos != none %} <span class="badge" title="Nuevas Observaciones" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top"  >{{ objetivos.count_no_vistos }}</span> {% endif %}
+                                                            </a>
+
+                                                   </td>
+                                                              <td style="width:40px; text-align:center; {%if estado_flujo.estado.id != 9%} display:none; {% endif %} "  >
+
+
+                                                          <button type="button"  title="Observaciones Asociadas al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" id="notification"  class="update btn btn-sm btn-primary" {% if total_disponible.id_controlador.estado_flujo_id > 3 and total_disponible.id_controlador.estado_flujo_id <= 7 or total_disponible.id_controlador.estado_flujo_id == 2 %} disabled tabindex="-1"  {% endif %} data-id="{% url 'gestionobservacionobjetivos' objetivos.id %}"  >
+														  <span class="fa fa-comments" ></span>
+                                                               {% if objetivos.count_no_vistos_obs != 0 and objetivos.count_no_vistos_obs != none %} <span class="badge" title="Nuevas Observaciones al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >{{ objetivos.count_no_vistos_obs }}</span> {% endif %}
+														  </button>
+                                                    </td>
+
+													</tr>
+                                      {% endfor %}
+                                         {% endif %}
+
+
+                                      {% if orden.orden_nivel == 4 %}
+                                                {% for objetivos in niveles %}
+													<tr>
+
+                                                        <td> {{ objetivos.descripcion_objetivo}}</td>
+                                                        	<td> {% if objetivos.count_observaciones == none %} 0 {% else %} {{ objetivos.count_observaciones}} {%endif%}</td>
+							                             <td>{% if objetivos.count_observaciones_obj == none %} 0 {% else %} {{ objetivos.count_observaciones_obj}} {%endif%}</td>
+                                                        <td>{% if objetivos.count_actividad == None %}0{% else %}{{ objetivos.count_actividad }}{%endif%} </td>
+
+                                                           <td style="width:60px; text-align:center;">
+
+
+
+                                                            <a  type="button" title="Actividades Asociadas al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom"  id="notification" class="objetivos btn btn-sm btn-success"  {% if total_disponible.id_controlador.estado_flujo_id > 3 and total_disponible.id_controlador.estado_flujo_id <= 7 or total_disponible.id_controlador.estado_flujo_id == 2 %} disabled tabindex="-1"  {% endif %} href="{% url 'ActividadesDetail' objetivos.id %}"  >
+                                                            <span class="fa fa-bars" ></span>
+                                                             {% if objetivos.count_no_vistos != 0 and objetivos.count_no_vistos != none %} <span class="badge" title="Nuevas Observaciones" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top"  >{{ objetivos.count_no_vistos }}</span> {% endif %}
+                                                            </a>
+
+                                                   </td>
+                                                            <td style="width:40px; text-align:center; {%if estado_flujo.estado.id != 9%} display:none; {% endif %} "  >
+
+
+                                                          <button type="button"  title="Observaciones Asociadas al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" id="notification"  class="update btn btn-sm btn-primary" {% if total_disponible.id_controlador.estado_flujo_id > 3 and total_disponible.id_controlador.estado_flujo_id <= 7 or total_disponible.id_controlador.estado_flujo_id == 2 %} disabled tabindex="-1"  {% endif %} data-id="{% url 'gestionobservacionobjetivos' objetivos.id %}"  >
+														  <span class="fa fa-comments" ></span>
+                                                               {% if objetivos.count_no_vistos_obs != 0 and objetivos.count_no_vistos_obs != none %} <span class="badge" title="Nuevas Observaciones al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >{{ objetivos.count_no_vistos_obs }}</span> {% endif %}
+														  </button>
+                                                    </td>
+
+													</tr>
+                                      {% endfor %}
+                                            {% endif %}
+
+
+
+
+
+									</tbody>
+								</table>
+
+															<div align="right" style="margin-right:100px;" >
+							<h5 style="color:#1e7799;">Total Horas Programadas:	<b>{{total_disponible.total_horas}}</b> | Total Horas Disponibles:  <b>{{total_disponible.total_utilizado}}</b> | Porcentaje de Carga Planificada: <b>{{total_disponible.consumidas}}(<label>{{total_disponible.avance_porcentaje}}%</label>)</b> </h5>
+							</div>
+
+							</div>
+
+
+
+
+						</section>
+
+
+{% endif %}
+<!--Cabecera del modal -->
+<div class="modal fade" tabindex="-1" role="dialog" id="modalCreate">
+  <div class="modal-dialog modal-lg" role="document">
+	<div class="modal-content">
+
+    </div>
+  </div>
+
+</div>
+
+	<div class="modal fade" tabindex="-1" role="dialog" id="modalDetalle">
+  <div class="modal-dialog modal-xs" role="document">
+	<div class="modal-content">
+
+    </div>
+  </div>
+
+</div>
+<div class="modal fade" data-backdrop="static"
+  data-keyboard="false" tabindex="-1" role="dialog" id="modalUpdate">
+  <div class="modal-dialog modal-lg" role="document">
+	<div class="modal-content">
+
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" tabindex="-1" role="dialog" id="modalDelete">
+  <div class="modal-dialog modal-xs" role="document">
+	<div class="modal-content">
+
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="modalConfirmPlan">
+  <div class="modal-dialog modal-xs" role="document">
+	<div class="modal-content">
+
+    </div>
+  </div>
+</div>
+<!--Fin cabecera del modal -->
+
+<div class="modal" id="confirm-plan" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+    <header class="panel-heading">
+				<div class="panel-actions">
+				<a class="fa fa-times" data-dismiss="modal"></a>
+				</div>
+				<h2 class="panel-title">Iniciar Plan de Trabajo</h2>
+			</header>
+      <div class="modal-body">
+
+<form method="post" action="" id="post-form">
+  {% csrf_token %}
+    <div class="panel-body">
+    <div class="modal-wrapper">
+        <div class="modal-icon">
+            <i class="fa fa-warning"></i>
+                </div>
+            <div class="modal-text">
+                <h4>Atención</h4>
+                <p>¿Está seguro que desea iniciar la Formulación de su Plan?. </p>
+            </div>
+        </div>
+    </div>
+  <div class="modal-footer">
+    <button class="btn btn-danger" type="submit" >Confirmar</button>
+     <button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
+  </div>
+
+</form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+	{% block extrajs %}
+
+
+
+<script type="text/javascript">
+
+
+
+			// JS modal actualiza Registro
+			$(".update").each(function () {
+				$(this).modalForm({formURL: $(this).data('id'),  modalID: $("#modalUpdate")});
+			});
+
+
+    // Shorthand for $( document ).ready()
+    $(function() {
+        $('#success-alert').hide()
+
+    });
+
+
+
+    $('#datatable-default').DataTable({
+"ordering": false //desactiva el ordenamiento de la tabla para que el order_by del queryset funcione. ("order": [[ 3, "desc" ]]) para ordenar desde jquery.
+});
+
+
+       // Js Muestra/Oculta Mensaje Success
+   	 $(".alert, #success-alert-warning").fadeTo(10000, 700).slideUp( "slow", function() {
+     $(this).remove();
+  });
+
+
+     // Js Muestra/Oculta Mensaje Success
+   	 $(".alert, #success-alert").fadeTo(8000, 700).slideUp( "slow", function() {
+     $(this).remove();
+  });
+
+
+
+
+$('.confirm').on('click',function () {
+    $('#confirm-plan').modal('toggle');
+});
+
+ 	 // JS modal actualiza Registro
+   $(".enviar").each(function () {
+   $(this).modalForm({formURL: $(this).data('id'),  modalID: $("#modalConfirmPlan")});
+
+    });
+
+$(document).on('submit', '#post-form',function(e){
+     e.preventDefault();
+
+    $.ajax({
+        type:'POST',
+        url:'{% url "updateEstate" %}',
+        data:{
+            id:$('#txt_jefarura_id').val(),
+            csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+            action: 'post'
+        },
+        success:function(json){
+        $('#confirm-plan').modal('toggle');
+         location.reload();
+        },
+        error : function(xhr,errmsg,err) {
+         $('#confirm-plan').modal('toggle');
+        console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+    }
+    });
+});
+
+</script>
+
+
+
+		{% endblock %}
+
+
+
+{% endblock %}
+

@@ -1,0 +1,61 @@
+<header class="panel-heading">
+    <div class="panel-actions">
+        <a class="fa fa-times" data-dismiss="modal"></a>
+    </div>
+    <h2 class="panel-title">Rechazar Plan</h2>
+</header>
+
+<form method="post" action="">
+
+    <div class="panel-body">
+        {% csrf_token %}
+
+        <div class="{% if form.non_field_errors %}invalid{% endif %} mb-2">
+            {% for error in form.non_field_errors %} {{ error }} {% endfor %}
+        </div>
+
+        <div class="col-md-12">
+
+
+            <div class="modal-wrapper">
+                <div class="modal-icon">
+                    <i class="fa fa-warning"></i>
+                        </div>
+                    <div class="modal-text">
+                        <h4>Atención</h4>
+                        <p>¿Está seguro que desea rechazar el plan?.</p>
+                    </div>
+                </div>
+                           <br>
+					<div class="alert alert-warning" role="alert">
+                      Al presionar "confirmar" el plan de trabajo será enviado a la jefatura quien lo formulo.
+                    </div>
+            <div class="form-group" style="display:none;">
+                <label>Estado</label>
+                <div>{{ form.estado_flujo }}</div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="modal-footer">
+        <button class="estado btn btn-danger" type="submit" id="confirmar">Confirmar</button>
+        <button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
+    </div>
+
+    <div class="alert alert-danger" style="display:none;" id="mjeError">
+
+        <p id="textError"></p>
+    </div>
+
+</form>
+
+
+{% block extrajs %}
+    <script type="text/javascript">
+        $(".estado").click(function () {
+            $('#id_estado_flujo').val('8');
+        });
+    </script>
+{% endblock %}

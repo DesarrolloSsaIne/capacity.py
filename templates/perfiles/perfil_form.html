@@ -1,0 +1,74 @@
+
+	<header class="panel-heading">
+				<div class="panel-actions">
+				<a class="fa fa-times" data-dismiss="modal"></a>
+				</div>
+				<h2 class="panel-title">Asignar Funcionario al Perfil</h2>
+			</header>
+
+			<form  method="post"  action="" >
+
+				<div class="panel-body">
+					{% csrf_token %}
+
+
+				<div class="col-md-6">
+
+
+
+<!--			<p>{{ item.id_jefatura.id_nivel}} </p>-->
+
+
+
+
+					<div  class="form-group">
+					<label >Funcionario</label>
+<!--					{{ form.id_user}}-->
+
+                        <select name="SelectUser" id="siteID" class="form-control" style="width:550px;" >
+                            item.username
+                            {% for item in qs %}
+                            <option value={{item.id}}>{{ item.first_name }} {{ item.last_name }}</option>
+                            {% endfor %}
+                        </select>
+
+				</div>
+
+
+				</div>
+
+			</div>
+
+			<div class="modal-footer">
+				<button class="btn btn-primary" type="submit" id="confirmar"  >Confirmar</button>
+				<button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
+			</div>
+
+				<div class="alert alert-danger" style="display:none;" id="mjeError">
+
+										<p id="textError"></p>
+									</div>
+
+			</form>
+
+
+
+	<script>
+
+
+
+$(function() {
+       $('#siteID').select2({
+        dropdownParent: $('#modalCreate')
+    });
+
+});
+
+
+
+
+
+	</script>
+
+
+

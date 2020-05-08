@@ -1,0 +1,76 @@
+<header class="panel-heading">
+    <div class="panel-actions">
+        <a class="fa fa-times" data-dismiss="modal"></a>
+    </div>
+    <h2 class="panel-title">Acepta Plan</h2>
+</header>
+
+<form method="post" action="">
+
+    <div class="panel-body">
+        {% csrf_token %}
+
+        <div class="{% if form.non_field_errors %}invalid{% endif %} mb-2">
+            {% for error in form.non_field_errors %} {{ error }} {% endfor %}
+        </div>
+
+        <div class="row show-grid">
+
+            <div class="col-md-12">
+                <span class="show-grid-block">
+
+                           <div class="form-group">
+					<label >Jefatura solicitante</label>
+					{{ form.id_jefatura}}
+				</div>
+                            <div class="form-group">
+					<label >Estado flujo</label>
+					{{ form.estado_flujo}}
+				</div>
+
+                  <div class="form-group">
+					<label >Jefatura segunda revisión</label>
+					{{ form.jefatura_segundarevision}}
+
+				</div>
+
+                   </span>
+
+            </div>
+
+        </div>
+        <BR>
+        <div class="alert alert-warning" role="alert">
+            Al presionar "confirmar" su plan de trabajo será enviado a la jefatura seleccionada.
+        </div>
+
+    </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-danger" type="submit" id="confirmar">Confirmar</button>
+        <button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
+    </div>
+
+    <div class="alert alert-danger" style="display:none;" id="mjeError">
+
+        <p id="textError"></p>
+    </div>
+</form>
+
+<script>
+    // Shorthand for $( document ).ready()
+    $(function() {
+        $('#id_id_jefatura option:not(:selected)').attr('disabled', true);
+        $('#id_estado_flujo option:not(:selected)').attr('disabled', true);
+        //id_jefatura_primerarevision
+
+        let $option = $('<option />', {
+            text: 'No requiere segunda revisión | Enviar directo a Planificación',
+            value: 1,
+        });
+        $('#id_jefatura_segundarevision').append($option);
+
+    });
+</script>
+
+

@@ -1,0 +1,54 @@
+
+	<header class="panel-heading">
+				<div class="panel-actions">
+				<a class="fa fa-times" data-dismiss="modal"></a>
+				</div>
+				<h2 class="panel-title">Registro Periodos</h2>
+			</header>
+
+			<form  method="post"  action="" >
+
+				<div class="panel-body">
+					{% csrf_token %}
+
+					 <div class="{% if form.non_field_errors %}invalid{% endif %} mb-2">
+    					  {% for error in form.non_field_errors %}
+        					{{ error }}
+     					 {% endfor %}
+    				</div>
+
+
+				<div class="col-md-6">
+					<div  class="form-group">
+					<label >Año</label>
+					{{ form.anio_periodo }}
+				    </div>
+
+                    <div class="form-group">
+					<label >Descripción Periodo</label>
+					{{ form.descripcion_periodo }}
+				    </div>
+
+
+                    <div class="form-group" style="display:none;">
+					<label >Estado Periodo</label>
+					{{ form.estado }}
+				    </div>
+
+
+
+
+				</div>
+
+			</div>
+
+			<div class="modal-footer">
+				<button class="btn btn-primary" type="submit" id="confirmar"  >Confirmar</button>
+				<button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
+			</div>
+
+			</form>
+
+
+
+

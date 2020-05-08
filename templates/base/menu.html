@@ -1,0 +1,29 @@
+
+{% load sitetree %}
+
+
+							{% for item in sitetree_items %}
+									<li class="{% if item.has_children %}nav-parent{% endif %} {% if item.is_current or item.in_current_branch %}nav-expanded{% endif %}">
+										<a href="{% if item.has_children %}#{% else %}{% sitetree_url for item %}{% endif %}">
+
+
+											<i class="{{ item.hint }}" aria-hidden="true"></i>
+											<span>	{{ item.title_resolved }}</span>
+
+										</a>
+
+										{% if item.has_children %}
+
+											{% sitetree_children of item for menu template "base/menu_hijos.html" %}
+
+										{% endif %}
+
+									</li>
+								{% endfor %}
+
+
+
+
+
+
+

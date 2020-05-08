@@ -1,0 +1,165 @@
+{% extends 'base/base.html' %}
+{% load sitetree %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+	{% block extrajs %}
+
+
+		<script type="text/javascript">
+
+$( document ).ready(function() {
+
+	var datos = {{ Midata|safe }};
+	var nElementos = datos.length;
+
+    var config = {
+      type: 'bar',
+      data: {
+        datasets: [{
+          data: {{ Midata|safe }},
+
+			backgroundColor: poolColors(nElementos),
+
+			borderWidth: 1,
+          label: 'Population'
+        }],
+        labels: {{ labels|safe }}
+      },
+	 options: {
+			scales: {
+				yAxes: [{
+					ticks: {
+						beginAtZero: true
+					}
+				}]
+			}
+		}
+    };
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	var datos = {{ Midata|safe }};
+	var nElementos = datos.length;
+
+    var config2 = {
+      type: 'line',
+      data: {
+        datasets: [{
+          data: {{ Midata|safe }},
+
+			backgroundColor: poolColors(nElementos),
+
+			borderWidth: 1,
+          label: ''
+        }],
+        labels: {{ labels|safe }}
+      },
+	 options: {
+	           legend: {
+           		 display: false
+         		},
+				scales: {
+					yAxes: [{
+						ticks: {
+							beginAtZero: true
+						}
+					}]
+				}
+
+		}
+    };
+
+
+
+
+
+    window.onload = function() {
+      var ctx = document.getElementById('chart_uno').getContext('2d');
+      var ctx2 = document.getElementById('chart_dos').getContext('2d');
+      window.myPie = new Chart(ctx, config);
+      window.myPie = new Chart(ctx2, config2);
+    };
+
+
+
+
+function dynamicColors() {
+    var r = Math.floor(Math.random() * 255);
+    var g = Math.floor(Math.random() * 255);
+    var b = Math.floor(Math.random() * 255);
+    return "rgba(" + r + "," + g + "," + b + ", 0.8)";
+}
+
+function poolColors(a) {
+    var pool = [];
+    for(i = 0; i < a; i++) {
+        pool.push(dynamicColors());
+    }
+    return pool;
+}
+
+});
+		</script>
+	{% endblock %}
+
+
+{% block content %}
+
+<!--{{ request.session.grupo }}-->
+<!--<div class="row"></div>-->
+<div class="col-md-12">
+<section class="panel">
+		<header class="panel-heading">
+			<div class="panel-actions">
+<!--				<button type="button" class="create btn btn-sm btn-success" name="button">-->
+<!--					<span class="fa fa-plus"></span>-->
+<!--				</button>-->
+			</div>
+
+		<h2 class="panel-title"></h2>
+		</header>
+
+		<div class="panel-body">
+
+
+    <canvas id="chart_uno" ></canvas>
+
+
+
+		</div>
+	</section>
+
+
+</div>
+
+
+<div class="col-md-12">
+<section class="panel">
+		<header class="panel-heading">
+			<div class="panel-actions">
+<!--				<button type="button" class="create btn btn-sm btn-success" name="button">-->
+<!--					<span class="fa fa-plus"></span>-->
+<!--				</button>-->
+			</div>
+
+		<h2 class="panel-title"></h2>
+		</header>
+
+		<div class="panel-body">
+
+
+    <canvas id="chart_dos"></canvas>
+
+
+
+		</div>
+	</section>
+
+
+</div>
+
+
+	{% endblock %}

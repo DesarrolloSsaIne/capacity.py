@@ -1,0 +1,40 @@
+	<header class="panel-heading">
+				<div class="panel-actions">
+				<a class="fa fa-times" data-dismiss="modal"></a>
+				</div>
+				<h2 class="panel-title">Gestión Cuarto Nivel</h2>
+			</header>
+
+			<form  method="post"  action="" >
+
+				<div class="panel-body">
+					{% csrf_token %}
+
+					 <div class="{% if form.non_field_errors %}invalid{% endif %} mb-2">
+    					  {% for error in form.non_field_errors %}
+        					{{ error }}
+     					 {% endfor %}
+    				</div>
+
+
+					<div class="form-group col-6">
+						<label>ID</label>
+					{{ form.id_eje }}
+				</div>
+
+
+					<div class="form-group col-6">
+						<label>Nombre Eje</label>
+					{{ form.descripcion_eje }}
+				</div>
+
+
+
+			</div>
+				</div>
+			<div class="modal-footer">
+				<button class="btn btn-primary" type="submit"  >Confirmar</button>
+				<button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
+			</div>
+
+			</form>

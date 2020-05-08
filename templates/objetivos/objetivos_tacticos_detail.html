@@ -1,0 +1,159 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+
+{% if messages %}
+		  {% for message in messages %}
+
+			<div style="border-radius:0;" {% if message.tags %} id="danger-alert" class="{{request.session.message_class}} fade show mb-0" role="alert" {% endif %}>
+			  {{ message }}
+			  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			  </button>
+			</div>
+
+		  {% endfor %}
+
+	{% endif %}
+
+	<section class="panel">
+							<header class="panel-heading">
+								<div class="panel-actions">
+
+
+							    <button type="button" class="volver btn btn-sm btn-info"  name="button" title="Volver" >
+      								<span class="fa fa-reply"></span></button>
+									<button  type="button" class="create btn btn-sm btn-success" id="create"  name="button" title="Agregar Objetivo"  >
+      								<span class="fa fa-plus"></span></button>
+									</div>
+
+
+									{% for objetivo in object_list|slice:":1" %}						<!--<a href="#" class="fa fa-times"></a>-->
+
+								<h2 class="panel-title"><b>Objetivos Tácticos - Segundo Nivel</b> - {{ objetivo.id_segundo_nivel }}</h2>
+
+  								{% endfor %}
+							</header>
+							<div class="panel-body">
+								<table class="table table-bordered table-striped mb-none" id="datatable-default">
+									<thead>
+										<tr>
+
+											<th>Eje</th>
+											<th>Objetivo Estratégico</th>
+											<th>Objetivo Táctico</th>
+
+
+											<th>Opciones</th>
+										</tr>
+									</thead>
+									<tbody>
+
+                                            {% for objetivo in object_list %}
+                                                <tr>
+
+													<td> {{ objetivo.id_objetivo_estrategico.ges_eje }}</td>
+ 													  <td> {{ objetivo.id_objetivo_estrategico }}</td>
+													<td> {{ objetivo.descripcion_objetivo }}</td>
+
+
+
+                                                    <td style="width:40px;">
+
+														 <button type="button" title="Editar Objetivo" class="update btn btn-sm btn-primary" data-id="{% url 'ObjetivosTacticosEdit' objetivo.id %}" >
+														<span class="fa fa-pencil"></span></button>
+														 <button type="button" title="Eliminar Objetivo" class="delete btn btn-sm btn-danger" data-id="{% url 'ObjetivosTacticosDelete' objetivo.id %}">
+      													  <span class="fa fa-trash-o"></span></button>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+
+
+									</tbody>
+								</table>
+							</div>
+						</section>
+
+
+
+
+<!--Cabecera del modal -->
+<div class="modal fade" tabindex="-1" role="dialog" id="modalCreate">
+  <div class="modal-dialog modal-lg" role="document">
+	<div class="modal-content">
+
+    </div>
+  </div>
+</div>
+<div class="modal fade" tabindex="-1" role="dialog" id="modalUpdate">
+  <div class="modal-dialog modal-lg" role="document">
+	<div class="modal-content">
+
+    </div>
+  </div>
+</div>
+<div class="modal fade" tabindex="-1" role="dialog" id="modalDelete">
+  <div class="modal-dialog modal-xs" role="document">
+	<div class="modal-content">
+
+    </div>
+  </div>
+</div>
+<!--Fin cabecera del modal -->
+
+
+	{% block extrajs %}
+
+
+
+
+<script type="text/javascript">
+
+$(".volver").click(function() {
+    window.location.href = '{% url 'SegundoNivelListar'  %}';
+    return false;
+});
+
+
+	// JS modal crea Registro
+  	 $(".create").modalForm(  {formURL: "{% url 'ObjetivosTacticosCrear' %}", modalID: $("#modalCreate")});
+
+    // JS modal crear Registro
+   // $(".create").each(function () {
+   // $(this).modalForm({formURL: $(this).data('id'),  modalID: $("#modalCreate")});
+	//});
+
+
+   	 // JS modal actualiza Registro
+   $(".update").each(function () {
+   $(this).modalForm({formURL: $(this).data('id'),  modalID: $("#modalUpdate")});
+
+    });
+
+
+    // JS modal elimina Registro
+    $(".delete").each(function () {
+    $(this).modalForm({formURL: $(this).data('id'),  modalID: $("#modalDelete")});
+	});
+
+
+     // Js Muestra/Oculta Mensaje Success
+   	 $(".alert").fadeTo(4000, 500).slideUp( "slow", function() {
+     $(this).remove();
+  });
+
+
+
+
+
+
+
+
+</script>
+
+
+		{% endblock %}
+
+
+
+{% endblock %}

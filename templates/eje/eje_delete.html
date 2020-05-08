@@ -1,0 +1,27 @@
+		<header class="panel-heading">
+				<div class="panel-actions">
+				<a class="fa fa-times" data-dismiss="modal"></a>
+				</div>
+				<h2 class="panel-title">Eliminar Registro</h2>
+			</header>
+<form method="post" action="">
+  {% csrf_token %}
+    
+    <div class="panel-body">
+    <div class="modal-wrapper">
+        <div class="modal-icon">
+            <i class="fa fa-warning"></i>
+                </div>
+            <div class="modal-text">
+                <h4>Atención</h4>
+                <p>¿Está seguro de eliminar el registro?. Recuerde que una vez borrado no se podrá recuperar.</p>
+            </div>
+        </div>
+    </div>
+
+  <div class="modal-footer">
+    <button class="btn btn-danger" type="submit" >Eliminar</button>
+     <button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
+  </div>
+
+</form>

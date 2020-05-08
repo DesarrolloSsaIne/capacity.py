@@ -1,0 +1,57 @@
+
+			<header class="panel-heading">
+				<div class="panel-actions">
+				<a class="fa fa-times" data-dismiss="modal"></a>
+				</div>
+				<h2 class="panel-title" >Gestión de Objetivos Tácticos Tercer Nivel </h2>
+
+			</header>
+
+			<form  method="post"  action="" >
+
+				<div class="panel-body">
+					{% csrf_token %}
+					 <!-- Esto es necesario para recuperar el ID del nivel al cual se le está agregando el objetivo-->
+                    <input name="id_cod" type="text" id="codigo" style="display:none;">
+
+
+				<div class="form-group">
+					<label >Objetivo Táctico Asociado - Segundo Nivel</label>
+					{{ form.id_objetivo_tactico}}
+				</div>
+
+				<div class="form-group">
+					<label >Descripción Objetivo</label>
+					{{ form.descripcion_objetivo }}
+				</div>
+
+
+
+
+
+		<!--		<div class="checkbox-custom checkbox-primary" style="display:none;" aria-checked="true">
+					{{ form.estado }}
+				<label>Estado</label>
+				</div>-->
+
+
+
+				</div>
+
+
+
+			<div class="modal-footer">
+				<button class="btn btn-primary" id="confirm" type="submit" title="Confirma Acción"  >Confirmar</button>
+				<button class="btn btn-default" type="button" data-dismiss="modal" title="Cancela Acción">Cancelar</button>
+			</div>
+
+			</form>
+<script>
+
+	$("#confirm").click(function(){
+	 $('#codigo').val(Cookies.get('codigo'));
+
+
+});
+
+</script>

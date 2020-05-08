@@ -1,0 +1,43 @@
+<header class="panel-heading">
+    <div class="panel-actions">
+        <a class="fa fa-times" data-dismiss="modal"></a>
+    </div>
+    <h2 class="panel-title">Observaciones</h2>
+</header>
+
+<form method="post" action="">
+
+    <div class="panel-body">
+        {% csrf_token %}
+
+        <div class="{% if form.non_field_errors %}invalid{% endif %} mb-2">
+            {% for error in form.non_field_errors %} {{ error }} {% endfor %}
+        </div>
+
+	<br>
+
+		<div class="container">
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label>Ingrese Observación</label>
+						{{ form.observacion }}
+					</div>
+				</div>
+				<div class="col-md-6"></div>
+			</div>
+			<div class="row">
+
+			</div>
+		</div>
+
+		<br><br>
+
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="submit">Confirmar</button>
+        <button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
+    </div>
+
+</form>

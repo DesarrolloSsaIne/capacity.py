@@ -1,0 +1,76 @@
+<header class="panel-heading">
+    <div class="panel-actions">
+        <a id="btnDismiss" class="fa fa-times" data-dismiss="modal"></a>
+    </div>
+    <h2 class="panel-title">Observaciones al Conjunto de Actividades</h2>
+</header>
+
+<form method="POST" id="post-form" action="" >
+
+<div id="panelbody"  class="panel-body" style="overflow-y: scroll; height:350px; overflow-x: hidden; ">
+        {% csrf_token %}
+
+	<br>
+
+		<div class="container"  >
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group"  >
+
+<input id="fullname" style="display:none;" value="{{user.get_full_name}}" >
+<input id="id_objetivo" style="display:none;" value="{{id_objetivo}}" >
+
+
+{%  for obs in object_list %}
+
+{% if obs.user_observa.id  ==  user.id  %}
+
+<div id="cont_1" class="container_light" style="width:835px;">
+<span class="nombre-left">{{ obs.user_observa}}</span>
+<br><br>
+  <p>{{ obs.observacion}} </p>
+  <span class="time-right">{{ obs.fecha_registro}}</span>
+</div>
+
+{% else %}
+
+<div id="cont_2" class="container_light darker" style="width:835px;">
+<span class="nombre-right">{{ obs.user_observa}} </span>
+    <br><br>
+  <p>{{ obs.observacion}} </p>
+  <span class="time-left">{{ obs.fecha_registro}}</span>
+</div>
+
+{% endif %}
+
+{% endfor %}
+
+
+<div id="cont"></div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+
+</div>
+
+
+
+
+
+    <div class="modal-footer">
+
+        <button id="btnCerrar" class="btn btn-default" type="button" data-dismiss="modal">Cerrar</button>
+    </div>
+
+</form>
+
+
+
+
+
+
+

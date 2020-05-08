@@ -1,0 +1,266 @@
+{% extends 'base/base.html' %}
+{% load sitetree %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block extrajs %}
+
+
+		<script type="text/javascript">
+
+$( document ).ready(function() {
+/////////////////////////////////////////////////1111////////////////////////////////////////////////////////////////////
+
+var ctx1 = document.getElementById('chart_uno').getContext('2d');
+
+var nElementos= 0;
+{% for item in qs %}
+var nElementos= nElementos + 1;
+{% endfor %}
+
+var myChart1 = new Chart(ctx1, {
+    type: 'doughnut',
+    data: {
+        labels: [{% for item in qs %}'{{ item.estado_flujo__descripcion_estado }}', {% endfor %}],
+        datasets: [{
+      	    showLine: false,
+            label: 'Nro. Actividades',
+            data: [{% for item in qs %}{{ item.CantidadEst }}, {% endfor %}],
+			backgroundColor: poolColors(nElementos),
+            borderWidth: 1,
+        }]
+    },
+    options: {
+	           legend: {
+           		 display: true
+         		},
+
+
+    }
+});
+
+
+////////////////////////////////////////////////22222/////////////////////////////////////////////////////////////////////
+
+var ctx2 = document.getElementById('chart_dos').getContext('2d');
+
+var nElementos= 0;
+{% for item in qs %}
+var nElementos= nElementos + 1;
+{%  endfor %}
+
+var myChart2 = new Chart(ctx2, {
+    type: 'bar',
+    data: {
+        labels: [{% for item2 in qs2 %}'{{ item2.id_controlador__id_jefatura__id_nivel__descripcion_nivel }}', {% endfor %}],
+        datasets: [{
+            label: 'Nro. Actividades',
+            data: [{% for item2 in qs2 %}{{ item2.CantidadAct }}, {% endfor %}],
+			backgroundColor: poolColors(nElementos),
+            borderWidth: 1,
+        }]
+    },
+    options: {
+	           legend: {
+           		 display: false
+         		},
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function dynamicColors() {
+    var r = Math.floor(Math.random() * 255);
+    var g = Math.floor(Math.random() * 255);
+    var b = Math.floor(Math.random() * 255);
+    return "rgba(" + r + "," + g + "," + b + ", 0.8)";
+}
+
+function poolColors(a) {
+    var pool = [];
+    for(i = 0; i < a; i++) {
+        pool.push(dynamicColors());
+    }
+    return pool;
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+   	 // JS modal actualiza Registro
+   $(".update").each(function () {
+   $(this).modalForm({formURL: $(this).data('id'),  modalID: $("#modalUpdate")});
+
+    });
+
+         // Js Muestra/Oculta Mensaje Success
+   	 $(".alert").fadeTo(2000, 500).slideUp( "slow", function() {
+     $(this).remove();
+  });
+
+});
+
+
+		</script>
+	{% endblock %}
+
+
+{% block content %}
+
+{% if messages %}
+		  {% for message in messages %}
+
+			<div style="border-radius:0;" {% if message.tags %} id="danger-alert" class="{{request.session.message_class}} fade show mb-0" role="alert" {% endif %}>
+			  {{ message }}
+			  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			  </button>
+			</div>
+
+		  {% endfor %}
+
+	{% endif %}
+
+<!--{{ request.session.grupo }}-->
+<!--<div class="row"></div>-->
+<div class="col-md-12">
+<section class="panel">
+		<header class="panel-heading">
+			<div class="panel-actions">
+<!--				<button type="button" class="create btn btn-sm btn-success" name="button">-->
+<!--					<span class="fa fa-plus"></span>-->
+<!--				</button>-->
+			</div>
+
+		<h2 class="panel-title"><a href="{% url 'export_users_csv' %}">Export all users</a></h2>
+	 <button type="button" class="update btn btn-sm btn-primary" data-id="{% url 'modificar' 27 %}" >
+														Modal</button>
+
+		</header>
+
+		<div class="panel-body">
+
+
+<canvas id="chart_uno" ></canvas>
+
+		</div>
+	</section>
+
+
+
+
+<div class="modal fade" tabindex="-1" role="dialog" id="modalUpdate">
+  <div class="modal-dialog modal-lg" role="document">
+	<div class="modal-content">
+
+    </div>
+  </div>
+</div>
+
+<!--	&lt;!&ndash;Cabecera del modal &ndash;&gt;-->
+<!--<div class="modal fade" tabindex="-1" role="dialog" id="modalCreate">-->
+<!--  <div class="modal-dialog modal-lg" role="document">-->
+<!--	<div class="modal-content">-->
+
+<!--		<header class="panel-heading">-->
+<!--    <div class="panel-actions">-->
+<!--        <a class="fa fa-times" data-dismiss="modal"></a>-->
+<!--    </div>-->
+<!--    <h2 class="panel-title">Observaciones</h2>-->
+<!--</header>-->
+
+<!--<form method="post" action="">-->
+
+<!--    <div class="panel-body">-->
+<!--        {% csrf_token %}-->
+
+<!--	<br>-->
+
+<!--		<div class="container">-->
+<!--			<div class="row">-->
+<!--				<div class="col-md-6">-->
+<!--					<div class="form-group">-->
+<!--						<label>Ingrese Observación</label>-->
+
+<!--					</div>-->
+<!--				</div>-->
+<!--				<div class="col-md-6"></div>-->
+<!--			</div>-->
+<!--			<div class="row">-->
+
+<!--			</div>-->
+<!--		</div>-->
+
+<!--		<br><br>-->
+
+<!--    </div>-->
+
+<!--    <div class="modal-footer">-->
+<!--        <button class="btn btn-primary" type="submit">Confirmar</button>-->
+<!--        <button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>-->
+<!--    </div>-->
+
+<!--</form>-->
+
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+<div class="col-md-12">
+<section class="panel">
+		<header class="panel-heading">
+			<div class="panel-actions">
+<!--				<button type="button" class="create btn btn-sm btn-success" name="button">-->
+<!--					<span class="fa fa-plus"></span>-->
+<!--				</button>-->
+			</div>
+
+		<h2 class="panel-title"></h2>
+		</header>
+
+		<div class="panel-body">
+
+{% for item in qs %}
+
+<!--			<p>{{ item.id_jefatura.id_nivel}} </p>-->
+
+
+
+{% endfor %}
+
+<canvas id="chart_dos" ></canvas>
+
+
+
+		</div>
+	</section>
+
+
+</div>
+
+
+
+	{% endblock %}

@@ -1,0 +1,153 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+
+{% if messages %}
+		  {% for message in messages %}
+
+			<div style="border-radius:0;" {% if message.tags %} id="danger-alert" class="{{request.session.message_class}} fade show mb-0" role="alert" {% endif %}>
+			  {{ message }}
+			  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			  </button>
+			</div>
+
+		  {% endfor %}
+
+	{% endif %}
+
+	<section class="panel">
+							<header class="panel-heading">
+								<div class="panel-actions">
+
+
+
+								 <button  type="button" class="create btn btn-sm btn-success"  name="button" title="Agregar Estado Flujo">
+      								<span class="fa fa-plus"></span></button>
+
+
+									<!--<a href="#" class="fa fa-times"></a>-->
+								</div>
+
+
+								<h2 class="panel-title">  Gestión Estados Flujo </h2>
+
+							</header>
+							<div class="panel-body">
+								<table class="table table-bordered table-striped mb-none" id="datatable-default">
+									<thead>
+										<tr>
+													<th>Estado</th>
+											<th>Descripción Estado Flujo</th>
+
+
+                                            <th>Opciones</th>
+										</tr>
+									</thead>
+									<tbody>
+
+                                            {% for estado_flujo in object_list %}
+                                                <tr>
+														 <td> {{ estado_flujo.estado }} </td>
+                                                    <td> {{ estado_flujo.descripcion_estado }} </td>
+
+
+
+
+
+    												 <td style="width:80px;">
+														 <button type="button" title="Actualizar Registro" class="update btn btn-sm btn-primary" data-id="{% url 'EstadoFlujo_editar' estado_flujo.id %}" >
+														<span class="fa fa-pencil"></span></button>
+														 <button type="button" title="Eliminar Registro" class="delete btn btn-sm btn-danger" data-id="{% url 'EstadoFlujo_delete' estado_flujo.id %}">
+      													  <span class="fa fa-trash-o"></span></button>
+
+
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+
+
+									</tbody>
+								</table>
+
+							</div>
+						</section>
+
+
+
+
+<!--Cabecera del modal -->
+<div class="modal fade" tabindex="-1" role="dialog" id="modalCreate">
+  <div class="modal-dialog modal-lg" role="document">
+	<div class="modal-content">
+
+    </div>
+  </div>
+</div>
+
+	<div class="modal fade" tabindex="-1" role="dialog" id="modalDetalle">
+  <div class="modal-dialog modal-xs" role="document">
+	<div class="modal-content">
+
+    </div>
+  </div>
+
+</div>
+<div class="modal fade" tabindex="-1" role="dialog" id="modalUpdate">
+  <div class="modal-dialog modal-lg" role="document">
+	<div class="modal-content">
+
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" tabindex="-1" role="dialog" id="modalDelete">
+  <div class="modal-dialog modal-xs" role="document">
+	<div class="modal-content">
+
+    </div>
+  </div>
+</div>
+<!--Fin cabecera del modal -->
+
+
+
+	{% block extrajs %}
+
+
+
+<script type="text/javascript">
+
+	// JS modal crea Registro
+  	 $(".create").modalForm(  {formURL: "{% url 'EstadoFlujo_crear' %}", modalID: $("#modalCreate")});
+
+
+   	 // JS modal actualiza Registro
+   $(".update").each(function () {
+   $(this).modalForm({formURL: $(this).data('id'),  modalID: $("#modalUpdate")});
+
+    });
+
+
+    // JS modal elimina Registro
+    $(".delete").each(function () {
+    $(this).modalForm({formURL: $(this).data('id'),  modalID: $("#modalDelete")});
+	});
+
+
+     // Js Muestra/Oculta Mensaje Success
+   	 $(".alert").fadeTo(5000, 500).slideUp( "slow", function() {
+     $(this).remove();
+  });
+
+
+
+</script>
+
+
+		{% endblock %}
+
+
+
+{% endblock %}
