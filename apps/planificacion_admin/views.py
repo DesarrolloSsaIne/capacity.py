@@ -30,6 +30,7 @@ class PlanificacionAdminList(ListView):
         lista_planes = Ges_Controlador.objects.filter((Q(estado_flujo_id=10) | Q(estado_flujo_id=11) | Q(estado_flujo_id=6)) & Q(id_periodo=periodo_actual))
         context['object_list'] = lista_planes
 
+
         return context
 
 def AsignaAnalista(request, id):
@@ -67,14 +68,6 @@ def AsignaAnalista(request, id):
             subject = 'Asignación de Plan'
             messageHtml = 'Estimada(o) <b>' + usuario + '</b> ,<br> El administrador de Planificación le ha asignado un PLAN para su revisión con los siguientes antecedentes:.<br> <br> Unidad Plan: <b>'+ unidad_plan +'</b> <br>Jefatura Elabora: <b>'+ jefe_elabora  + '</b> <br><br> Para su revisión ingrese al sistema Capacity Institucional y diríjase a su bandeja de entrada. <br> Atte. <br><br>Subdpto. de Planificación Institucional.<br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
             send_correo(idcorreoJefatura, subject, messageHtml)
-
-            ####este correo se le debe enviar al analista###
-            # email_jefatura_2revision = email_jefatura_2revision
-            # idcorreoJefatura = [email_jefatura_2revision]
-            # subject = 'Revisión de Plan'
-            # message = 'Estimada(o) Usuaria(o), Se ha cargado un nuevo plan  para su revisión.  Atte. Subdpto. de Planificación Institucional.>Correo generado automaticamente no responder.'
-            # messageHtml = 'Estimada(o) Usuaria(o),<br> Se ha cargado un nuevo plan  para su revisión. <br> Atte. <br>Subdpto. de Planificación Institucional.<br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
-            # send_correo(idcorreoJefatura, subject, message, messageHtml)
 
             request.session['message_class'] = "alert alert-success"  # Tipo mensaje
             messages.success(request, "El plan fue asignado correctamente y se ha enviado un correo al analista!")  # mensaje
