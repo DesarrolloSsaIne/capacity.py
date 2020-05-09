@@ -12,26 +12,28 @@ from django.utils.module_loading import import_string
 from django.core.mail import EmailMultiAlternatives, send_mail
 
 
-# Create your views here.
+# Generic Functions of projects.
+def PeriodoActual():
+    try:
+        periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+    except Glo_Periodos.DoesNotExist:
+        return None
+    return periodo_actual
+
+def usuarioActual(request):
+
+    id_usuario_actual = request.user.id  # obtiene id usuario actual
+
+    return id_usuario_actual
+
 
 class PlanificacionAdminList(ListView):
     model = Ges_Controlador
     template_name = 'planificacion_admin/planificacion_admin_list.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(PlanificacionAdminList, self).get_context_data(**kwargs)
-        id_usuario_actual = self.request.user.id  # obtiene id usuario actual
-
-        try:
-            periodo_actual = Glo_Periodos.objects.get(id_estado=1)
-        except Glo_Periodos.DoesNotExist:
-            return None
-
-        lista_planes = Ges_Controlador.objects.filter((Q(estado_flujo_id=10) | Q(estado_flujo_id=11) | Q(estado_flujo_id=6)) & Q(id_periodo=periodo_actual))
-        context['object_list'] = lista_planes
+    context_object_name = 'object_list'
+    queryset = Ges_Controlador.objects.filter((Q(estado_flujo_id=10) | Q(estado_flujo_id=11) | Q(estado_flujo_id=6)) & Q(id_periodo=PeriodoActual()))
 
 
-        return context
 
 def AsignaAnalista(request, id):
     template_name = 'planificacion_admin/planificacion_admin_asigna.html'
@@ -39,24 +41,19 @@ def AsignaAnalista(request, id):
     qs = User.objects.filter(groups__in=Group.objects.filter(id=6)) #Envío los usuario que no pertenezcan a algún grupo.
     context = {"qs": qs} # aquí le envío lo que quiero al modal para que lo muestre, incluso una lista.
 
-    try:
-        periodo_activo = Glo_Periodos.objects.get(id_estado=1)
-    except Glo_Periodos.DoesNotExist:
-        return None
-
 
     if request.method == "POST": # aquí recojo lo que trae el modal
 
         id_user= request.POST['SelectUser'] # aquí capturo lo que traigo del modal
 
         Ges_Controlador.objects.filter(
-            Q(id=id) & Q(id_periodo=periodo_activo.id)).update(
+            Q(id=id) & Q(id_periodo=PeriodoActual())).update(
             analista_asignado = id_user, estado_flujo= 6,
         )
 
         try:
 
-            controladorPlan = Ges_Controlador.objects.get(Q(id=id) & Q(id_periodo=periodo_activo))
+            controladorPlan = Ges_Controlador.objects.get(Q(id=id) & Q(id_periodo=PeriodoActual()))
             usuario=  str(controladorPlan.analista_asignado)
             unidad_plan=str(controladorPlan.id_jefatura.id_nivel)
             jefe_elabora= str(controladorPlan.id_jefatura.id_user)
