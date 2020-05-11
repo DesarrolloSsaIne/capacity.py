@@ -34,9 +34,12 @@ class ClubChartView(TemplateView):
 
         ps = Ges_Controlador.objects.filter(id_periodo=3).values('estado_flujo__descripcion_estado').annotate(CantidadEst=Count('id')) # estado por jefatura
         ps2 = Ges_Actividad.objects.filter(id_periodo=3).values('id_controlador__id_jefatura__id_nivel__descripcion_nivel').annotate(CantidadAct=Count('id'))# Cantidad act. por areas
-
+        ps3 = Ges_Controlador.objects.filter(id_periodo=3).values(
+            'analista_asignado__first_name','analista_asignado__last_name').annotate(
+            CantidadPlan=Count('id'))  # Cantidad planes por analista
         context["qs"] = ps
         context["qs2"] = ps2
+        context["qs3"] = ps3
         return context
 
 

@@ -78,6 +78,51 @@ var myChart2 = new Chart(ctx2, {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+////////////////////////////////////////////////22222/////////////////////////////////////////////////////////////////////
+
+var ctx3 = document.getElementById('chart_tres').getContext('2d');
+
+var nElementos= 0;
+{% for item in qs3 %}
+var nElementos= nElementos + 1;
+{%  endfor %}
+
+var myChart3 = new Chart(ctx3, {
+    type: 'bar',
+    data: {
+        labels: [{% for item3 in qs3 %}'{{ item3.analista_asignado__first_name }} {{ item3.analista_asignado__last_name }} ', {% endfor %}],
+        datasets: [{
+            label: 'Nro. Actividades',
+            data: [{% for item3 in qs3 %}{{ item3.CantidadPlan }}, {% endfor %}],
+			backgroundColor: poolColors(nElementos),
+            borderWidth: 1,
+        }]
+    },
+    options: {
+	           legend: {
+           		 display: false
+         		},
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
 function dynamicColors() {
     var r = Math.floor(Math.random() * 255);
     var g = Math.floor(Math.random() * 255);
@@ -164,70 +209,9 @@ function poolColors(a) {
   </div>
 </div>
 
-<!--	&lt;!&ndash;Cabecera del modal &ndash;&gt;-->
-<!--<div class="modal fade" tabindex="-1" role="dialog" id="modalCreate">-->
-<!--  <div class="modal-dialog modal-lg" role="document">-->
-<!--	<div class="modal-content">-->
-
-<!--		<header class="panel-heading">-->
-<!--    <div class="panel-actions">-->
-<!--        <a class="fa fa-times" data-dismiss="modal"></a>-->
-<!--    </div>-->
-<!--    <h2 class="panel-title">Observaciones</h2>-->
-<!--</header>-->
-
-<!--<form method="post" action="">-->
-
-<!--    <div class="panel-body">-->
-<!--        {% csrf_token %}-->
-
-<!--	<br>-->
-
-<!--		<div class="container">-->
-<!--			<div class="row">-->
-<!--				<div class="col-md-6">-->
-<!--					<div class="form-group">-->
-<!--						<label>Ingrese Observación</label>-->
-
-<!--					</div>-->
-<!--				</div>-->
-<!--				<div class="col-md-6"></div>-->
-<!--			</div>-->
-<!--			<div class="row">-->
-
-<!--			</div>-->
-<!--		</div>-->
-
-<!--		<br><br>-->
-
-<!--    </div>-->
-
-<!--    <div class="modal-footer">-->
-<!--        <button class="btn btn-primary" type="submit">Confirmar</button>-->
-<!--        <button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>-->
-<!--    </div>-->
-
-<!--</form>-->
-
-<!--    </div>-->
-<!--  </div>-->
-<!--</div>-->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 </div>
+
+
 
 <div class="col-md-12">
 <section class="panel">
@@ -243,24 +227,43 @@ function poolColors(a) {
 
 		<div class="panel-body">
 
-{% for item in qs %}
 
-<!--			<p>{{ item.id_jefatura.id_nivel}} </p>-->
+<canvas id="chart_dos" >
 
-
-
-{% endfor %}
-
-<canvas id="chart_dos" ></canvas>
-
-
+</canvas>
 
 		</div>
-	</section>
+</section>
 
 
 </div>
 
 
+
+
+<div class="col-md-12">
+<section class="panel">
+		<header class="panel-heading">
+			<div class="panel-actions">
+<!--				<button type="button" class="create btn btn-sm btn-success" name="button">-->
+<!--					<span class="fa fa-plus"></span>-->
+<!--				</button>-->
+			</div>
+
+		<h2 class="panel-title"></h2>
+		</header>
+
+		<div class="panel-body">
+
+
+<canvas id="chart_tres" >
+
+</canvas>
+
+		</div>
+</section>
+
+
+</div>
 
 	{% endblock %}
