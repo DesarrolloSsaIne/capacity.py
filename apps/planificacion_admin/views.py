@@ -4,7 +4,7 @@ from apps.estado_flujo.models import Glo_EstadoFlujo
 from apps.planificacion_admin.forms import Planificacion_adminForm
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from apps.periodos.models import Glo_Periodos
-from django.contrib.auth.models import User, Group
+from apps.registration.models import logEventos
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.db.models import Q
@@ -26,6 +26,7 @@ def usuarioActual(request):
 
     id_usuario_actual = request.user.id  # obtiene id usuario actual
     return id_usuario_actual
+
 
 
 class PlanificacionAdminList(ListView):
@@ -118,4 +119,14 @@ def send_correo(email, subject,  messageHtml):
     conn.send_messages(email_messages)
     conn.close()
 
+    return None
+
+
+def logEventosCreate(tipo_evento, metodo ,usuario_evento, jefatura_dirigida):
+    logEventos.objects.create(
+        tipo_evento=tipo_evento,
+        metodo=metodo,
+        usuario_evento=usuario_evento,
+        jefatura_dirigida=jefatura_dirigida,
+    )
     return None

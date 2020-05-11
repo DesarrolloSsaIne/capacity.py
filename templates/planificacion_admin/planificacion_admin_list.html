@@ -82,49 +82,10 @@ Listado de Planes
 
 
 <!--Cabecera del modal -->
-<div class="modal fade" tabindex="-1" role="dialog" id="modalCreate">
-  <div class="modal-dialog modal-lg" role="document">
-	<div class="modal-content">
-
-    </div>
-  </div>
-</div>
-
-	<div class="modal fade" tabindex="-1" role="dialog" id="modalDetalle">
-  <div class="modal-dialog modal-xs" role="document">
-	<div class="modal-content">
-
-    </div>
-  </div>
-
-</div>
-<div class="modal fade" tabindex="-1" role="dialog" id="modalUpdate">
-  <div class="modal-dialog modal-lg" role="document">
-	<div class="modal-content">
-
-    </div>
-  </div>
-</div>
 
 
-<div class="modal fade" tabindex="-1" role="dialog" id="modalDelete">
-  <div class="modal-dialog modal-xs" role="document">
-	<div class="modal-content">
-
-    </div>
-  </div>
-</div>
-
-
-<div class="modal fade" tabindex="-1" role="dialog" id="modalRechazar">
-  <div class="modal-dialog modal-xs" role="document">
-	<div class="modal-content">
-
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" tabindex="-1" role="dialog" id="modalAceptar">
+<div class="modal fade" data-backdrop="static"
+  data-keyboard="false"  tabindex="-1" role="dialog" id="modalAceptar">
   <div class="modal-dialog modal-xs" role="document">
 	<div class="modal-content">
 
@@ -141,44 +102,21 @@ Listado de Planes
 
 <script type="text/javascript">
 
-    $(".rechazar").each(function () {
-      $(this).modalForm({formURL: $(this).data('id'),  modalID: $("#modalRechazar")});
-	})
 
     $(".aceptar").each(function () {
       $(this).modalForm({formURL: $(this).data('id'),  modalID: $("#modalAceptar")});
 	})
 
-</script>
-
-<script type="text/javascript">
-
-
-
-	// JS modal crea Registro
-  	//  $(".create").modalForm(  {formURL: "{% url 'JefaturaCrear' %}", modalID: $("#modalCreate")});
-
-
-   	 // JS modal actualiza Registro
-   $(".update").each(function () {
-   $(this).modalForm({formURL: $(this).data('id'),  modalID: $("#modalUpdate")});
-
-    });
-
-
-    // JS modal elimina Registro
-    $(".delete").each(function () {
-    $(this).modalForm({formURL: $(this).data('id'),  modalID: $("#modalDelete")});
-	});
-
 
      // Js Muestra/Oculta Mensaje Success
    	 $(".alert").fadeTo(9000, 500).slideUp( "slow", function() {
      $(this).remove();
-  });
-$('#datatable-default').DataTable({
-"order": [[ 4, "desc" ]] //desactiva el ordenamiento de la tabla para que el order_by del queryset funcione. ("order": [[ 3, "desc" ]]) para ordenar desde jquery.
-});
+  		});
+
+
+	$('#datatable-default').DataTable({
+	"order": [[ 4, "desc" ]] //desactiva el ordenamiento de la tabla para que el order_by del queryset funcione. ("order": [[ 3, "desc" ]]) para ordenar desde jquery.
+	});
 
 
 

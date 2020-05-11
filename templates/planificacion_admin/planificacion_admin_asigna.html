@@ -1,14 +1,13 @@
-
 	<header class="panel-heading">
 				<div class="panel-actions">
-				<a class="fa fa-times" data-dismiss="modal"></a>
+
 				</div>
 				<h2 class="panel-title">Asignar Plan a Analista de Planificación</h2>
 			</header>
 
-			<form  method="post"  action="" >
+			<form id="formAsigna" method="post"  action="" >
 
-				<div class="panel-body">
+				<div id="panel" class="panel-body">
 					{% csrf_token %}
 
 
@@ -31,18 +30,21 @@
 
 			</div>
 
-			<div class="modal-footer">
+			<div id="botones" class="modal-footer">
+
+        <div id="enviar" style="display:none; text-align:left; " class="alert alert-info" role="alert">
+            Enviando correo al analista, favor espere...
+        </div>
+
 				<button class="btn btn-primary" type="submit" id="confirmar"  >Confirmar</button>
-				<button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
+
+				<button class="btn btn-default" type="button" id="cancelar" data-dismiss="modal">Cancelar</button>
 			</div>
 
-				<div class="alert alert-danger" style="display:none;" id="mjeError">
 
-										<p id="textError"></p>
-									</div>
+
 
 			</form>
-
 
 
 	<script>
@@ -55,6 +57,15 @@ $(function() {
     });
 
 });
+
+
+            $('#confirmar').click(function() {
+
+                $( this ).hide();
+                $( '#cancelar' ).hide();
+                 $( '#enviar' ).fadeIn();
+
+            });
 
 
 

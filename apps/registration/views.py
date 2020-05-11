@@ -58,6 +58,7 @@ class LogList(ListView):
     model = logAcceso
     template_name = 'registration/log_list.html'
 
+
     def get_context_data(self,  **kwargs):
         context = super(LogList, self).get_context_data(**kwargs)
         lista_log= logAcceso.objects.all().order_by('-id')
