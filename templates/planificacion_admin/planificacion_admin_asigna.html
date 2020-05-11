@@ -21,15 +21,8 @@
 
 
 					<div  class="form-group">
-					<label >Seleccione un Funcionario Analista</label>
-<!--					{{ form.id_user}}-->
-
-                        <select name="SelectUser" id="siteID" class="form-control" style="width:550px;" >
-                            item.username
-                            {% for item in qs %}
-                            <option value={{item.id}}>{{ item.first_name }} {{ item.last_name }}</option>
-                            {% endfor %}
-                        </select>
+					<label >Seleccione un funcionario analista</label>
+					<div >{{ form.analista_asignado }}</div>
 
 				</div>
 
