@@ -8,6 +8,7 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models.deletion import ProtectedError
 from django.db.models import Q
+from django.db.models.deletion import ProtectedError
 
 # Create your views here.
 
@@ -15,28 +16,26 @@ from django.db.models import Q
 class PerfilesList(ListView):
     model = User
     template_name = 'perfiles/perfil_list.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(PerfilesList, self).get_context_data(**kwargs)
-
-        lista_grupos =Group.objects.filter(~Q(id=2) & ~Q(id=5))
-        context['object_list'] = lista_grupos
-        return context
+    context_object_name = 'object_list'
+    queryset = Group.objects.filter(~Q(id=2) & ~Q(id=5))
 
 
-
-def PerfilUsuarioList(request, id):
+class PerfilUsuarioList(ListView):
+    model = Group
     template_name = 'perfiles/perfil_usuarios_list.html'
 
-    qs = User.objects.filter(groups__in=Group.objects.filter(id=id)) #Envío los usuario que no pertenezcan a algún grupo.
-    grupo = Group.objects.get(id=id)
+    def get_context_data(self, **kwargs):
+        context = super(PerfilUsuarioList, self).get_context_data(**kwargs)
 
+        qs = User.objects.filter(groups__in=Group.objects.filter(id=self.kwargs['pk']))
+        grupo = Group.objects.get(id=self.kwargs['pk'])
 
-    context = {"object_list": qs, "grupo": grupo}
+        context['object_list'] = qs
+        context['grupo']= grupo
+        self.request.session["id_perfil"] = self.kwargs['pk']
 
-    request.session["id_perfil"]=id
+        return context
 
-    return render(request, template_name, context)
 
 
 
@@ -46,13 +45,22 @@ def PerfilDelete(request, id):
 
     if request.method == "POST": # aquí recojo lo que trae el modal
 
-        g = Group.objects.get(user=id)
-        g.user_set.remove(id)
 
-        id_perfil= request.session["id_perfil"]
-        request.session['message_class'] = "alert alert-success" #Tipo mensaje
-        messages.success(request, "Los usuario fue eliminado correctamente de este perfil!") # mensaje
-        return HttpResponseRedirect('/perfiles/listarUsuarios/' + str(id_perfil)) # Redirije a la pantalla principal
+        try:
+            id_perfil = request.session["id_perfil"]
+
+            g = Group.objects.get(user=id)
+            g.user_set.remove(id)
+
+            request.session['message_class'] = "alert alert-success" #Tipo mensaje
+            messages.success(request, "Los usuario fue eliminado correctamente de este perfil!") # mensaje
+            return HttpResponseRedirect('/perfiles/listarUsuarios/' + str(id_perfil)) # Redirije a la pantalla principal
+
+        except ProtectedError:
+            request.session['message_class'] = "alert alert-danger" #Tipo mensaje
+            messages.success(request, "No puede eliminar este dato ya que se encuentra asociado a otro registro!") # mensaje
+            return HttpResponseRedirect('/perfiles/listarUsuarios/' + str(id_perfil)) # Redirije a la pantalla principal
+
 
     return render(request, template_name)
 

@@ -42,7 +42,8 @@ def AsignaAnalista(request, id):
     context = {"qs": qs} # aquí le envío lo que quiero al modal para que lo muestre, incluso una lista.
 
 
-    if request.method == "POST": # aquí recojo lo que trae el modal
+
+    if request.method == "POST":
 
         id_user= request.POST['SelectUser'] # aquí capturo lo que traigo del modal
 

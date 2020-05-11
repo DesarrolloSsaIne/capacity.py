@@ -12,7 +12,7 @@ urlpatterns = [
     # url('editar/(?P<pk>\d+)/$', login_required(JefaturaUpdate.as_view()), name='JefaturaEditar'),
     # url('eliminar/(?P<pk>\d+)/$', login_required(AnalistaDelete.as_view()), name='AnalistaEliminar'),
     path('eliminar/<int:id>', login_required(PerfilDelete), name="PerfilEliminar"),
-    path('listarUsuarios/<int:id>', login_required(PerfilUsuarioList), name="PerfilListarUsuarios"),
+    url('listarUsuarios/(?P<pk>\d+)/$', login_required(PerfilUsuarioList.as_view()), name="PerfilListarUsuarios"),
     path('crear/', login_required(PerfilAsigna), name="PerfilCrear"),
     #url('editar/2/(?P<id_nivel>\d+)/$', SegundoNivelUpdate, name='SegundoNivelEditar'),
 
