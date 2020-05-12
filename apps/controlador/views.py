@@ -107,7 +107,6 @@ class ControladorDelete(SuccessMessageMixin, DeleteView ):
             user_id_jefatura = nivel_jefatura.id_jefatura.id_user
 
             obj.delete()
-
             g = Group.objects.get(id=1)
             g.user_set.remove(user_id_jefatura)
 
