@@ -47,8 +47,6 @@ class ActividadesObjetivosList(ListView): #clase modificada por JR- sprint 8 - O
         id_usuario_actual= self.request.user.id #obtiene id usuario actual
         id_jefatura = Ges_Jefatura.objects.get(id_user=id_usuario_actual)
 
-
-
         try:
             periodo_actual = Glo_Periodos.objects.get(id_estado=1)
         except Glo_Periodos.DoesNotExist:

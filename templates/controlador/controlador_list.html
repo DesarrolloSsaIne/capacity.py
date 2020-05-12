@@ -60,10 +60,10 @@
 <!--                                                    <td> {{ controlador.fecha_ultima_modificacion }} </td>-->
                                                      <td> {{ controlador.estado_flujo }} </td>
 
-    												 <td style="width:80px;">
-														 <button type="button" title="Actualizar Registro" class="update btn btn-sm btn-primary" data-id="{% url 'producto_editar' controlador.id %}" >
-														<span class="fa fa-pencil"></span></button>
-														 <button type="button" title="Eliminar Registro" class="delete btn btn-sm btn-danger" data-id="{% url 'producto_delete' controlador.id %}">
+    												 <td style="width:80px; text-align:center;">
+<!--														 <button type="button" title="Actualizar Registro" class="update btn btn-sm btn-primary" data-id="{% url 'producto_editar' controlador.id %}" >-->
+<!--														<span class="fa fa-pencil"></span></button>-->
+														 <button type="button" title="Eliminar Registro" class="delete btn btn-sm btn-danger" data-id="{% url 'controlador_delete' controlador.id %}">
       													  <span class="fa fa-trash-o"></span></button>
 
 

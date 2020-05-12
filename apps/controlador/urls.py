@@ -8,5 +8,5 @@ urlpatterns = [
     path('listar', login_required(views.ControladorList.as_view()), name='controlador_listar'),
     path('create', login_required(views.ControladorCreate.as_view()), name='controlador_crear'),
     path('edit/<int:pk>', login_required(views.ControladorUpdate.as_view()), name='controlador_editar'),
-   # path('delete/<int:pk>', login_required(views.ProductoDelete.as_view()), name='producto_delete'),
+    path('delete/<int:pk>', login_required(views.ControladorDelete.as_view()), name='controlador_delete'),
 ]

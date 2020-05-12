@@ -3,7 +3,7 @@ import smtplib
 from django.core import mail
 from django.http import HttpResponseRedirect
 from django.contrib import messages
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models.deletion import ProtectedError
 from django.db.models import Q
@@ -50,6 +50,14 @@ class ControladorCreate(SuccessMessageMixin, CreateView):
     form_class = controladorFlujoForm
     template_name = 'controlador/controlador_form.html'
 
+    def get_form_kwargs(self, **kwargs):
+        kwargs = super(ControladorCreate, self).get_form_kwargs()
+        try:
+            periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+        except Glo_Periodos.DoesNotExist:
+            return None
+        kwargs['id_periodo'] = periodo_actual
+        return kwargs
 
     def post(self, request, *args, **kwargs):
         form_class = self.get_form_class()
@@ -58,6 +66,8 @@ class ControladorCreate(SuccessMessageMixin, CreateView):
         jefatura = request.POST['id_jefatura']
         nivel_jefatura= Ges_Jefatura.objects.get(id=jefatura)
         nivel_inicial = Ges_Niveles.objects.get(id=nivel_jefatura.id_nivel_id)
+
+        user_id_jefatura=nivel_jefatura.id_user
 
         periodo= Glo_Periodos.objects.get(id_estado=1)
         estado_flujo = Glo_EstadoFlujo.objects.get(estado=2)
@@ -68,7 +78,13 @@ class ControladorCreate(SuccessMessageMixin, CreateView):
             form.instance.estado_flujo= estado_flujo
             form.instance.fecha_ultima_modificacion= date.today()
 
+
+
             form.save()
+
+            g = Group.objects.get(id=1)
+            g.user_set.add(user_id_jefatura)
+
             request.session['message_class'] = "alert alert-success"
             messages.success(self.request, "Los datos fueron creados correctamente!")
             return HttpResponseRedirect('/controlador/listar')
@@ -76,6 +92,53 @@ class ControladorCreate(SuccessMessageMixin, CreateView):
             request.session['message_class'] = "alert alert-danger"
             messages.error(self.request, "Error interno: No se ha creado el registro. Comuníquese con el administrador.")
             return HttpResponseRedirect('/controlador/listar')
+
+
+class ControladorDelete(SuccessMessageMixin, DeleteView ):
+    model = Ges_Controlador
+    template_name = 'controlador/controlador_delete.html'
+
+    def delete(self, request, *args, **kwargs):
+        obj = self.get_object()
+        try:
+
+            id_controlador = self.kwargs['pk']
+            nivel_jefatura = Ges_Controlador.objects.get(id=id_controlador)
+            user_id_jefatura = nivel_jefatura.id_jefatura.id_user
+
+            obj.delete()
+
+            g = Group.objects.get(id=1)
+            g.user_set.remove(user_id_jefatura)
+
+
+            request.session['message_class'] = "alert alert-success"
+            messages.success(self.request, "El registro fue eliminado correctamente!")
+            return HttpResponseRedirect('/controlador/listar')
+
+        except ProtectedError as e:
+            request.session['message_class'] = "alert alert-danger"
+            messages.error(request, "Error de integridad: .")
+            return HttpResponseRedirect('/controlador/listar')
+
+        except Exception  as e:
+            request.session['message_class'] = "alert alert-danger"
+            messages.error(request, "Error interno: No se ha eliminado el registro. Comuníquese con el administrador.")
+            return HttpResponseRedirect('/controlador/listar')
+
+
+
+
+########################################################################################################################
+########################################################################################################################
+########################################################################################################################
+
+
+
+
+
+
+
 
 class ControladorUpdate(UpdateView):
     model = Ges_Controlador

@@ -17,7 +17,7 @@ class PerfilesList(ListView):
     model = User
     template_name = 'perfiles/perfil_list.html'
     context_object_name = 'object_list'
-    queryset = Group.objects.filter(~Q(id=2) & ~Q(id=5))
+    queryset = Group.objects.filter(~Q(id=2) & ~Q(id=5) & ~Q(id=1))
 
 
 class PerfilUsuarioList(ListView):
