@@ -12,7 +12,7 @@ from django.core import mail
 from django.conf import settings
 from django.utils.module_loading import import_string
 from django.core.mail import EmailMultiAlternatives, send_mail
-
+from django.core.mail import EmailMessage
 
 # Generic Functions of projects.
 def PeriodoActual():
@@ -68,7 +68,10 @@ class AsignaAnalista(UpdateView):
                 idcorreoJefatura = [email_jefatura_ingresaAct]
                 subject = 'Asignación de Plan'
                 messageHtml = 'Estimada(o) <b>' + usuario + '</b> ,<br> El administrador de Planificación le ha asignado un PLAN para su revisión con los siguientes antecedentes:.<br> <br> Unidad Plan: <b>'+ unidad_plan +'</b> <br>Jefatura Elabora: <b>'+ jefe_elabora  + '</b> <br><br> Para su revisión ingrese al sistema Capacity Institucional y diríjase a su bandeja de entrada. <br> Atte. <br><br>Subdpto. de Planificación Institucional.<br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
-                send_correo(idcorreoJefatura, subject, messageHtml)
+
+                email = EmailMessage(subject, messageHtml ,to=[idcorreoJefatura])
+                email.content_subtype='html'
+                email.send()
 
                 request.session['message_class'] = "alert alert-success"  # Tipo mensaje
                 messages.success(request, "El plan fue asignado correctamente y se ha enviado un correo al analista!")  # mensaje
@@ -76,9 +79,9 @@ class AsignaAnalista(UpdateView):
 
             except:
 
-                request.session['message_class'] = "alert alert-warning" #Tipo mensaje
-                messages.success(request, "El plan fue asignado correctamente!, pero el servicio de correo tuvo un inconveniente favor comuníquese con el analista para informar la asignación.") # mensaje
-                return HttpResponseRedirect('/planificacion_admin/listar/') # Redirije a la pantalla principal
+                 request.session['message_class'] = "alert alert-warning" #Tipo mensaje
+                 messages.success(request, "El plan fue asignado correctamente!, pero el servicio de correo tuvo un inconveniente favor comuníquese con el analista para informar la asignación.") # mensaje
+                 return HttpResponseRedirect('/planificacion_admin/listar/') # Redirije a la pantalla principal
 
         else:
 
@@ -86,40 +89,6 @@ class AsignaAnalista(UpdateView):
             messages.error(self.request, "Error interno: No se ha asignado el funcionario. Comuníquese con el administrador.")
             return HttpResponseRedirect('/planificacion_admin/listar/')
 
-
-
-
-
-def get_connection(backend=None, fail_silently=False, **kwds):
-    klass = import_string(backend or settings.EMAIL_BACKEND)
-    return klass(fail_silently=fail_silently, **kwds)
-
-def send_correo(email, subject,  messageHtml):
-    email = email
-    subject = subject
-    from_email = settings.EMAIL_HOST_USER
-    email_messages = []
-    subject, from_email, to = subject, from_email, email
-    html_content = messageHtml
-    fail_silently = False
-    auth_user = None
-    auth_password = None
-    connection = None
-
-    connection = connection or get_connection(
-        username=auth_user,
-        password=auth_password,
-        fail_silently=fail_silently,
-    )
-    msg = EmailMultiAlternatives(subject, html_content, from_email, to)
-    msg.attach_alternative(html_content, "text/html")
-    email_messages.append(msg)
-    conn = mail.get_connection()
-    conn.open()
-    conn.send_messages(email_messages)
-    conn.close()
-
-    return None
 
 
 def logEventosCreate(tipo_evento, metodo ,usuario_evento, jefatura_dirigida):

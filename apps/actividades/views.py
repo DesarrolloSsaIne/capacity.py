@@ -491,8 +491,8 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
         fecha_termino = request.POST['fecha_termino_actividad']
         total_horas_post = request.POST['total_horas']
 
-        fecha_inicio_split = datetime.datetime.strptime(fecha_inicio, '%Y-%m-%d')
-        fecha_termino_split = datetime.datetime.strptime(fecha_termino, '%Y-%m-%d')
+        fecha_inicio_split = datetime.strptime(fecha_inicio, '%Y-%m-%d')
+        fecha_termino_split = datetime.strptime(fecha_termino, '%Y-%m-%d')
 
         anio_inicio = fecha_inicio_split.year
         mes_inicio = fecha_inicio_split.month
@@ -502,8 +502,8 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
         mes_termino = fecha_termino_split.month
         dia_termino = fecha_termino_split.day
 
-        dias_habiles_brutos = workdays(datetime.datetime(anio_inicio, mes_inicio, dia_inicio),
-                                       datetime.datetime(anio_termino, mes_termino, dia_termino))
+        dias_habiles_brutos = workdays(datetime(anio_inicio, mes_inicio, dia_inicio),
+                                       datetime(anio_termino, mes_termino, dia_termino))
 
         feriados = Ges_Feriados.objects.filter(Q(id_periodo=periodo_actual.id) & Q(fecha_feriado__range=(
             fecha_inicio, fecha_termino))).count()  # cuenta los feriados entre las fechas de inicio y termino.

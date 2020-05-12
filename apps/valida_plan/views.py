@@ -645,35 +645,6 @@ class ObservacionDelete(SuccessMessageMixin, DeleteView ): #clase creada por JR-
             return HttpResponseRedirect('/valida_plan/listaObservacion/'+str(id_actividad))
 
 
-# class ObservacionUpdate(UpdateView):#clase creada por JR- sprint 8 - OK
-#     model = Ges_Observaciones
-#     form_class = ObservacionForm
-#     template_name = 'valida_plan/valida_plan_observacion_update.html'
-#
-#     def get_form_kwargs(self, **kwargs):
-#         kwargs = super(ObservacionUpdate, self).get_form_kwargs()
-#         id_obs = self.kwargs['pk']
-#         id_usuario_actual = self.request.user.id  # obtiene id usuario actual
-#         id_user=Ges_Observaciones.objects.get(id=id_obs)
-#         kwargs['id_user'] = str(id_user.user_observa.id)
-#
-#
-#         if id_user.user_observa.id != id_usuario_actual:
-#             UpdateLeidoObservacion(id_obs)
-#
-#         return kwargs
-#
-#     def get_success_url(self):
-#         id_actividad = self.request.session['id_actividad']
-#         return reverse_lazy('observacionesListar', args=(id_actividad,))
-#
-#
-#
-# def UpdateLeidoObservacion(id_observacion): #Función creada por JR - sprint 8- OK
-#     Ges_Observaciones.objects.filter(id=id_observacion).update(
-#         observado=0,
-#     )
-#     pass
 
 
 
@@ -804,31 +775,4 @@ def GestionObservacionesObjetivosVp(request, id):
 
 
 
-
-
-
-#
-# def GestionObservaciones(request, id):
-#     template_name = "valida_plan/modal_observaciones.html"
-#     id_usuario_actual = request.user.id
-#     # qs = Ges_Actividad.objects.get(id=id) #Cualquier QS con la que quiera obtener datos para enviar al modal.
-#     # context = {"qs": qs} # aquí le envío lo que quiero al modal para que lo muestre, incluso una lista.
-#
-#     qs = Ges_Observaciones.objects.filter(id_actividad=id) #Cualquier QS con la que quiera obtener datos para enviar al modal.
-#     context= {'qs': qs } # aquí le envío lo que quiero al modal para que lo muestre, incluso una lista.
-#
-#
-#     if request.method == "POST": # aquí recojo lo que trae el modal
-#
-#         observacion= request.POST['observacion'] # aquí capturo lo que traigo del modal
-#        # select = request.POST['seleccion']  # aquí capturo lo que traigo del modal
-#
-#         Ges_Observaciones.objects.create( # aquí actualizo o agrego o elimino.
-#             observacion=observacion ,
-#         )
-#         request.session['message_class'] = "alert alert-success" #Tipo mensaje
-#         messages.success(request, "Los datos fueron actualizados correctamente!") # mensaje
-#         return HttpResponseRedirect('/valida_plan/gestionObservacion/'+str(27)) # Redirije a la pantalla principal
-#
-#     return render(request, template_name, context)
 

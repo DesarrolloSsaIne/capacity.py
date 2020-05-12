@@ -20,6 +20,7 @@ from django.db.models import Case, CharField, Value, When
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import get_template
 from django.template import Context
+from django.core.mail import EmailMessage
 
 from django.conf import settings
 
