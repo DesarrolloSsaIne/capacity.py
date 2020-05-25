@@ -5,6 +5,7 @@ from apps.productos.models import Glo_ProductosEstadisticos
 from apps.controlador.models import Ges_Controlador
 from apps.objetivos.models import Ges_Objetivo_Estrategico, Ges_Objetivo_Tactico, Ges_Objetivo_TacticoTN, Ges_Objetivo_Operativo
 from apps.periodos.models import Glo_Periodos
+from apps.estado_actividad.models import Glo_EstadoActividad
 from django.core.validators import MaxValueValidator
 from django.core.exceptions import ValidationError
 # Create your models here.
@@ -29,5 +30,6 @@ class Ges_Actividad (models.Model):
     id_objetivo_tactico= models.ForeignKey(Ges_Objetivo_Tactico, on_delete=models.PROTECT, blank=True, null=True)
     id_objetivo_tacticotn = models.ForeignKey(Ges_Objetivo_TacticoTN, on_delete=models.PROTECT, blank=True, null=True)
     id_objetivo_operativo = models.ForeignKey(Ges_Objetivo_Operativo, on_delete=models.PROTECT, blank=True, null=True)
+    id_estado_actividad = models.ForeignKey(Glo_EstadoActividad, on_delete=models.PROTECT, blank=True, null=True)
 
 
