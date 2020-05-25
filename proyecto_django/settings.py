@@ -117,6 +117,9 @@ INSTALLED_APPS = [
     'apps.valida_plan2',
     'apps.perfiles',
     'apps.planificacion_admin',
+    'apps.estado_actividad',
+    'apps.estado_plan',
+    'apps.estado_seguimiento',
 ]
 
 MIDDLEWARE = [

@@ -50,9 +50,7 @@ class AsignaAnalista(UpdateView):
         id_nuevo_estado= Glo_EstadoFlujo.objects.get(id=6)
 
         if form.is_valid():
-
             form.instance.estado_flujo=id_nuevo_estado
-
             form.save()
 
             try:
