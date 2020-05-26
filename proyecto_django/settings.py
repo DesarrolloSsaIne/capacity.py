@@ -120,7 +120,8 @@ INSTALLED_APPS = [
     'apps.estado_actividad',
     'apps.estado_plan',
     'apps.estado_seguimiento',
-    'apps.periodos_seguimiento',
+    'apps.seguimiento',
+
 ]
 
 MIDDLEWARE = [
