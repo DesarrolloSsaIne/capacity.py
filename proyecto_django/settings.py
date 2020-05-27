@@ -97,9 +97,10 @@ INSTALLED_APPS = [
 
     'django_python3_ldap',
     'sitetree',
+
     'apps.eje',
     'apps.registration',
-
+    'apps.periodos',
     'apps.estructura',
     'apps.objetivos',
     'apps.jefaturas',
@@ -107,7 +108,6 @@ INSTALLED_APPS = [
     'apps.gestion_horas',
     'apps.feriados',
     'apps.vista_objetivos',
-    'apps.periodos',
     'apps.periodicidad',
     'apps.productos',
     'apps.estado_flujo',
@@ -120,7 +120,10 @@ INSTALLED_APPS = [
     'apps.estado_actividad',
     'apps.estado_plan',
     'apps.estado_seguimiento',
-    'apps.seguimiento',
+    'apps.revision_planificacion',
+
+
+
 
 ]
 
@@ -249,8 +252,8 @@ EMAIL_HOST = '192.168.1.235'
 EMAIL_PORT = 25
 # EMAIL_HOST_USER = 'capacity.planificacion@ine.cl'
 # EMAIL_HOST_PASSWORD = '(Morande_801)'
-EMAIL_HOST_USER = 'benjamin.vasquez@ine.cl'
-EMAIL_HOST_PASSWORD = '(ine2022)'
+EMAIL_HOST_USER = 'jason.rodriguez@ine.cl'
+EMAIL_HOST_PASSWORD = 'JR14202112-9'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 EMAIL_USE_SSL = False

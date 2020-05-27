@@ -1,5 +1,5 @@
 from django import forms
-from apps.periodos.models import Glo_Periodos
+from apps.periodos.models import Glo_Periodos, Glo_Seguimiento
 
 class periodosForm(forms.ModelForm):
     ANIO_CHOICES = (
@@ -40,4 +40,15 @@ class periodosForm(forms.ModelForm):
             'descripcion_periodo': forms.TextInput(attrs={'class': 'form-control'}),
 
         }
+
+class Seguimiento_cierreform(forms.ModelForm):
+
+
+    class Meta:
+        model = Glo_Seguimiento
+        fields = [
+            'fecha_termino',
+
+        ]
+
 

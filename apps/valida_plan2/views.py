@@ -134,9 +134,17 @@ class AceptaPlan(UpdateView):
         #Se debe cambiar por email Analistas
         #email_jefatura_ingresaAct = controladorPlan.id_jefatura.id_user.email
 
+
         #instancia_nivel = self.model.objects.get(id=id_controlador)
         #form = self.form_class(request.POST, instance=controladorPlan)
-        estado = 6
+
+        existeAnalista = controladorPlan.analista_asignado
+        estado = 0
+        if existeAnalista:
+            estado = 6
+        else:
+            estado = 10
+        estado = int(estado)
         controladorPlan.estado_flujo_id = int(estado)
         try:
             controladorPlan.save()

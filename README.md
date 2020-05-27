@@ -1,2 +1,0 @@
-# capacityinstitucional
-Proyecto capacity

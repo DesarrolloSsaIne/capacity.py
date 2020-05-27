@@ -62,15 +62,15 @@
 														 {%endif%} > {{ periodo.id_estado }} </td>
 
 
-    												 <td style="width:120px;">
-														 <button type="button" title="Actualizar Registro" class="update btn btn-sm btn-primary" data-id="{% url 'periodo_editar' periodo.id %}" >
-														<span class="fa fa-pencil"></span></button>
+    												 <td style="width:80px; text-align:center;">
+<!--														{% if periodo.id_estado.id == 1  %}  <button type="button" title="Actualizar Registro" class="update btn btn-sm btn-primary" data-id="{% url 'periodo_editar' periodo.id %}" >-->
+<!--														<span class="fa fa-pencil"></span></button>{%endif%}-->
 <!--														 <button type="button" title="Eliminar Registro" class="delete btn btn-sm btn-danger" data-id="{% url 'periodo_delete' periodo.id %}">-->
 <!--      													  <span class="fa fa-trash-o"></span></button>-->
-														  <button type="button" title="Abrir Periodo" class="delete btn btn-sm btn-success" data-id="{% url 'periodo_delete' periodo.id %}">
-      													  <span class="fa fa-unlock"></span></button>
-														  <button type="button" title="Cerrar Periodo" class="delete btn btn-sm btn-warning" data-id="{% url 'periodo_delete' periodo.id %}">
-      													  <span class="fa fa-lock"></span></button>
+														 {% if periodo.id_estado.id == 1  %}  <button type="button" title="Cerrar Periodo" class="delete btn btn-sm btn-danger" data-id="{% url 'periodo_delete' periodo.id %}">
+      													  <span class="fa fa-lock"></span></button>{%endif%}
+														 {% if periodo.id_estado.id == 1  %} <a type="button"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" title="Administrar Periodos de Seguimiento" class="objetivo btn btn-sm btn-success" href="{% url 'seguimiento_listar' periodo.id %}">
+      													  <span class="fa fa-flag-checkered"></span></a>{%endif%}
 
                                                     </td>
                                                 </tr>
@@ -151,6 +151,9 @@
      $(this).remove();
   });
 
+	$('#datatable-default').DataTable({
+	"order": [[ 2, "asc" ]] //desactiva el ordenamiento de la tabla para que el order_by del queryset funcione. ("order": [[ 3, "desc" ]]) para ordenar desde jquery.
+	});
 
 
 </script>

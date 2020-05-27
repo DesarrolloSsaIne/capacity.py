@@ -26,6 +26,7 @@ urlpatterns = [
     path(r'valida_plan2/', include('apps.valida_plan2.urls')),
     path(r'perfiles/', include('apps.perfiles.urls')),
     path(r'planificacion_admin/', include('apps.planificacion_admin.urls')),
+    path(r'revision_planificacion/', include('apps.revision_planificacion.urls')),
 ]
 
 

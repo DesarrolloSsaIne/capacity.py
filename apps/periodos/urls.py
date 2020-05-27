@@ -9,4 +9,8 @@ urlpatterns = [
     path('create', login_required(views.PeriodosCreate.as_view()), name='periodos_crear'),
     path('edit/<int:pk>', login_required(views.PeriodosEdit.as_view()), name='periodo_editar'),
     path('delete/<int:pk>', login_required(views.PeriodosDelete.as_view()), name='periodo_delete'),
+
+    path('listar_seguimiento/<int:pk>', login_required(views.SeguimientoList.as_view()), name='seguimiento_listar'),
+    path('seguimiento_cerrar/<int:pk>', login_required(views.SeguimientoCerrarPeriodo.as_view()), name='seguimiento_cerrar'),
+    path('seguimiento_abrir_periodo', login_required(views.SeguimientoAbrirPeriodo.as_view()), name='seguimiento_abrir'),
 ]

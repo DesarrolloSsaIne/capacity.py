@@ -32,4 +32,3 @@ class Ges_Actividad (models.Model):
     id_objetivo_operativo = models.ForeignKey(Ges_Objetivo_Operativo, on_delete=models.PROTECT, blank=True, null=True)
     id_estado_actividad = models.ForeignKey(Glo_EstadoActividad, on_delete=models.PROTECT, blank=True, null=True)
 
-

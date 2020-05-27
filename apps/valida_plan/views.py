@@ -131,6 +131,8 @@ class AceptaPlan(UpdateView):
     def get_form_kwargs(self, **kwargs):
         kwargs = super(AceptaPlan, self).get_form_kwargs()
         id_usuario_actual = self.request.user.id
+
+
         try:
             periodo_actual = Glo_Periodos.objects.get(id_estado=1)
         except Glo_Periodos.DoesNotExist:
@@ -172,9 +174,12 @@ class AceptaPlan(UpdateView):
             id_nivel_jefsuperior = Ges_Niveles.objects.get(id_segundo_nivel=id_SegundoNivel.segundo_nivel_id)
         if id_orden == 4:
             id_nivel_jefsuperior = Ges_Niveles.objects.get(id_tercer_nivel=id_tercerNivel.tercer_nivel_id)
+        try:
 
-        id_jef_final = Ges_Jefatura.objects.get(id_nivel=id_nivel_jefsuperior.id)
-        id_jef_final = int(id_jef_final.id_nivel_id)
+            id_jef_final = Ges_Jefatura.objects.get(id_nivel=id_nivel_jefsuperior.id)
+            id_jef_final = int(id_jef_final.id_nivel_id)
+        except Ges_Jefatura.DoesNotExist:
+                pass
 
         kwargs['nivel_jefatura'] = id_jef_final
         return kwargs
@@ -193,7 +198,7 @@ class AceptaPlan(UpdateView):
         except Glo_Periodos.DoesNotExist:
             return None
 
-        if int(id_jefatura) != 1:
+        if int(id_jefatura) != 0:
 
             id_nivel_post = Ges_Jefatura.objects.get(id=id_jefatura)
             id_nivel_post = id_nivel_post.id_nivel_id
@@ -233,7 +238,15 @@ class AceptaPlan(UpdateView):
                 return HttpResponseRedirect('/valida_plan/listarUnidades')
         else:
             d_jefatura = Ges_Jefatura.objects.get(id_user=id_usuario_actual)
-            update_state(id_jefatura_solicita, '', 6, d_jefatura.id)
+            controlador = Ges_Controlador.objects.get(Q(id= id_nivel) & Q(id_periodo=periodo_actual.id))
+            existeAnalista = controlador.analista_asignado
+            estado = 0
+            if existeAnalista:
+                estado = 6
+            else:
+                estado = 10
+            estado = int(estado)
+            update_state(id_jefatura_solicita, '', estado, d_jefatura.id)
             nivel_usuario = Ges_Jefatura.objects.get(Q(id_user=id_usuario_actual) & Q(id_periodo=periodo_actual.id))
 
             tipo_evento = "Envío Plan a planifificaión"
@@ -645,6 +658,35 @@ class ObservacionDelete(SuccessMessageMixin, DeleteView ): #clase creada por JR-
             return HttpResponseRedirect('/valida_plan/listaObservacion/'+str(id_actividad))
 
 
+# class ObservacionUpdate(UpdateView):#clase creada por JR- sprint 8 - OK
+#     model = Ges_Observaciones
+#     form_class = ObservacionForm
+#     template_name = 'valida_plan/valida_plan_observacion_update.html'
+#
+#     def get_form_kwargs(self, **kwargs):
+#         kwargs = super(ObservacionUpdate, self).get_form_kwargs()
+#         id_obs = self.kwargs['pk']
+#         id_usuario_actual = self.request.user.id  # obtiene id usuario actual
+#         id_user=Ges_Observaciones.objects.get(id=id_obs)
+#         kwargs['id_user'] = str(id_user.user_observa.id)
+#
+#
+#         if id_user.user_observa.id != id_usuario_actual:
+#             UpdateLeidoObservacion(id_obs)
+#
+#         return kwargs
+#
+#     def get_success_url(self):
+#         id_actividad = self.request.session['id_actividad']
+#         return reverse_lazy('observacionesListar', args=(id_actividad,))
+#
+#
+#
+# def UpdateLeidoObservacion(id_observacion): #Función creada por JR - sprint 8- OK
+#     Ges_Observaciones.objects.filter(id=id_observacion).update(
+#         observado=0,
+#     )
+#     pass
 
 
 
@@ -775,4 +817,31 @@ def GestionObservacionesObjetivosVp(request, id):
 
 
 
+
+
+
+#
+# def GestionObservaciones(request, id):
+#     template_name = "valida_plan/modal_observaciones.html"
+#     id_usuario_actual = request.user.id
+#     # qs = Ges_Actividad.objects.get(id=id) #Cualquier QS con la que quiera obtener datos para enviar al modal.
+#     # context = {"qs": qs} # aquí le envío lo que quiero al modal para que lo muestre, incluso una lista.
+#
+#     qs = Ges_Observaciones.objects.filter(id_actividad=id) #Cualquier QS con la que quiera obtener datos para enviar al modal.
+#     context= {'qs': qs } # aquí le envío lo que quiero al modal para que lo muestre, incluso una lista.
+#
+#
+#     if request.method == "POST": # aquí recojo lo que trae el modal
+#
+#         observacion= request.POST['observacion'] # aquí capturo lo que traigo del modal
+#        # select = request.POST['seleccion']  # aquí capturo lo que traigo del modal
+#
+#         Ges_Observaciones.objects.create( # aquí actualizo o agrego o elimino.
+#             observacion=observacion ,
+#         )
+#         request.session['message_class'] = "alert alert-success" #Tipo mensaje
+#         messages.success(request, "Los datos fueron actualizados correctamente!") # mensaje
+#         return HttpResponseRedirect('/valida_plan/gestionObservacion/'+str(27)) # Redirije a la pantalla principal
+#
+#     return render(request, template_name, context)
 
