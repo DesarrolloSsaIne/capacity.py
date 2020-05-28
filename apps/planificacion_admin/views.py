@@ -8,10 +8,9 @@ from apps.registration.models import logEventos
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.db.models import Q
-from django.core import mail
-from django.conf import settings
-from django.utils.module_loading import import_string
-from django.core.mail import EmailMultiAlternatives, send_mail
+from apps.estructura.models import Ges_Niveles, Ges_CuartoNivel, Ges_TercerNivel, Ges_SegundoNivel, Ges_PrimerNivel
+from apps.jefaturas.models import Ges_Jefatura
+from apps.periodos.models import Glo_Seguimiento
 from django.core.mail import EmailMessage
 
 # Generic Functions of projects.
@@ -88,6 +87,36 @@ class AsignaAnalista(UpdateView):
             request.session['message_class'] = "alert alert-danger"
             messages.error(self.request, "Error interno: No se ha asignado el funcionario. Comuníquese con el administrador.")
             return HttpResponseRedirect('/planificacion_admin/listar/')
+
+
+class PlanificacionAdminUnidadesList(ListView): #Modificado por JR- sprint 10
+    model = Ges_Niveles
+    template_name = 'planificacion_admin/planificacion_admin_plan_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(PlanificacionAdminUnidadesList, self).get_context_data(**kwargs)
+        id_usuario_actual = self.request.user.id  # obtiene id usuario actual
+
+        try:
+            periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+        except Glo_Periodos.DoesNotExist:
+            return None
+
+        # id_jefatura = Ges_Jefatura.objects.get(id_user=id_usuario_actual)
+
+        id_controlador = Ges_Controlador.objects.filter(id_periodo=periodo_actual.id)
+
+        try:
+             estado= Glo_Seguimiento.objects.get(Q(id_estado_seguimiento=1) & Q(id_periodo=PeriodoActual()))
+        except Glo_Seguimiento.DoesNotExist:
+             estado = 0
+
+        context['estado_seguimiento'] = estado
+        context['object_list'] = id_controlador
+
+        return context
+
+
 
 
 

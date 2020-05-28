@@ -1,0 +1,179 @@
+{% extends 'base/base.html' %}
+{% block title %}
+Vista Estado Seguimiento Planes
+{% endblock %}
+
+{% block content %}
+
+{% if messages %} {% for message in messages %}
+
+	<div style="border-radius:0;" {% if message.tags %} id="danger-alert" class="{{request.session.message_class}} fade show mb-0" role="alert" {% endif %}>
+		{{ message }}
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+
+{% endfor %} {% endif %}
+
+{% if estado_seguimiento == 0 %}
+
+    <div class="alert alert-warning" id="success-warning" role="alert">
+        <b>Estimado Usuario:</b> La estapa de seguimiento aún no ha sido abierta para su visualización.
+    </div>
+
+{% else %}
+
+<section class="panel">
+    <header class="panel-heading">
+        <div class="panel-actions">
+            <!--<a href="#" class="fa fa-times"></a>-->
+        </div>
+
+
+        <h2 class="panel-title"></h2>
+
+    </header>
+    <div class="panel-body">
+        <table class="table table-bordered table-striped mb-none" id="datatable-default">
+            <thead>
+                <tr>
+
+                    <th  >Unidad Formula Plan</th>
+                    <th>Jefatura Elabora Plan</th>
+                    <th title="Estado actual en la etapa de seguimiento" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >Estado Seguimiento</th>
+
+
+                    <th style="text-align:center; display:none;">Objetivos</th>
+
+
+                </tr>
+            </thead>
+            <tbody>
+
+                {% for planes in object_list %}
+                <tr>
+
+                    <td> {{ planes.id_jefatura.id_nivel }} </td>
+                    <td> {{ planes.id_jefatura.id_user }} </td>
+
+
+
+                    <td  {% if planes.id_estado_plan.id == 2  %}
+														 style="color:#47a447; "
+														{% elif planes.id_estado_plan.id == 3  %}
+														 style="color:red;  "
+														 {%endif%} > {{ planes.id_estado_plan }} </td>
+
+
+                      <td style="text-align:center; display:none;">
+
+                             		<a type="button" title="Objetivos Asociados al Plan" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom"  id="notification" class="objetivos btn btn-sm btn-success"  href="{% url 'SeguimientoObjetivosList'  planes.id %} ">
+			<span class="fa fa-bars" ></span>
+			{% if planes.count_no_vistos != 0 and planes.count_no_vistos != none %} <span class="badge" title="Nuevas Observaciones" >{{ planes.count_no_vistos }}</span> {% endif %}
+			</a>
+
+                    </td>
+
+
+
+
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+</section>
+{% endif %}
+<!--Cabecera del modal -->
+<div class="modal fade" tabindex="-1" role="dialog" id="modalCreate">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="modalDetalle">
+    <div class="modal-dialog modal-xs" role="document">
+        <div class="modal-content">
+
+        </div>
+    </div>
+
+</div>
+<div class="modal fade" tabindex="-1" role="dialog" id="modalUpdate">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="modalDelete">
+    <div class="modal-dialog modal-xs" role="document">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="modalRechazar">
+    <div class="modal-dialog modal-xs" role="document">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="modalAceptar">
+    <div class="modal-dialog modal-xs" role="document">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+
+<!--Fin cabecera del modal -->
+
+{% block extrajs %}
+
+<script type="text/javascript">
+    $(".rechazar").each(function() {
+        $(this).modalForm({
+            formURL: $(this).data('id'),
+            modalID: $("#modalRechazar")
+        });
+    })
+
+    $(".aceptar").each(function() {
+        $(this).modalForm({
+            formURL: $(this).data('id'),
+            modalID: $("#modalAceptar")
+        });
+    })
+</script>
+
+<script type="text/javascript">
+
+
+    // Js Muestra/Oculta Mensaje Success
+    $(".alert").fadeTo(59000, 500).slideUp("slow", function() {
+        $(this).remove();
+    });
+
+       	 // JS modal actualiza Registro
+   $(".update").each(function () {
+   $(this).modalForm({formURL: $(this).data('id'),  modalID: $("#modalUpdate")});
+
+    });
+
+    $('#datatable-default').DataTable({
+        "order": [[ 2, "desc" ]] //desactiva el ordenamiento de la tabla para que el order_by del queryset funcione. ("order": [[ 3, "desc" ]]) para ordenar desde jquery.
+    });
+</script>
+
+{% endblock %} {% endblock %}
