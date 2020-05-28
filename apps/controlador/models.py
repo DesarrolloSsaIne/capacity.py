@@ -19,6 +19,6 @@ class Ges_Controlador(models.Model):
     jefatura_segundarevision = models.ForeignKey(Ges_Jefatura, on_delete=models.PROTECT, null=True,
                                                  related_name="jefatura_segundarevision")
     analista_asignado  = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True)
-    id_estado_plan = models.ForeignKey(Glo_EstadoPlan, on_delete=models.PROTECT, null=True, blank=True)
+    id_estado_plan = models.ForeignKey(Glo_EstadoPlan, on_delete=models.PROTECT, null=True, blank=True, default=1)
 
 

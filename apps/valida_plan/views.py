@@ -15,7 +15,7 @@ from apps.valida_plan.models import Ges_Observaciones
 from apps.valida_plan2.models import Ges_Observaciones_sr
 from django.db.models import Subquery, OuterRef, Count # import agregados por JR - sprint 8 - ok
 from django.db.models.deletion import ProtectedError
-from django.urls import reverse_lazy
+from apps.periodos.models import Glo_Seguimiento
 
 from django.core import mail
 from django.conf import settings
@@ -476,6 +476,7 @@ class Actividades(ListView): # Modificado por JR- sprint 8 - OK
     def get_context_data(self,  **kwargs):
         context = super(Actividades, self).get_context_data(**kwargs)
         id_usuario_actual = self.request.user.id  # obtiene id usuario actual
+
         try:
             periodo_actual = Glo_Periodos.objects.get(id_estado=1)
         except Glo_Periodos.DoesNotExist:
@@ -552,6 +553,206 @@ class Actividades(ListView): # Modificado por JR- sprint 8 - OK
 
 
         return context
+
+
+
+#############################################################################################################
+#############################################################################################################
+#############################################################################################################
+
+class SeguimientoUnidadesList(ListView): #Modificado por JR- sprint 10
+    model = Ges_Niveles
+    template_name = 'valida_plan/seguimiento_plan_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(SeguimientoUnidadesList, self).get_context_data(**kwargs)
+        id_usuario_actual = self.request.user.id  # obtiene id usuario actual
+
+        try:
+            periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+        except Glo_Periodos.DoesNotExist:
+            return None
+
+        id_jefatura = Ges_Jefatura.objects.get(id_user=id_usuario_actual)
+
+        id_controlador = Ges_Controlador.objects.filter(
+            Q(jefatura_primerarevision=id_jefatura.id) & Q(id_periodo=periodo_actual.id))
+
+        try:
+             estado= Glo_Seguimiento.objects.get(Q(id_estado_seguimiento=1) & Q(id_periodo=PeriodoActual()))
+        except Glo_Seguimiento.DoesNotExist:
+             estado = 0
+
+        context['estado_seguimiento'] = estado
+        context['object_list'] = id_controlador
+
+        return context
+
+
+class SeguimientoObjetivos(ListView): #Modificado por JR- sprint 8 - OK
+    model = Ges_Actividad
+    template_name = 'valida_plan/seguimiento_plan_detalle.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(SeguimientoObjetivos, self).get_context_data(**kwargs)
+        id_usuario_actual = self.request.user.id  # obtiene id usuario actual
+        self.request.session['id_nivel_controlador']=self.kwargs['pk'] #guarda id  controlador
+
+        try:
+            periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+        except Glo_Periodos.DoesNotExist:
+            return None
+
+        try:
+            controlador = Ges_Controlador.objects.get(Q(id=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id))
+        except Ges_Controlador.DoesNotExist:
+            return None
+
+        id_orden = controlador.nivel_inicial
+        self.request.session['id_controlador_real'] = controlador.id
+
+        id_nivel = Ges_Niveles.objects.get(
+            Q(id=controlador.id_jefatura.id_nivel_id) & Q(id_periodo=periodo_actual.id))
+
+        try:
+
+            if id_orden == 3:
+                count_actividades = Ges_Actividad.objects.values('id_objetivo_tacticotn').filter(
+                    id_objetivo_tacticotn=OuterRef('pk')).annotate(
+                    count_id_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id)))
+                replies2 = Ges_Objetivo_TacticoTN.objects.filter(
+                    Q(id_tercer_nivel_id=id_nivel.id_tercer_nivel_id) & Q(id_periodo=periodo_actual.id)).annotate(
+                    count_actividades=Subquery(count_actividades.values('count_id_actividad')))
+
+            if id_orden == 2:
+                count_actividades = Ges_Actividad.objects.values('id_objetivo_tactico').filter(
+                    id_objetivo_tactico=OuterRef('pk')).annotate(
+                    count_id_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id)))
+                replies2 = Ges_Objetivo_Tactico.objects.filter(
+                    Q(id_segundo_nivel_id=id_nivel.id_segundo_nivel_id) & Q(id_periodo=periodo_actual.id)).annotate(
+                    count_actividades=Subquery(count_actividades.values('count_id_actividad')))
+
+            if id_orden == 4:
+                count_actividades = Ges_Actividad.objects.values('id_objetivo_operativo').filter(
+                    id_objetivo_operativo=OuterRef('pk')).annotate(
+                    count_id_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id)))
+                replies2 = Ges_Objetivo_Operativo.objects.filter(
+                    Q(id_cuarto_nivel_id=id_nivel.id_cuarto_nivel_id) & Q(id_periodo=periodo_actual.id)).annotate(
+
+                    count_actividades=Subquery(count_actividades.values('count_id_actividad')))
+
+            context['orden'] = {'orden_nivel': id_orden}
+            context['niveles'] = replies2
+            context['objetivo'] = id_nivel
+
+            self.request.session['id_orden'] = id_orden
+
+            return context
+
+        except Ges_Jefatura.DoesNotExist:
+            context['habilitado'] = {'mensaje': False}
+
+
+            return None
+
+
+class SeguimientoActividades(ListView): # Modificado por JR- sprint 8 - OK
+    model = Ges_Actividad
+    template_name = 'valida_plan/seguimiento_plan_list_actividades.html'
+
+    def get_context_data(self,  **kwargs):
+        context = super(SeguimientoActividades, self).get_context_data(**kwargs)
+        id_usuario_actual = self.request.user.id  # obtiene id usuario actual
+
+        try:
+            periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+        except Glo_Periodos.DoesNotExist:
+            return None
+
+        self.request.session['id_objetivo']=self.kwargs['pk']#315
+
+        nombre = ""
+        if self.request.session['id_orden']==2:
+           # lista_actividades = Ges_Actividad.objects.filter(Q(id_objetivo_tactico=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id))
+
+            count_no_vistos = Ges_Observaciones.objects.values('id_actividad_id').filter(id_actividad=OuterRef('pk')).annotate(
+              count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (~Q(user_observa=id_usuario_actual))))
+
+            count_observaciones = Ges_Observaciones.objects.values('id_actividad_id').filter(id_actividad=OuterRef('pk')).annotate(
+            count_id_actividad=Count('id'))
+
+            lista_actividades = Ges_Actividad.objects.filter(
+              Q(id_objetivo_tactico=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)).annotate(
+              count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
+
+                count_observaciones=Subquery(count_observaciones.values('count_id_actividad'))).order_by('-count_no_vistos','-fecha_registro')
+
+            nombre=  Ges_Objetivo_Tactico.objects.get(id=self.kwargs['pk'])
+
+        if self.request.session['id_orden']==3:
+           # lista_actividades = Ges_Actividad.objects.filter(Q(id_objetivo_tacticotn=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id))
+
+            count_no_vistos = Ges_Observaciones.objects.values('id_actividad_id').filter(id_actividad=OuterRef('pk')).annotate(
+              count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (~Q(user_observa=id_usuario_actual))))
+            count_observaciones = Ges_Observaciones.objects.values('id_actividad_id').filter(id_actividad=OuterRef('pk')).annotate(
+            count_id_actividad=Count('id'))
+
+
+            lista_actividades = Ges_Actividad.objects.filter(
+              Q(id_objetivo_tacticotn=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)).annotate(
+              count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
+
+
+                count_observaciones=Subquery(count_observaciones.values('count_id_actividad'))).order_by('-count_no_vistos','-fecha_registro')
+
+
+            nombre = Ges_Objetivo_TacticoTN.objects.get(id=self.kwargs['pk'])
+
+        if self.request.session['id_orden']==4:
+
+            count_no_vistos = Ges_Observaciones.objects.values('id_actividad_id').filter(id_actividad=OuterRef('pk')).annotate(
+              count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (~Q(user_observa=id_usuario_actual))))
+            count_observaciones = Ges_Observaciones.objects.values('id_actividad_id').filter(id_actividad=OuterRef('pk')).annotate(
+            count_id_actividad=Count('id'))
+
+            lista_actividades = Ges_Actividad.objects.filter(
+              Q(id_objetivo_operativo=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)).annotate(
+              count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
+
+                count_observaciones=Subquery(count_observaciones.values('count_id_actividad'))).order_by('-count_no_vistos','-fecha_registro')
+
+
+            nombre = Ges_Objetivo_Operativo.objects.get(id=self.kwargs['pk'])
+
+        try:
+            nivel_usuario = Ges_Jefatura.objects.get(Q(id_user=id_usuario_actual) & Q(id_periodo=periodo_actual.id))
+        except Ges_Jefatura.DoesNotExist:
+            context['habilitado'] = {'mensaje': False}
+            return None
+
+
+        context['object_list'] = lista_actividades
+        context['nombre_objetivo'] = {'nombre': nombre}
+        context['id_orden'] = {'id_orden': self.request.session['id_orden']}
+        context['id_nivel_controlador']={'id': self.request.session['id_nivel_controlador']}
+
+        #context['objetivo'] = id_nivel
+
+
+        return context
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class ObservacionesListar(ListView): #Modificado por JR- sprint 8 - OK
@@ -656,37 +857,6 @@ class ObservacionDelete(SuccessMessageMixin, DeleteView ): #clase creada por JR-
             request.session['message_class'] = "alert alert-danger"
             messages.error(request, "Error interno: No se ha eliminado el registro. Comuníquese con el administrador.")
             return HttpResponseRedirect('/valida_plan/listaObservacion/'+str(id_actividad))
-
-
-# class ObservacionUpdate(UpdateView):#clase creada por JR- sprint 8 - OK
-#     model = Ges_Observaciones
-#     form_class = ObservacionForm
-#     template_name = 'valida_plan/valida_plan_observacion_update.html'
-#
-#     def get_form_kwargs(self, **kwargs):
-#         kwargs = super(ObservacionUpdate, self).get_form_kwargs()
-#         id_obs = self.kwargs['pk']
-#         id_usuario_actual = self.request.user.id  # obtiene id usuario actual
-#         id_user=Ges_Observaciones.objects.get(id=id_obs)
-#         kwargs['id_user'] = str(id_user.user_observa.id)
-#
-#
-#         if id_user.user_observa.id != id_usuario_actual:
-#             UpdateLeidoObservacion(id_obs)
-#
-#         return kwargs
-#
-#     def get_success_url(self):
-#         id_actividad = self.request.session['id_actividad']
-#         return reverse_lazy('observacionesListar', args=(id_actividad,))
-#
-#
-#
-# def UpdateLeidoObservacion(id_observacion): #Función creada por JR - sprint 8- OK
-#     Ges_Observaciones.objects.filter(id=id_observacion).update(
-#         observado=0,
-#     )
-#     pass
 
 
 
@@ -815,33 +985,11 @@ def GestionObservacionesObjetivosVp(request, id):
     return render(request, template_name, args)
 
 
+def PeriodoActual():
+    try:
+        periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+    except Glo_Periodos.DoesNotExist:
+        return None
+    return periodo_actual
 
-
-
-
-
-#
-# def GestionObservaciones(request, id):
-#     template_name = "valida_plan/modal_observaciones.html"
-#     id_usuario_actual = request.user.id
-#     # qs = Ges_Actividad.objects.get(id=id) #Cualquier QS con la que quiera obtener datos para enviar al modal.
-#     # context = {"qs": qs} # aquí le envío lo que quiero al modal para que lo muestre, incluso una lista.
-#
-#     qs = Ges_Observaciones.objects.filter(id_actividad=id) #Cualquier QS con la que quiera obtener datos para enviar al modal.
-#     context= {'qs': qs } # aquí le envío lo que quiero al modal para que lo muestre, incluso una lista.
-#
-#
-#     if request.method == "POST": # aquí recojo lo que trae el modal
-#
-#         observacion= request.POST['observacion'] # aquí capturo lo que traigo del modal
-#        # select = request.POST['seleccion']  # aquí capturo lo que traigo del modal
-#
-#         Ges_Observaciones.objects.create( # aquí actualizo o agrego o elimino.
-#             observacion=observacion ,
-#         )
-#         request.session['message_class'] = "alert alert-success" #Tipo mensaje
-#         messages.success(request, "Los datos fueron actualizados correctamente!") # mensaje
-#         return HttpResponseRedirect('/valida_plan/gestionObservacion/'+str(27)) # Redirije a la pantalla principal
-#
-#     return render(request, template_name, context)
 

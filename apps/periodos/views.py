@@ -9,7 +9,9 @@ from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
 from django.db.models.deletion import ProtectedError
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage,send_mass_mail
+
+from django.db.models import Q
 from datetime import date
 from datetime import datetime
 # Create your views here.
@@ -169,7 +171,7 @@ class SeguimientoAbrirPeriodo(SuccessMessageMixin, CreateView):
         context = super(SeguimientoAbrirPeriodo, self).get_context_data(**kwargs)
 
         try:
-             estado= Glo_Seguimiento.objects.get(id_estado_seguimiento=1)
+             estado= Glo_Seguimiento.objects.get(Q(id_estado_seguimiento=1) & Q(id_periodo=PeriodoActual()))
         except Glo_Seguimiento.DoesNotExist:
              estado = 0
 
@@ -197,7 +199,7 @@ class SeguimientoAbrirPeriodo(SuccessMessageMixin, CreateView):
                 EnviarCorreoAbrir()
 
                 request.session['message_class'] = "alert alert-success"  # Tipo mensaje
-                messages.success(request, "El periodo de seguimiento fue abierto correctamente! y se ha enviado un correo al analista!")  # mensaje
+                messages.success(request, "El periodo de seguimiento fue abierto correctamente! y se ha enviado un correo a las jefaturas que formulan!")  # mensaje
                 return HttpResponseRedirect('/periodos/listar_seguimiento/' + str(id_periodo))  # Redirije a la pantalla principal
 
             except:
@@ -213,8 +215,6 @@ class SeguimientoAbrirPeriodo(SuccessMessageMixin, CreateView):
             return HttpResponseRedirect('/periodos/listar_seguimiento' + str(id_periodo))
 
 
-
-
 def PeriodoActual():
     try:
         periodo_actual = Glo_Periodos.objects.get(id_estado=1)
@@ -224,41 +224,37 @@ def PeriodoActual():
 
 
 def EnviarCorreoCierre():
-    controladorPlan = Ges_Controlador.objects.filter(id_periodo=PeriodoActual())
+    controladorPlan = Ges_Controlador.objects.values_list('id_jefatura_id__id_user__email' , flat=True).filter(id_periodo=PeriodoActual())
 
-    for controladorPlan in controladorPlan:
+    ahora = datetime.now()
+    fecha = ahora.strftime("%d" + " de " + "%B" + " de " + "%Y" + " a las " + "%H:%M")
 
-        usuario=  str(controladorPlan.analista_asignado)
-        ahora = datetime.now()
-        fecha = ahora.strftime("%d" + " de " + "%B" + " de " + "%Y" + " a las " + "%H:%M")
+    idcorreoJefatura=list(controladorPlan)
 
+    subject = 'Cierre etapa Seguimiento'
+    messageHtml = '<b>Estimada(o) Usuaria(o) del Sistema Capacity Institucional</b> ,<br> Le informamos que con fecha  '+ str(fecha) +', el proceso de <b>seguimiento</B> ha sido cerrado. <br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
 
-        # Envío al analista
-        email_jefatura_ingresaAct = controladorPlan.analista_asignado.email
-        idcorreoJefatura = [email_jefatura_ingresaAct]
-        subject = 'Cierre etapa Seguimiento'
-        messageHtml = 'Estimada(o) <b>' + usuario + '</b> ,<br> Con fecha  '+ str(fecha) +', le informamos que el proceso de seguimiento ha sido cerrado. <br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
+    email = EmailMessage(subject, messageHtml ,to=idcorreoJefatura)
+    email.content_subtype='html'
+    email.send()
 
-        email = EmailMessage(subject, messageHtml ,to=[idcorreoJefatura])
-        email.content_subtype='html'
-        email.send()
 
 def EnviarCorreoAbrir():
-    controladorPlan = Ges_Controlador.objects.filter(id_periodo=PeriodoActual())
+    controladorPlan = Ges_Controlador.objects.values_list('id_jefatura_id__id_user__email', flat=True).filter(
+        id_periodo=PeriodoActual())
 
-    for controladorPlan in controladorPlan:
+    ahora = datetime.now()
+    fecha = ahora.strftime("%d" + " de " + "%B" + " de " + "%Y" + " a las " + "%H:%M")
 
-        usuario=  str(controladorPlan.analista_asignado)
-        ahora = datetime.now()
-        fecha = ahora.strftime("%d" + " de " + "%B" + " de " + "%Y" + " a las " + "%H:%M")
+    idcorreoJefatura=list(controladorPlan)
+
+    subject = 'Cierre etapa Seguimiento'
+    messageHtml = '<b>Estimada(o) Usuaria(o) del Sistema Capacity Institucional</b> ,<br> Le informamos que con fecha  '+ str(fecha) +', el proceso de <b>seguimiento</B> ha sido abierto para que ingrese el avance de sus actividades. <br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
+
+    email = EmailMessage(subject, messageHtml ,to=idcorreoJefatura)
+    email.content_subtype='html'
+    email.send()
 
 
-        # Envío al analista
-        email_jefatura_ingresaAct = controladorPlan.analista_asignado.email
-        idcorreoJefatura = [email_jefatura_ingresaAct]
-        subject = 'Apertura etapa Seguimiento'
-        messageHtml = 'Estimada(o) <b>' + usuario + '</b> ,<br> Con fecha  '+ str(fecha) +', le informamos que el proceso de seguimiento ha sido abierto. <br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
 
-        email = EmailMessage(subject, messageHtml ,to=[idcorreoJefatura])
-        email.content_subtype='html'
-        email.send()
+

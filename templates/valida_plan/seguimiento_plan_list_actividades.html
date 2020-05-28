@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %}
 
 {% block title %}
-Actividades Asociadas al Objetivo
+Actividades Asociadas al Objetivo | Seguimiento
 {% endblock %}
 
 
@@ -36,17 +36,17 @@ Actividades Asociadas al Objetivo
 						<!--<th>id</th>-->
 						<th>N°</th>
 						<th>Actividad</th>
-						<th >Horas</th>
-						<th>Volumen</th>
+
+
 						<th>Personas Asignadas</th>
 						<th>Total Horas</th>
 						<th  title="Fecha Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Fecha I. Act.</th>
 						<th  title="Fecha de Término de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Fecha T. Act.</th>
 						<th>Familia Cargo</th>
-						<th>Periodicidad</th>
-						<th style="display:none;">count NV</th>
-                        <th title="Total Observaciones Asociadas a la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Obs. Totales</th>
-						<th>Obs.</th>
+						<th>Estado Seguimiento</th>
+
+
+						<th style="display:none;">Obs.</th>
 
 					</tr>
 				</thead>
@@ -54,25 +54,39 @@ Actividades Asociadas al Objetivo
 					{%  for objetivo in object_list %}
 					<tr>
 						<td> {{ forloop.counter }}</td>
-						<td class="descripcion_actividad"  style="cursor:pointer; max-width: 100px; overflow: hidden;  display: table-cell;  text-overflow: ellipsis;  border: solid 1px #dddddd; white-space: nowrap;">{{ objetivo.descripcion_actividad }}</td>
-						<td >{{ objetivo.horas_actividad }}</td>
-						<td>{{ objetivo.volumen }}</td>
+						<td class="descripcion_actividad"  style="cursor:pointer; max-width: 300px; overflow: hidden;  display: table-cell;  text-overflow: ellipsis;  border: solid 1px #dddddd; white-space: nowrap;">{{ objetivo.descripcion_actividad }}</td>
+
+
 						<td>{{ objetivo.personas_asignadas }}</td>
 						<td>{{ objetivo.total_horas }}</td>
 						<td style="width:170px;">{{ objetivo.fecha_inicio_actividad }}</td>
 						<td style="width:190px;">{{ objetivo.fecha_termino_actividad }}</td>
 						<td>{{ objetivo.id_familia_cargo }}</td>
 
-						<td>{{ objetivo.id_periodicidad }}</td>
-						<td style="display:none;>">{{ objetivo.count_no_vistos }}</td>
 
-						   <td> {% if objetivo.count_observaciones == none %} 0 {% else %} {{ objetivo.count_observaciones}} {%endif%}</td>
+						{% if objetivo.id_estado_actividad != none %}
+
+						  <td  {% if objetivo.id_estado_actividad_id == 1  %}
+								style="color:red; "
+								{% elif objetivo.id_estado_actividad_id  == 2  %}
+								style="color:black;"
+								{% elif objetivo.id_estado_actividad_id == 3  %}
+								style="color:#47a447;"
+							   {% elif objetivo.id_estado_actividad_id  == 4  %}
+								style="color:#1e7799;"
+
+							   {%endif%} > {{ objetivo.id_estado_actividad }}</td>
+
+						{%else%}
+						<td>-</td>
+						{%endif%}
 
 
-						 <td style="width:40px; text-align:center;">
 
-							 <button type="button"  title="Observaciones Asociadas a la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" id="notification"  class="update btn btn-sm btn-primary"  data-id="{% url 'gestionobservacionactividadesvp' objetivo.id %}"  >
-							<span class="fa fa-comments" ></span>
+						 <td style="width:40px; text-align:center; display:none;">
+
+							 <button type="button"  title="Reservado para alguna acción" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" id="notification"  class="update btn btn-sm btn-primary"  data-id="{% url 'gestionobservacionactividadesvp' objetivo.id %}"  >
+							<span class="fa fa-coffee" ></span>
 							{% if objetivo.count_no_vistos != 0 and objetivo.count_no_vistos != none %} <span class="badge" title="Nuevas Observaciones a la actividad" >{{ objetivo.count_no_vistos }}</span> {% endif %}
 							</button>
                          </td>
@@ -142,7 +156,7 @@ Actividades Asociadas al Objetivo
 
 
 			$(".volver").click(function() {
-				window.location.href = '{% url 'ActividadesDetalles' id_nivel_controlador.id  %}';
+				window.location.href = '{% url 'SeguimientoObjetivosList' id_nivel_controlador.id  %}';
 				return false;
 			});
 
