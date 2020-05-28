@@ -135,7 +135,7 @@ class SeguimientoCerrarPeriodo(UpdateView):
         if form.is_valid():
 
             form.instance.id_estado_seguimiento=id_nuevo_estado
-            form.instance.fecha_termino= date.today()
+            form.instance.fecha_termino= datetime.now()
 
             form.save()
 
@@ -190,7 +190,7 @@ class SeguimientoAbrirPeriodo(SuccessMessageMixin, CreateView):
         if form.is_valid():
             form.instance.id_periodo= periodo_actual
             form.instance.id_estado_seguimiento=id_nuevo_estado
-            form.instance.fecha_inicio= date.today()
+            form.instance.fecha_inicio= datetime.now()
 
             form.save()
 

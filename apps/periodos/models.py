@@ -26,8 +26,8 @@ class Glo_Periodos(models.Model):
 
 class Glo_Seguimiento(models.Model):
     id_periodo= models.ForeignKey(Glo_Periodos, on_delete=models.PROTECT, null=True, blank=True)
-    fecha_inicio= models.DateField(blank=True, null=True)
-    fecha_termino= models.DateField(blank=True, null=True)
+    fecha_inicio= models.DateTimeField(blank=True, null=True)
+    fecha_termino= models.DateTimeField(blank=True, null=True)
     id_estado_seguimiento= models.ForeignKey(Glo_EstadoSeguimiento, on_delete=models.PROTECT, null=True, blank=True)
 
 
