@@ -248,7 +248,7 @@ def EnviarCorreoAbrir():
 
     idcorreoJefatura=list(controladorPlan)
 
-    subject = 'Cierre etapa Seguimiento'
+    subject = 'Apertura etapa Seguimiento'
     messageHtml = '<b>Estimada(o) Usuaria(o) del Sistema Capacity Institucional</b> ,<br> Le informamos que con fecha  '+ str(fecha) +', el proceso de <b>seguimiento</B> ha sido abierto para que ingrese el avance de sus actividades. <br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
 
     email = EmailMessage(subject, messageHtml ,to=idcorreoJefatura)

@@ -47,7 +47,7 @@ class UnidadesListar(ListView):
 
             id_controlador = Ges_Controlador.objects.filter(
                 Q(analista_asignado=id_usuario_actual) & Q(id_periodo=periodo_actual.id) & Q(
-                    estado_flujo=6)).annotate(
+                    estado_flujo__in= [6,7,11])).annotate(
                 count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
                 count_observaciones=Subquery(count_observaciones.values('count_id_actividad')[0:1])).order_by(
                 '-count_no_vistos', '-count_observaciones')

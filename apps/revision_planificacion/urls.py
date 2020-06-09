@@ -10,7 +10,7 @@ urlpatterns = [
     url('listarActividadesAnalista/(?P<pk>\d+)/', login_required(ActividadesListar.as_view()), name='listarActividadesAnalista'),
     path('gestionObservacionActividadesA/<int:id>', GestionObservacionesActividades,
          name="gestionobservacionactividadesA"),
-path('gestionObservacionAn/<int:id>', GestionObservacionesObjetivosVp2, name="gestionobservacionan"),
+    path('gestionObservacionAn/<int:id>', GestionObservacionesObjetivosVp2, name="gestionobservacionan"),
     path('rechazaplanAnalista/<int:pk>', login_required(RechazaPlan.as_view()), name='rechazaplanAnalista'),
     path('aceptaplanAnalista/<int:pk>', login_required(AceptaPlan.as_view()), name='aceptaplanAnalista'),
 ]

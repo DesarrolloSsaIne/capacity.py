@@ -121,6 +121,7 @@ INSTALLED_APPS = [
     'apps.estado_plan',
     'apps.estado_seguimiento',
     'apps.revision_planificacion',
+    'apps.seguimiento_formula',
 
 
 

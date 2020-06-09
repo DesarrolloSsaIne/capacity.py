@@ -26,7 +26,19 @@ Listado de Planes
         <h2 class="panel-title"></h2>
 
     </header>
+
     <div class="panel-body">
+            <div class="form-group">
+							<label>Filtrar</label>
+							<select class="form-control" id="list_estados" style="max-width:300px;">
+                                <option value="" selected>Seleccione...</option>
+                             <option value="En Revisión Planificación">En Revisión Planificación</option>
+                              <option value="Aprobado">Aprobado</option>
+                              <option value="Formulación en Observación Planificación">Formulación en Observación Planificación</option>
+
+                            </select>
+
+						    </div>
         <table class="table table-bordered table-striped mb-none" id="datatable-default">
             <thead>
                 <tr>
@@ -53,18 +65,18 @@ Listado de Planes
 
                       <td style="text-align:center;">
 
-                             		<a type="button" title="Objetivos Asociados al Plan" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom"  id="notification" class="objetivos btn btn-sm btn-success"  href="{% url 'listaObjetivosAnalista'  planes.id %} ">
-			<span class="fa fa-bars" ></span>
-			{% if planes.count_no_vistos != 0 and planes.count_no_vistos != none %} <span class="badge" title="Nuevas Observaciones" >{{ planes.count_no_vistos }}</span> {% endif %}
-			</a>
+                             		<a type="button" title="Objetivos Asociados al Plan" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom"  id="notification" class="objetivos btn btn-sm btn-success"  href="{% url 'listaObjetivosAnalista'  planes.id %} "  >
+			                        <span class="fa fa-bars" ></span>
+			                        {% if planes.count_no_vistos != 0 and planes.count_no_vistos != none %} <span class="badge" title="Nuevas Observaciones" >{{ planes.count_no_vistos }}</span> {% endif %}
+			                    </a>
 
                     </td>
                     <td style="text-align:center;">
 
-                        <button type="button" title="Aceptar plan y enviar a revisión." data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" class="aceptar btn btn-sm btn-primary" data-id="{% url 'aceptaplanAnalista' planes.id %}">
+                        <button type="button" title="Aceptar plan y enviar a revisión." data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" class="aceptar btn btn-sm btn-primary" data-id="{% url 'aceptaplanAnalista' planes.id %}"  {% if planes.estado_flujo_id == 11 or planes.estado_flujo_id == 7 %} disabled tabindex="-1"    {% endif %}>
                             <span class="fa fa-check-square"></span></button>
 
-                        <button type="button"  title="Rechazar plan y devolver a jefatura que lo formuló." data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" class="rechazar btn btn-sm btn-danger" data-id="{% url 'rechazaplanAnalista' planes.id %}">
+                        <button type="button"  title="Rechazar plan y devolver a jefatura que lo formuló." data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" class="rechazar btn btn-sm btn-danger" data-id="{% url 'rechazaplanAnalista' planes.id %}" {% if planes.estado_flujo_id == 11 or planes.estado_flujo_id == 7 %} disabled tabindex="-1"    {% endif %}>
                             <span class="fa fa-exclamation-triangle"></span></button>
 
                     </td>
@@ -112,6 +124,11 @@ Listado de Planes
     $(".alert").fadeTo(2000, 500).slideUp("slow", function() {
         $(this).remove();
     });
+
+    $("#list_estados").change(function () {
+    $('#datatable-default_filter').find("input").val($(this).val())
+    $('#datatable-default_filter').find("input").trigger('keyup');
+        });
 
 </script>
 

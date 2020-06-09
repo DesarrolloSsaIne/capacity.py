@@ -32,3 +32,7 @@ class Ges_Actividad (models.Model):
     id_objetivo_operativo = models.ForeignKey(Ges_Objetivo_Operativo, on_delete=models.PROTECT, blank=True, null=True)
     id_estado_actividad = models.ForeignKey(Glo_EstadoActividad, on_delete=models.PROTECT, blank=True, null=True)
 
+    fecha_real_termino = models.DateField(blank=True, null=True)
+    fecha_reprogramacion_termino = models.DateField(blank=True, null=True)
+    fecha_reprogramacion_inicio = models.DateField(blank=True, null=True)
+    justificacion = models.CharField(max_length=2000, blank=True, null=True)

@@ -1,0 +1,365 @@
+			<header class="panel-heading">
+				<div class="panel-actions">
+				<a class="fa fa-times" data-dismiss="modal"></a>
+				</div>
+				<h2 class="panel-title">Gestión Actividades</h2>
+			</header>
+
+			<form  method="post"  action="" >
+
+				<div class="panel-body">
+					{% csrf_token %}
+
+					 <div class="{% if form.non_field_errors %}invalid{% endif %} mb-2">
+    					  {% for error in form.non_field_errors %}
+        					{{ error }}
+     					 {% endfor %}
+    				</div>
+
+
+
+<div class="row show-grid">
+
+    				<div class="col-md-6">
+
+                <span class="show-grid-block">
+
+                    <div class="form-group">
+					<label >Descripción Actividad</label>
+					{{ form.descripcion_actividad }}
+				</div>
+					   <div class="form-group">
+					<label >Producto Estadístico</label>
+					{{ form.id_producto_estadistico}}
+				</div>
+					    <label >Fecha Inicio Actividad </label>
+				<div class="input-group">
+				<span class="input-group-addon">
+					<i class="fa fa-calendar"></i>
+				</span>
+					<input id="fecha_inicio_actividad" readonly="readonly"  type="date"  class="form-control" aria-valuetext="{{ form.fecha_inicio_actividad }} <!--">-->
+
+				</div>
+					 <label >Fecha Término Actividad </label>
+				<div class="input-group">
+				<span class="input-group-addon">
+					<i class="fa fa-calendar"></i>
+				</span>
+				<input id="fecha_termino_actividad"  type="date"  readonly="readonly" class="form-control" aria-valuetext="{{ form.fecha_termino_actividad }} <!--">-->
+				</div>
+
+                </span>
+                </div>
+
+</div>
+<br>
+<div class="row show-grid">
+
+                    <div class="col-md-6">
+                        <span class="show-grid-block">
+
+						   <div class="form-group">
+					<label >Reportar Estado</label>
+					{{ form.id_estado_actividad}}
+				</div>
+
+
+					<div class="hide-reprogramacion_inicio">
+												    <label >Reprogramacion Fecha Inicio  </label>
+				<div class="input-group">
+				<span class="input-group-addon">
+					<i class="fa fa-calendar"></i>
+				</span>
+					<input id="fecha_reprogramacion_inicio"  type="date"  class="form-control" aria-valuetext="{{ form.fecha_reprogramacion_inicio }} <!--">-->
+
+				</div>
+					</div>
+							<div class="hide-reprogramacion_termino">
+											 <label >Reprogramación Fecha Término </label>
+				<div class="input-group">
+				<span class="input-group-addon">
+					<i class="fa fa-calendar"></i>
+				</span>
+				<input id="fecha_reprogramacion_termino"  type="date"  class="form-control" aria-valuetext="{{ form.fecha_reprogramacion_termino }} <!--">-->
+				</div>
+							</div>
+                   </span>
+					</div>
+
+     <div class="col-md-6">
+                        <span class="show-grid-block">
+					<div class="hide-real_termino">
+							    <label > Fecha Real Término  </label>
+				<div class="input-group">
+				<span class="input-group-addon">
+					<i class="fa fa-calendar"></i>
+				</span>
+					<input id="fecha_real_termino"  type="date"  class="form-control" aria-valuetext="{{ form.fecha_real_termino }} <!--">-->
+
+				</div>
+					</div>
+
+
+     </span>
+
+                    </div>
+	<div class="col-md-12">
+		<div class="hide-justificacion">
+					<label >Justificación</label>
+					{{ form.justificacion }}
+		</div>
+				</div>
+                <span class="show-grid-block">
+
+				</span>
+</div>
+
+
+<br>
+
+
+
+
+</div>
+</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-primary" type="submit" id="confirmar" >Confirmar</button>
+				<button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
+			</div>
+
+								<div class="alert alert-danger" style="display:none;" id="mjeError">
+
+										<p id="textError"></p>
+								</div>
+			</form>
+<script>
+
+$(function() {
+
+	$('#id_id_producto_estadistico option:not(:selected)').attr('disabled',true);
+
+
+	estado = $('#id_id_estado_actividad').val();
+	if(estado == 1){
+			$(".hide-justificacion").css("display", "block");
+    $(".hide-real_termino").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "block");
+    $(".hide-reprogramacion_inicio").css("display", "block");
+	}
+	if(estado == 2){
+
+		$(".hide-justificacion").css("display", "none");
+    $(".hide-real_termino").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "none");
+    $(".hide-reprogramacion_inicio").css("display", "none");
+	}
+	if(estado == 3){
+		$(".hide-justificacion").css("display", "none");
+    $(".hide-real_termino").css("display", "block");
+    $(".hide-reprogramacion_termino").css("display", "none");
+    $(".hide-reprogramacion_inicio").css("display", "none");
+
+	}
+	if(estado == 4){
+
+		$(".hide-justificacion").css("display", "block");
+    $(".hide-real_termino").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "none");
+    $(".hide-reprogramacion_inicio").css("display", "none");
+	}
+	if(estado == 5){
+
+	$(".hide-justificacion").css("display", "block");
+    $(".hide-real_termino").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "none");
+    $(".hide-reprogramacion_inicio").css("display", "none");
+
+	}
+
+if(estado == 0 || estado == ''){
+
+	$(".hide-justificacion").css("display", "none");
+    $(".hide-real_termino").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "none");
+    $(".hide-reprogramacion_inicio").css("display", "none");
+
+	$('#fecha_real_termino').removeAttr('required');
+    $('#fecha_reprogramacion_inicio').removeAttr('required');
+    $('#fecha_reprogramacion_termino').removeAttr('required');
+    $('#id_justificacion').removeAttr('required');
+    $("#id_id_estado_actividad").prop('required',true);
+	}
+
+
+
+
+
+
+});
+
+
+$( "#id_id_estado_actividad" ).change(function() {
+
+  estado = $( this ).val();
+  if (estado == 1) //habilita con restraso
+  {
+  	$(".hide-justificacion").css("display", "block");
+    $(".hide-real_termino").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "block");
+    $(".hide-reprogramacion_inicio").css("display", "block");
+
+    $('#fecha_real_termino').removeAttr('required').val('');
+    $('#fecha_reprogramacion_inicio').prop('required',true);
+    $('#fecha_reprogramacion_termino').prop('required',true);
+    $('#id_justificacion').prop('required',true);
+
+
+       }
+       if (estado == 2) //habilita en curso
+  {
+  	$(".hide-justificacion").css("display", "none");
+    $(".hide-real_termino").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "none");
+    $(".hide-reprogramacion_inicio").css("display", "none");
+
+    $('#fecha_real_termino').removeAttr('required').val('');
+    $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
+    $('#fecha_reprogramacion_termino').removeAttr('required').val('');
+    $('#id_justificacion').removeAttr('required').val('');
+
+       }
+   if (estado == 3) //habilita finalizada
+  {
+  	$(".hide-justificacion").css("display", "none");
+    $(".hide-real_termino").css("display", "block");
+    $(".hide-reprogramacion_termino").css("display", "none");
+    $(".hide-reprogramacion_inicio").css("display", "none");
+
+     $('#fecha_real_termino').prop('required',true);
+    $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
+    $('#fecha_reprogramacion_termino').removeAttr('required').val('');
+    $('#id_justificacion').removeAttr('required').val('');
+       }
+
+        if (estado == 4) //habilita eliminada
+  {
+  	$(".hide-justificacion").css("display", "block");
+    $(".hide-real_termino").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "none");
+    $(".hide-reprogramacion_inicio").css("display", "none");
+
+
+     $('#fecha_real_termino').removeAttr('required').val('');
+    $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
+    $('#fecha_reprogramacion_termino').removeAttr('required').val('');
+    $('#id_justificacion').prop('required',true);
+       }
+
+        if (estado == 5) //habilita sin movimiento
+  {
+  	$(".hide-justificacion").css("display", "block");
+    $(".hide-real_termino").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "none");
+    $(".hide-reprogramacion_inicio").css("display", "none");
+
+    $('#fecha_real_termino').removeAttr('required').val('');
+    $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
+    $('#fecha_reprogramacion_termino').removeAttr('required').val('');
+    $('#id_justificacion').prop('required',true).val('');
+       }
+
+
+});
+
+$("#confirmar").click(function(){
+
+var horas_actividad;
+var horas_disponibles;
+
+
+
+horas_actividad= $('#total_horas_id').val();
+horas_disponibles = $('#total_disponible_id').val()
+
+horas_actividad= parseInt(horas_actividad)
+horas_disponibles = parseInt(horas_disponibles)
+
+if (horas_actividad>horas_disponibles){
+	$("#mjeError").css("display","block");
+	$("#textError").text("Error : No cuenta con saldo de horas disponibles para asignar a la actividad.");
+return false
+}
+
+if (horas_actividad==0){
+	$("#mjeError").css("display","block");
+	$("#textError").text("Error : El total de horas no puede ser igual a 0.");
+return false
+}
+
+
+var anio_actual= moment().year();
+
+fecha_inicio = $("#fecha_inicio_actividad").val();
+fecha_termino = $("#fecha_termino_actividad").val();
+
+
+
+
+var valuesStart = fecha_inicio.split("-");
+var anio_inicio = valuesStart[0];
+
+var valuesStart = fecha_termino.split("-");
+var anio_termino = valuesStart[0];
+
+
+if (anio_inicio==anio_actual && anio_termino==anio_actual){
+	//alert('ok');
+}else{
+	$("#mjeError").css("display","block");
+	$("#textError").text("Error : Las fechas seleccionadas deben corresponder al año en curso.");
+return false
+}
+
+
+if (moment(fecha_inicio).isBefore(fecha_termino) || moment(fecha_inicio).isSameOrBefore(fecha_termino)){
+	//alert('ok');
+}else{
+	$("#mjeError").css("display","block");
+	$("#textError").text("Error : La fecha de inicio no puede ser superior a la fecha de término.");
+return false
+}
+
+
+});
+
+
+
+
+
+
+
+Date.prototype.getWeekNumber = function(){
+  var d = new Date(Date.UTC(this.getFullYear(), this.getMonth(), this.getDate()));
+  var dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+  return Math.ceil((((d - yearStart) / 86400000) + 1)/7)
+};
+
+function checkWeek($fecha) {
+  var s = $fecha;
+  var m = moment(s, 'YYYY-MM-DD');
+  //alert(m.format('W'));
+  var $semana = m.toDate().getWeekNumber()
+  return $semana
+}
+
+
+
+
+
+
+</script>
+
+
