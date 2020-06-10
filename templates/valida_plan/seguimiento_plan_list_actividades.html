@@ -36,17 +36,10 @@ Actividades Asociadas al Objetivo | Seguimiento
 						<!--<th>id</th>-->
 						<th>N°</th>
 						<th>Actividad</th>
-
-
-						<th>Personas Asignadas</th>
-						<th>Total Horas</th>
-						<th  title="Fecha Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Fecha I. Act.</th>
-						<th  title="Fecha de Término de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Fecha T. Act.</th>
-						<th>Familia Cargo</th>
+						<th  title="Fecha Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Fecha Inicio</th>
+						<th  title="Fecha de Término de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Fecha Término</th>
 						<th>Estado Seguimiento</th>
-
-
-						<th style="display:none;">Obs.</th>
+						<th style="">Obs.</th>
 
 					</tr>
 				</thead>
@@ -57,11 +50,10 @@ Actividades Asociadas al Objetivo | Seguimiento
 						<td class="descripcion_actividad"  style="cursor:pointer; max-width: 300px; overflow: hidden;  display: table-cell;  text-overflow: ellipsis;  border: solid 1px #dddddd; white-space: nowrap;">{{ objetivo.descripcion_actividad }}</td>
 
 
-						<td>{{ objetivo.personas_asignadas }}</td>
-						<td>{{ objetivo.total_horas }}</td>
+
 						<td style="width:170px;">{{ objetivo.fecha_inicio_actividad }}</td>
 						<td style="width:190px;">{{ objetivo.fecha_termino_actividad }}</td>
-						<td>{{ objetivo.id_familia_cargo }}</td>
+
 
 
 						{% if objetivo.id_estado_actividad != none %}
@@ -83,13 +75,13 @@ Actividades Asociadas al Objetivo | Seguimiento
 
 
 
-						 <td style="width:40px; text-align:center; display:none;">
+						 <td style="width:40px; text-align:center;">
 
-							 <button type="button"  title="Reservado para alguna acción" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" id="notification"  class="update btn btn-sm btn-primary"  data-id="{% url 'gestionobservacionactividadesvp' objetivo.id %}"  >
-							<span class="fa fa-coffee" ></span>
-							{% if objetivo.count_no_vistos != 0 and objetivo.count_no_vistos != none %} <span class="badge" title="Nuevas Observaciones a la actividad" >{{ objetivo.count_no_vistos }}</span> {% endif %}
+							 <button type="button"  title="Detalle Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" id="notification"  class="update btn btn-sm btn-primary"  data-id="{% url 'detalleactividadesvp' objetivo.id %}"  >
+							<span class="fa fa-search" ></span>
 							</button>
-                         </td>
+
+						 </td>
 
 
 					</tr>

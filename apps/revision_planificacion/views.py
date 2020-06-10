@@ -359,6 +359,20 @@ class AceptaPlan(UpdateView):
             return HttpResponseRedirect('/revision_planificacion/listarUnidadesAnalista')
 
 
+
+def ActividadDetalle(request, id):
+
+    template_name = "revision_planificacion/modal_revision_planificacion_actividad_detalle.html"
+    qs = Ges_Actividad.objects.get(id=id) #Cualquier QS con la que quiera obtener datos para enviar al modal.
+    context = {"qs": qs} # aquí le envío lo que quiero al modal para que lo muestre, incluso una lista.
+
+
+
+    return render(request, template_name, context)
+
+
+
+
 def GestionObservacionesActividades(request, id):
     template_name = "revision_planificacion/modal_observaciones_actividad.html"
     response_data = {}

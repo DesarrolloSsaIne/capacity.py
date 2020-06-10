@@ -743,6 +743,14 @@ class SeguimientoActividades(ListView): # Modificado por JR- sprint 8 - OK
 
 
 
+def ActividadDetalle(request, id):
+
+    template_name = "valida_plan/modal_valida_plan_actividad_detalle.html"
+    qs = Ges_Actividad.objects.get(id=id) #Cualquier QS con la que quiera obtener datos para enviar al modal.
+    context = {"qs": qs} # aquí le envío lo que quiero al modal para que lo muestre, incluso una lista.
+
+
+    return render(request, template_name, context)
 
 
 

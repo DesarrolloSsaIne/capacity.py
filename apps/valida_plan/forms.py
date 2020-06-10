@@ -1,5 +1,6 @@
 from django import forms
 from apps.valida_plan.models import Ges_Observaciones, Ges_Controlador, Ges_Jefatura
+from apps.actividades.models import Ges_Actividad
 from django.contrib.auth.models import User
 from apps.jefaturas.models import Ges_Jefatura as Gj
 
@@ -86,4 +87,35 @@ class ValidaPlanUpdateForm(forms.ModelForm):
             'estado_flujo': forms.Select(attrs={'class': 'form-control', 'readonly':'readonly'}),
             'jefatura_segundarevision': forms.Select(attrs={'class': 'form-control'}),
             'id_jefatura': forms.Select(attrs={'class': 'form-control', 'readonly':'readonly'}),
+        }
+
+
+class Valida_plan_DetalleForm(forms.ModelForm):
+
+    class Meta:
+        model = Ges_Actividad
+        fields = [
+
+            'id_periodicidad',
+            'horas_actividad',
+            'volumen',
+            'personas_asignadas',
+            'total_horas',
+            'id_producto_estadistico',
+            'id_estado_actividad',
+
+
+        ]
+
+        widgets = {
+
+            'id_producto_estadistico': forms.Select(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+            'id_periodicidad': forms.Select(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+            'horas_actividad': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+            'volumen': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+            'personas_asignadas': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+            'total_horas': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+            'id_estado_actividad': forms.Select(attrs={'class': 'form-control'}),
+
+
         }

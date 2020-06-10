@@ -41,13 +41,7 @@ Actividades Asociadas al Objetivo
 										<tr>
 											<th>ID</th>
 											<th>Descripción Actividad</th>
-											<th>Periodicidad</th>
-											<th>Horas Asoc.</th>
-											<th>Volumen</th>
-											<th>Personas Asig.</th>
-											<th>Total Horas</th>
-											<th>Familia Cargo</th>
-											<th>Producto Est.</th>
+
 											<th title="Fecha de Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Inicio Actividad</th>
 											<th title="Fecha de Término de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Termino Actividad</th>
 
@@ -61,15 +55,9 @@ Actividades Asociadas al Objetivo
 
                                                 <tr>
 
-													<td> {{ forloop.counter }}</td>
+													<td style="width:10px;"> {{ forloop.counter }}</td>
 													<td class="descripcion_actividad"  style="cursor:pointer; max-width: 10px; overflow: hidden;  display: table-cell;  text-overflow: ellipsis;  border: solid 1px #dddddd; white-space: nowrap;">{{ objetivo.descripcion_actividad}}</td>
-													<td style="width:80px;"> {{ objetivo.id_periodicidad}}</td>
-													<td style="width:60px;"> {{ objetivo.horas_actividad}}</td>
-													<td style="width:60px;"> {{ objetivo.volumen}}</td>
-													<td style="width:80px;"> {{ objetivo.personas_asignadas}}</td>
-													<td style="width:60px;"> {{ objetivo.total_horas}}</td>
-													<td style="width:90px;"> {{ objetivo.id_familia_cargo}}</td>
-													<td style="width:60px;" > {{ objetivo.id_producto_estadistico}}</td>
+
 													<td style="width:80px;" > {{ objetivo.fecha_inicio_actividad}}</td>
 													<td style="width:80px;"> {{ objetivo.fecha_termino_actividad}}</td>
 

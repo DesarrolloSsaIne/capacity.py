@@ -38,7 +38,12 @@ class GestionActividadesUpdateForm(forms.ModelForm):
     class Meta:
         model = Ges_Actividad
         fields = [
-            'descripcion_actividad',
+
+            'id_periodicidad',
+            'horas_actividad',
+            'volumen',
+            'personas_asignadas',
+            'total_horas',
             'id_producto_estadistico',
             'fecha_inicio_actividad',
             'fecha_termino_actividad',
@@ -51,13 +56,17 @@ class GestionActividadesUpdateForm(forms.ModelForm):
         ]
 
         widgets = {
-            'descripcion_actividad': forms.TextInput(attrs={'class': 'form-control', 'readonly':'readonly'}),
+
             'id_producto_estadistico': forms.Select(attrs={'class': 'form-control', 'readonly':'readonly'}),
+            'id_periodicidad': forms.Select(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+            'horas_actividad': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+            'volumen': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+            'personas_asignadas': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+            'total_horas': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
             'id_estado_actividad': forms.Select(attrs={'class': 'form-control'}),
             'justificacion': forms.Textarea(attrs={'class': 'form-control', 'style': 'height:80px;'}),
 
-            #'fecha_inicio_actividad': DateInput(attrs={'class': 'form-control'}),
-            #'fecha_termino_actividad': DateInput(attrs={'class': 'form-control'}),
+
         }
 
         outputs = {
