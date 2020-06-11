@@ -206,28 +206,28 @@ $(function() {
     $(".hide-reprogramacion_termino").css("display", "block");
     $(".hide-reprogramacion_inicio").css("display", "block");
 	}
-	if(estado == 2){
+	if(estado == 3){
 
 		$(".hide-justificacion").css("display", "none");
     $(".hide-real_termino").css("display", "none");
     $(".hide-reprogramacion_termino").css("display", "none");
     $(".hide-reprogramacion_inicio").css("display", "none");
 	}
-	if(estado == 3){
+	if(estado == 4){
 		$(".hide-justificacion").css("display", "none");
     $(".hide-real_termino").css("display", "block");
     $(".hide-reprogramacion_termino").css("display", "none");
     $(".hide-reprogramacion_inicio").css("display", "none");
 
 	}
-	if(estado == 4){
+	if(estado == 5){
 
 		$(".hide-justificacion").css("display", "block");
     $(".hide-real_termino").css("display", "none");
     $(".hide-reprogramacion_termino").css("display", "none");
     $(".hide-reprogramacion_inicio").css("display", "none");
 	}
-	if(estado == 5){
+	if(estado == 2){
 
 	$(".hide-justificacion").css("display", "block");
     $(".hide-real_termino").css("display", "none");
@@ -275,7 +275,7 @@ $( "#id_id_estado_actividad" ).change(function() {
 
 
        }
-       if (estado == 2) //habilita en curso
+       if (estado == 3) //habilita en curso
   {
   	$(".hide-justificacion").css("display", "none");
     $(".hide-real_termino").css("display", "none");
@@ -288,7 +288,7 @@ $( "#id_id_estado_actividad" ).change(function() {
     $('#id_justificacion').removeAttr('required').val('');
 
        }
-   if (estado == 3) //habilita finalizada
+   if (estado == 4) //habilita finalizada
   {
   	$(".hide-justificacion").css("display", "none");
     $(".hide-real_termino").css("display", "block");
@@ -301,7 +301,7 @@ $( "#id_id_estado_actividad" ).change(function() {
     $('#id_justificacion').removeAttr('required').val('');
        }
 
-        if (estado == 4) //habilita eliminada
+        if (estado == 5) //habilita eliminada
   {
   	$(".hide-justificacion").css("display", "block");
     $(".hide-real_termino").css("display", "none");
@@ -315,7 +315,7 @@ $( "#id_id_estado_actividad" ).change(function() {
     $('#id_justificacion').prop('required',true);
        }
 
-        if (estado == 5) //habilita sin movimiento
+        if (estado == 2) //habilita sin movimiento
   {
   	$(".hide-justificacion").css("display", "block");
     $(".hide-real_termino").css("display", "none");

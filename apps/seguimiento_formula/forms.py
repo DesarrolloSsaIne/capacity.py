@@ -1,15 +1,18 @@
 from django import forms
 from apps.actividades.models import Ges_Actividad
 from apps.controlador.models import Ges_Controlador
-
+from apps.estado_actividad.models import Glo_EstadoActividad
 
 class GestionActividadesUpdateForm(forms.ModelForm):
 
     def __init__(self,  *args, **kwargs):
+        self.request = kwargs.pop('request', None)
         super(GestionActividadesUpdateForm, self).__init__(*args, **kwargs)
+        self.fields['id_estado_actividad'].queryset = Glo_EstadoActividad.objects.filter(id__in=[1,2,3,4, 5])
         # asi vuelves tus campos no requeridos
         for key in self.fields:
             self.fields[key].required = False
+
 
     fecha_inicio_actividad = forms.DateField(
         widget=forms.DateInput(format='%Y-%m-%d'),
@@ -35,6 +38,7 @@ class GestionActividadesUpdateForm(forms.ModelForm):
         input_formats=('%Y-%m-%d',)
     )
 
+
     class Meta:
         model = Ges_Actividad
         fields = [
@@ -47,8 +51,8 @@ class GestionActividadesUpdateForm(forms.ModelForm):
             'id_producto_estadistico',
             'fecha_inicio_actividad',
             'fecha_termino_actividad',
-            'id_estado_actividad',
             'fecha_real_termino',
+            'id_estado_actividad',
             'fecha_reprogramacion_inicio',
             'fecha_reprogramacion_termino',
             'justificacion',

@@ -44,7 +44,7 @@ Actividades Asociadas al Objetivo
 
 											<th title="Fecha de Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Inicio Actividad</th>
 											<th title="Fecha de Término de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Termino Actividad</th>
-
+											<th>Estado Seguimiento</th>
 											<th>Reportar Avances</th>
 
 										</tr>
@@ -56,15 +56,37 @@ Actividades Asociadas al Objetivo
                                                 <tr>
 
 													<td style="width:10px;"> {{ forloop.counter }}</td>
-													<td class="descripcion_actividad"  style="cursor:pointer; max-width: 10px; overflow: hidden;  display: table-cell;  text-overflow: ellipsis;  border: solid 1px #dddddd; white-space: nowrap;">{{ objetivo.descripcion_actividad}}</td>
+													<td class="descripcion_actividad"  style="cursor:pointer; max-width: 200px; overflow: hidden;  display: table-cell;  text-overflow: ellipsis;  border: solid 1px #dddddd; white-space: nowrap;">{{ objetivo.descripcion_actividad}}</td>
 
-													<td style="width:80px;" > {{ objetivo.fecha_inicio_actividad}}</td>
-													<td style="width:80px;"> {{ objetivo.fecha_termino_actividad}}</td>
+													<td style="width:150px;" > {{ objetivo.fecha_inicio_actividad}}</td>
+													<td style="width:150px;"> {{ objetivo.fecha_termino_actividad}}</td>
+													<td   {% if objetivo.id_estado_actividad_id == 1  %}
+														 style="color:red; width:140px; "
+														  {% elif objetivo.id_estado_actividad_id == 2  %}
+														 style="color:#3688fc; width:140px; "
+														  {% elif objetivo.id_estado_actividad_id == 3  %}
+														 style="color:#47a447; width:140px; "
+														  {% elif objetivo.id_estado_actividad_id == 4  %}
+														 style="color:#47a447; width:140px; "
+														   {% elif objetivo.id_estado_actividad_id == 5  %}
+														 style="color:red; width:140px; "
+														   {% elif objetivo.id_estado_actividad_id == 6  %}
+														 style="color:red; width:140px; "
+														   {% elif objetivo.id_estado_actividad_id == 7  %}
+														 style="color:red; width:140px; "
 
 
-                                                    <td style="width:80px; text-align:center;" >
 
-														 <button type="button" title="Reportar Avance de la Actividad" title="Fecha de Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" class="update btn btn-sm btn-primary" data-id="{% url 'RegistroActividadEditarSeguimiento' objetivo.id %}" >
+														 {%endif%} >{% if objetivo.id_estado_actividad == none %} -  {%else%}
+
+
+														{{ objetivo.id_estado_actividad}} {%endif%}</td>
+
+
+
+                                                    <td  style="width:80px; text-align:center;"  >
+
+														<button {%if objetivo.id_estado_actividad_id == 6 or objetivo.id_estado_actividad_id == 7%} disabled="disabled" {%endif%} type="button" title="Reportar Avance de la Actividad" title="Fecha de Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" class="update btn btn-sm btn-primary" data-id="{% url 'RegistroActividadEditarSeguimiento' objetivo.id %}">
 														<span class="fa fa-check-square-o"></span></button>
 
 													</td>

@@ -43,6 +43,8 @@
 
 											<th>Fecha Apertura</th>
                                             <th>Fecha Cierre</th>
+											<th>Fecha Inicio Corte</th>
+											<th>Fecha Término Corte</th>
                                              <th>Estado</th>
                                             <th>Opciones</th>
 										</tr>
@@ -56,6 +58,9 @@
                                                     <td> {{ seguimiento.fecha_inicio }} </td>
 
 													 <td>{% if seguimiento.fecha_termino == None  %} - {%else%}{{ seguimiento.fecha_termino}}</td>{%endif%}
+
+													 <td> {{ seguimiento.fecha_inicio_corte }} </td>
+													 <td> {{ seguimiento.fecha_termino_corte }} </td>
 
                                                     <td  {% if seguimiento.id_estado_seguimiento.id == 1  %}
 														 style="color:#47a447; width:130px; font-weight: bold;"
@@ -159,7 +164,7 @@ $(".volver").click(function() {
   });
 
 	$('#datatable-default').DataTable({
-	"order": [[ 0, "desc" ]] //desactiva el ordenamiento de la tabla para que el order_by del queryset funcione. ("order": [[ 3, "desc" ]]) para ordenar desde jquery.
+	"order": [[ 4, "asc" ]] //desactiva el ordenamiento de la tabla para que el order_by del queryset funcione. ("order": [[ 3, "desc" ]]) para ordenar desde jquery.
 	});
 
 </script>

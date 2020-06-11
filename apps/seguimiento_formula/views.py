@@ -149,7 +149,7 @@ class ActividadesDetail(ListView): #clase modificada por JR- sprint 8 - Ok
             #lista_actividades = Ges_Actividad.objects.filter(Q(id_objetivo_tactico=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id))
 
             lista_actividades = Ges_Actividad.objects.filter(
-                Q(id_objetivo_tactico=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id))
+                Q(id_objetivo_tactico=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)).order_by('id_estado_actividad','fecha_inicio_actividad')
 
             nombre=  Ges_Objetivo_Tactico.objects.get(id=self.kwargs['pk'])
         if self.request.session['id_orden']==3:
@@ -157,7 +157,7 @@ class ActividadesDetail(ListView): #clase modificada por JR- sprint 8 - Ok
 
 
             lista_actividades = Ges_Actividad.objects.filter(
-                Q(id_objetivo_tacticotn=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id))
+                Q(id_objetivo_tacticotn=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)).order_by('id_estado_actividad','fecha_inicio_actividad')
 
 
             nombre = Ges_Objetivo_TacticoTN.objects.get(id=self.kwargs['pk'])
@@ -166,7 +166,7 @@ class ActividadesDetail(ListView): #clase modificada por JR- sprint 8 - Ok
 
 
             lista_actividades = Ges_Actividad.objects.filter(
-                Q(id_objetivo_operativo=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id))
+                Q(id_objetivo_operativo=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)).order_by('id_estado_actividad','fecha_inicio_actividad')
 
             nombre = Ges_Objetivo_Operativo.objects.get(id=self.kwargs['pk'])
 

@@ -1,6 +1,9 @@
 from django import forms
 from apps.periodos.models import Glo_Periodos, Glo_Seguimiento
 
+class DateInput(forms.DateInput):
+    input_type = 'date'
+
 class periodosForm(forms.ModelForm):
     ANIO_CHOICES = (
         (2020, '2020'),
@@ -51,4 +54,22 @@ class Seguimiento_cierreform(forms.ModelForm):
 
         ]
 
+
+class Seguimiento_abrirform(forms.ModelForm):
+
+
+    class Meta:
+        model = Glo_Seguimiento
+        fields = [
+            'fecha_termino',
+            'fecha_inicio_corte',
+            'fecha_termino_corte',
+        ]
+
+        widgets = {
+
+            'fecha_inicio_corte': DateInput(attrs={'class': 'form-control', 'required':'required', 'id':'id_fecha_inicio_corte'}),
+            'fecha_termino_corte': DateInput(attrs={'class': 'form-control', 'required':'required', 'id':'id_fecha_termino_corte'}),
+
+        }
 

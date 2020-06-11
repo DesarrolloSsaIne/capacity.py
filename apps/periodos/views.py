@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from apps.periodos.forms import periodosForm, Seguimiento_cierreform
+from apps.periodos.forms import periodosForm, Seguimiento_cierreform, Seguimiento_abrirform
 from apps.periodos.models import Glo_Periodos, Glo_Seguimiento
 from apps.controlador.models import Ges_Controlador
+from apps.jefaturas.models import Ges_Jefatura
 from apps.estado_seguimiento.models import Glo_EstadoSeguimiento
 
 from django.contrib import messages
@@ -14,6 +15,7 @@ from django.core.mail import EmailMessage,send_mass_mail
 from django.db.models import Q
 from datetime import date
 from datetime import datetime
+from django.utils import timezone
 # Create your views here.
 
 
@@ -135,7 +137,7 @@ class SeguimientoCerrarPeriodo(UpdateView):
         if form.is_valid():
 
             form.instance.id_estado_seguimiento=id_nuevo_estado
-            form.instance.fecha_termino= datetime.now()
+            form.instance.fecha_termino= datetime.now(tz=timezone.utc)
 
             form.save()
 
@@ -164,7 +166,7 @@ class SeguimientoCerrarPeriodo(UpdateView):
 class SeguimientoAbrirPeriodo(SuccessMessageMixin, CreateView):
     model = Glo_Seguimiento
     template_name = 'periodos/seguimiento_abrir.html'
-    form_class = Seguimiento_cierreform
+    form_class = Seguimiento_abrirform
 
 
     def get_context_data(self, **kwargs):
@@ -182,6 +184,7 @@ class SeguimientoAbrirPeriodo(SuccessMessageMixin, CreateView):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
 
+
         id_nuevo_estado= Glo_EstadoSeguimiento.objects.get(id=1)
         periodo_actual = Glo_Periodos.objects.get(id_estado=1)
 
@@ -190,7 +193,7 @@ class SeguimientoAbrirPeriodo(SuccessMessageMixin, CreateView):
         if form.is_valid():
             form.instance.id_periodo= periodo_actual
             form.instance.id_estado_seguimiento=id_nuevo_estado
-            form.instance.fecha_inicio= datetime.now()
+            form.instance.fecha_inicio= datetime.now(tz=timezone.utc)
 
             form.save()
 
@@ -224,7 +227,7 @@ def PeriodoActual():
 
 
 def EnviarCorreoCierre():
-    controladorPlan = Ges_Controlador.objects.values_list('id_jefatura_id__id_user__email' , flat=True).filter(id_periodo=PeriodoActual())
+    controladorPlan = Ges_Jefatura.objects.values_list('id_user__email' , flat=True).filter(id_periodo=PeriodoActual())
 
     ahora = datetime.now()
     fecha = ahora.strftime("%d" + " de " + "%B" + " de " + "%Y" + " a las " + "%H:%M")
@@ -240,7 +243,7 @@ def EnviarCorreoCierre():
 
 
 def EnviarCorreoAbrir():
-    controladorPlan = Ges_Controlador.objects.values_list('id_jefatura_id__id_user__email', flat=True).filter(
+    controladorPlan = Ges_Jefatura.objects.values_list('id_user__email', flat=True).filter(
         id_periodo=PeriodoActual())
 
     ahora = datetime.now()

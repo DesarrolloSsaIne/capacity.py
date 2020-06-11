@@ -92,15 +92,6 @@ if __name__=='__main__':
 
 
 
-
-
-
-
-
-
-
-
-
 # if __name__=='__main__':
 #     url= 'https://httpbin.org/get'
 #     args = {'nombre':'jason', 'curso':'python'}
