@@ -1,7 +1,7 @@
 from django.db.models import Q, Subquery, OuterRef, Count
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-
+from apps.periodos.models import Glo_Seguimiento
 # Create your views here.
 from apps.actividades.models import Ges_Actividad
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
@@ -16,6 +16,8 @@ from django.contrib.messages.views import SuccessMessageMixin
 from apps.registration.models import logEventos
 from apps.seguimiento_formula.forms import  GestionActividadesUpdateForm, PlanUpdateForm
 from django.contrib import messages
+from datetime import datetime
+import datetime
 
 class ActividadesObjetivosList(ListView): #clase modificada por JR- sprint 8 - Ok
     model= Ges_Actividad
@@ -149,7 +151,7 @@ class ActividadesDetail(ListView): #clase modificada por JR- sprint 8 - Ok
             #lista_actividades = Ges_Actividad.objects.filter(Q(id_objetivo_tactico=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id))
 
             lista_actividades = Ges_Actividad.objects.filter(
-                Q(id_objetivo_tactico=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)).order_by('id_estado_actividad','fecha_inicio_actividad')
+                Q(id_objetivo_tactico=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)).order_by('id_estado_actividad_id','fecha_termino_actividad')
 
             nombre=  Ges_Objetivo_Tactico.objects.get(id=self.kwargs['pk'])
         if self.request.session['id_orden']==3:
@@ -157,7 +159,7 @@ class ActividadesDetail(ListView): #clase modificada por JR- sprint 8 - Ok
 
 
             lista_actividades = Ges_Actividad.objects.filter(
-                Q(id_objetivo_tacticotn=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)).order_by('id_estado_actividad','fecha_inicio_actividad')
+                Q(id_objetivo_tacticotn=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)).order_by('id_estado_actividad_id','fecha_termino_actividad')
 
 
             nombre = Ges_Objetivo_TacticoTN.objects.get(id=self.kwargs['pk'])
@@ -166,7 +168,7 @@ class ActividadesDetail(ListView): #clase modificada por JR- sprint 8 - Ok
 
 
             lista_actividades = Ges_Actividad.objects.filter(
-                Q(id_objetivo_operativo=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)).order_by('id_estado_actividad','fecha_inicio_actividad')
+                Q(id_objetivo_operativo=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)).order_by('id_estado_actividad_id','fecha_termino_actividad')
 
             nombre = Ges_Objetivo_Operativo.objects.get(id=self.kwargs['pk'])
 
@@ -199,6 +201,26 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
     model = Ges_Actividad
     form_class = GestionActividadesUpdateForm
     template_name = 'seguimiento_formula/actividades_seguimiento_update.html'
+
+
+    def get_context_data(self,  **kwargs):
+        context = super(ActividadEdit, self).get_context_data(**kwargs)
+
+        fechas_corte= Glo_Seguimiento.objects.order_by('-id')[0]
+
+
+
+
+
+        context['fechas'] = {'fecha_inicio_corte_str':str(fechas_corte.fecha_inicio_corte)  ,
+                             'fecha_termino_corte_str':str(fechas_corte.fecha_termino_corte),
+                             'fecha_inicio_corte': fechas_corte.fecha_inicio_corte,
+                             'fecha_termino_corte': fechas_corte.fecha_termino_corte,
+
+                             }
+
+
+        return context
 
     def post(self, request, *args, **kwargs):
         form_class = self.get_form_class()

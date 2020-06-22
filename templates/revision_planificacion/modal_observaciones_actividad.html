@@ -63,9 +63,9 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group"  >
-<!--                        <p style="color:#1e7799;">Ingrese Observación</p>-->
+                        <p style="color:#1e7799;">Ingrese Observación</p>
 
-                         <textarea {% if estado_plan ==  7  %} disabled style="display:none;" {% endif %} id="observacion"  placeholder = "Ingrese una observación, máximo 2000 caracteres." name="observacion" class="md-textarea form-control " maxlength="2000" rows="3"  style="width:835px; display:none;" required="required" ></textarea>
+                         <textarea {% if estado_plan ==  7  %} disabled style="display:none;" {% endif %} id="observacion"  placeholder = "Ingrese una observación, máximo 2000 caracteres." name="observacion" class="md-textarea form-control " maxlength="2000" rows="3"  style="width:835px; " required="required" ></textarea>
                     </div>
                 </div>
             </div>
@@ -75,7 +75,7 @@
 
 
     <div class="modal-footer">
-<!--        <button id="btnGuarda" {% if estado_plan ==  7  %} disabled style="display:none;" {% endif %} class="btn btn-primary" type="submit" >Aceptar</button>-->
+        <button id="btnGuarda" {% if estado_plan ==  7  %} disabled style="display:none;" {% endif %} class="btn btn-primary" type="submit" >Aceptar</button>
         <button id="btnCerrar" class="btn btn-default" type="button" data-dismiss="modal">Cerrar</button>
     </div>
 

@@ -41,6 +41,7 @@ Actividades Asociadas al Objetivo
 						<th  title="Fecha de Término de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Fecha Término Actividad</th>
 
 						<th style="display:none;">count NV</th>
+						<th title="Estado Actividad Etapa Seguimiento" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Estado Seguimiento</th>
                         <th title="Total Observaciones Asociadas a la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Obs. Totales</th>
 						<th>Opciones</th>
 
@@ -54,6 +55,28 @@ Actividades Asociadas al Objetivo
 
 						<td style="width:170px;">{{ objetivo.fecha_inicio_actividad }}</td>
 						<td style="width:190px;">{{ objetivo.fecha_termino_actividad }}</td>
+
+							<td   {% if objetivo.id_estado_actividad_id == 1  %}
+														 style="color:red; width:140px; "
+														  {% elif objetivo.id_estado_actividad_id == 2  %}
+														 style="color:#3688fc; width:140px; "
+														  {% elif objetivo.id_estado_actividad_id == 3  %}
+														 style="color:#47a447; width:140px; "
+														  {% elif objetivo.id_estado_actividad_id == 4  %}
+														 style="color:#47a447; width:140px; "
+														   {% elif objetivo.id_estado_actividad_id == 5  %}
+														 style="color:red; width:140px; "
+														   {% elif objetivo.id_estado_actividad_id == 6  %}
+														 style="color:red; width:140px; "
+														   {% elif objetivo.id_estado_actividad_id == 7  %}
+														 style="color:red; width:140px; "
+
+
+
+														 {%endif%} >{% if objetivo.id_estado_actividad == none %} -  {%else%}
+
+
+														{{ objetivo.id_estado_actividad}} {%endif%}</td>
 
 						<td style="display:none;>">{{ objetivo.count_no_vistos }}</td>
 

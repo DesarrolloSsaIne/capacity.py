@@ -429,6 +429,7 @@ def GestionObservacionesActividades(request, id):
     args = {}
 
     args['id_actividad'] = id
+    args['estado_plan'] = controlador_id.estado_flujo_id
     args['object_list']= qs
 
 
@@ -516,6 +517,7 @@ def GestionObservacionesObjetivosVp2(request, id):
     args = {}
 
     args['id_objetivo'] = id
+    args['estado_plan'] = controlador_id.estado_flujo_id
     args['object_list']= qs
 
 

@@ -2,7 +2,7 @@
 				<div class="panel-actions">
 				<a class="fa fa-times" data-dismiss="modal"></a>
 				</div>
-				<h2 class="panel-title">Gestión Actividades</h2>
+				<h2 class="panel-title">Gestión Actividades </h2>
 			</header>
 
 			<form  method="post"  action="" >
@@ -16,18 +16,36 @@
      					 {% endfor %}
     				</div>
 
+		<div class="row show-grid">
+<div class="col-md-6">
 
+<div  id="xfecha_inicio_corte"  style="border-top: 1px solid #bbbbbb; border-bottom: 1px solid #bbbbbb; " > <b>Fecha Inicio Corte : </b>{{ fechas.fecha_inicio_corte }}</div>
+	<input style="display:none;" id="fecha_inicio_corte" type="text" value="{{ fechas.fecha_inicio_corte_str }}">
+	<br>
+</div>
+			<div class="col-md-6">
+
+<div  style="border-top: 1px solid #bbbbbb; border-bottom: 1px solid #bbbbbb; " ><b>Fecha Término Corte : </b>{{ fechas.fecha_termino_corte }}</div>
+<input style="display:none;"  id="fecha_termino_corte" type="text" value="{{ fechas.fecha_termino_corte_str }}">
+				<br>
+			</div>
+		</div>
 
 <div class="row show-grid">
 
-    				<div class="col-md-6">
+<div class="col-md-6">
 
                 <span class="show-grid-block">
 
                     <div class="form-group">
+
+
 					<label >Periodicidad</label>
 
 		      	       {{ form.id_periodicidad}}
+
+
+
 
 				    </div>
 
@@ -86,6 +104,10 @@
 
 				</div>
 
+<br>
+
+
+
 
 	      </span>
                 </div>
@@ -111,7 +133,7 @@
 
 
 </div>
-<br>
+
 <div class="row show-grid">
 
                     <div class="col-md-12">
@@ -174,7 +196,7 @@
 </div>
 
 
-<br>
+
 
 
 
@@ -182,15 +204,18 @@
 </div>
 </div>
 			</div>
+
+												<div class="alert alert-danger" style="display:none;" id="mjeError">
+
+										<p id="textError"></p>
+								</div>
+
 			<div class="modal-footer">
 				<button class="btn btn-primary" type="submit" id="confirmar" >Confirmar</button>
 				<button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
 			</div>
 
-								<div class="alert alert-danger" style="display:none;" id="mjeError">
 
-										<p id="textError"></p>
-								</div>
 			</form>
 <script>
 
@@ -200,39 +225,64 @@ $(function() {
 	$('#id_id_periodicidad option:not(:selected)').attr('disabled',true);
 
 	estado = $('#id_id_estado_actividad').val();
-	if(estado == 1){
+	periodicidad = $('#id_id_periodicidad').val();
+
+
+
+
+	if(estado == 2){ // Con Retraso - Validar
 			$(".hide-justificacion").css("display", "block");
     $(".hide-real_termino").css("display", "none");
     $(".hide-reprogramacion_termino").css("display", "block");
     $(".hide-reprogramacion_inicio").css("display", "block");
 	}
-	if(estado == 3){
 
-		$(".hide-justificacion").css("display", "none");
+
+	if(estado == 3){ // en curso
+	//	$(".hide-justificacion").css("display", "none");
     $(".hide-real_termino").css("display", "none");
-    $(".hide-reprogramacion_termino").css("display", "none");
+  //  $(".hide-reprogramacion_termino").css("display", "none");
     $(".hide-reprogramacion_inicio").css("display", "none");
+    $('#id_justificacion').prop('required',true);
+
 	}
-	if(estado == 4){
-		$(".hide-justificacion").css("display", "none");
+	if(estado == 7){ // Finalizada - Validar
+	$(".hide-justificacion").css("display", "block");
     $(".hide-real_termino").css("display", "block");
     $(".hide-reprogramacion_termino").css("display", "none");
     $(".hide-reprogramacion_inicio").css("display", "none");
 
 	}
-	if(estado == 5){
+	if(estado == 10){ // Eliminada - Validar
 
 		$(".hide-justificacion").css("display", "block");
     $(".hide-real_termino").css("display", "none");
     $(".hide-reprogramacion_termino").css("display", "none");
     $(".hide-reprogramacion_inicio").css("display", "none");
 	}
-	if(estado == 2){
 
-	$(".hide-justificacion").css("display", "block");
+	if(estado == 5){ // Sin Movimiento
+
+		periodicidad = $('#id_id_periodicidad').val();
+
+	if (periodicidad != 9  && periodicidad != 10 ){
+
+  	$(".hide-justificacion").css("display", "block");
+    $(".hide-real_termino").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "block");
+    $(".hide-reprogramacion_inicio").css("display", "block");
+
+
+	}else{
+
+	  	$(".hide-justificacion").css("display", "block");
     $(".hide-real_termino").css("display", "none");
     $(".hide-reprogramacion_termino").css("display", "none");
     $(".hide-reprogramacion_inicio").css("display", "none");
+
+
+	}
+
 
 	}
 
@@ -261,7 +311,12 @@ if(estado == 0 || estado == ''){
 $( "#id_id_estado_actividad" ).change(function() {
 
   estado = $( this ).val();
-  if (estado == 1) //habilita con restraso
+
+  if (estado==2 || estado==3 || estado==4 || estado==5 || estado==7  || estado==10){
+  $("#mjeError").css("display","none");
+  }
+
+  if (estado == 2) //habilita con restraso - Validar
   {
   	$(".hide-justificacion").css("display", "block");
     $(".hide-real_termino").css("display", "none");
@@ -269,28 +324,29 @@ $( "#id_id_estado_actividad" ).change(function() {
     $(".hide-reprogramacion_inicio").css("display", "block");
 
     $('#fecha_real_termino').removeAttr('required').val('');
-    $('#fecha_reprogramacion_inicio').prop('required',true);
-    $('#fecha_reprogramacion_termino').prop('required',true);
+    $('#fecha_reprogramacion_inicio').prop('required',false);
+    $('#fecha_reprogramacion_termino').prop('required',false);
     $('#id_justificacion').prop('required',true);
 
 
        }
        if (estado == 3) //habilita en curso
   {
-  	$(".hide-justificacion").css("display", "none");
+  	$(".hide-justificacion").css("display", "block");
     $(".hide-real_termino").css("display", "none");
-    $(".hide-reprogramacion_termino").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "block");
     $(".hide-reprogramacion_inicio").css("display", "none");
 
     $('#fecha_real_termino').removeAttr('required').val('');
     $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
     $('#fecha_reprogramacion_termino').removeAttr('required').val('');
-    $('#id_justificacion').removeAttr('required').val('');
+    $('#id_justificacion').prop('required',true);
+   // $('#id_justificacion').removeAttr('required').val('');
 
        }
-   if (estado == 4) //habilita finalizada
+   if (estado == 7) //habilita finalizada - Validar
   {
-  	$(".hide-justificacion").css("display", "none");
+  	$(".hide-justificacion").css("display", "block");
     $(".hide-real_termino").css("display", "block");
     $(".hide-reprogramacion_termino").css("display", "none");
     $(".hide-reprogramacion_inicio").css("display", "none");
@@ -301,7 +357,7 @@ $( "#id_id_estado_actividad" ).change(function() {
     $('#id_justificacion').removeAttr('required').val('');
        }
 
-        if (estado == 5) //habilita eliminada
+        if (estado == 10) //habilita eliminada - validar
   {
   	$(".hide-justificacion").css("display", "block");
     $(".hide-real_termino").css("display", "none");
@@ -315,9 +371,29 @@ $( "#id_id_estado_actividad" ).change(function() {
     $('#id_justificacion').prop('required',true);
        }
 
-        if (estado == 2) //habilita sin movimiento
-  {
+
+
+
+        if (estado == 5){ //habilita sin movimiento
+		periodicidad = $('#id_id_periodicidad').val();
+
+	if (periodicidad != 9  && periodicidad != 10 ){
+
   	$(".hide-justificacion").css("display", "block");
+    $(".hide-real_termino").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "block");
+    $(".hide-reprogramacion_inicio").css("display", "block");
+
+    $('#fecha_real_termino').removeAttr('required').val('');
+    $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
+    $('#fecha_reprogramacion_termino').removeAttr('required').val('');
+    $('#id_justificacion').prop('required',true).val('');
+
+
+
+	}else{
+
+	  	$(".hide-justificacion").css("display", "block");
     $(".hide-real_termino").css("display", "none");
     $(".hide-reprogramacion_termino").css("display", "none");
     $(".hide-reprogramacion_inicio").css("display", "none");
@@ -326,6 +402,11 @@ $( "#id_id_estado_actividad" ).change(function() {
     $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
     $('#fecha_reprogramacion_termino').removeAttr('required').val('');
     $('#id_justificacion').prop('required',true).val('');
+
+
+	}
+
+
        }
 
 
@@ -335,6 +416,132 @@ $("#confirmar").click(function(){
 
 var horas_actividad;
 var horas_disponibles;
+
+
+//////////////VALIDACIONES SPRINT 13 JR /////////////////
+
+var fecha_inicio_corte_str = $('#fecha_inicio_corte').val();
+var fecha_termino_corte_str = $('#fecha_termino_corte').val();
+var fecha_inicio_corte = moment(fecha_inicio_corte_str).format('YYYY-MM-DD');
+var fecha_termino_corte = moment(fecha_termino_corte_str).format('YYYY-MM-DD');
+
+
+  estado = $('#id_id_estado_actividad').val();
+  periodicidad = $('#id_id_periodicidad').val();
+
+	 if (estado == 7){ // Finalizada - Validar
+
+		var fecha_real_termino = $('#fecha_real_termino').val();
+
+			if (moment(fecha_real_termino).isAfter(fecha_termino_corte)) {
+				$("#mjeError").css("display","block");
+				$("#textError").text("Error : La fecha real de término no puede ser superior a la fecha de término de corte.");
+				return false
+
+			}
+
+	 }
+
+
+	  if (estado == 3){ // En Curso
+
+	  var fecha_reprogramacion_termino= $('#fecha_reprogramacion_termino').val()
+
+	  	  if (fecha_reprogramacion_termino != ""){
+
+	  	  	 if (moment(fecha_reprogramacion_termino).isSameOrBefore(fecha_termino_corte)) {
+
+	  	  		$("#mjeError").css("display","block");
+				$("#textError").text("Error : La fecha de témino de reprogramación debe ser mayor a la fecha de termino de corte.");
+				return false
+			}
+
+	  	  }
+
+
+	  }
+
+
+	  if (estado == 2){ // Con retraso - validar
+		var fecha_reprogramacion_inicio= $('#fecha_reprogramacion_inicio').val()
+ 		var fecha_reprogramacion_termino= $('#fecha_reprogramacion_termino').val()
+
+
+ 		 if (fecha_reprogramacion_inicio != ""){
+
+ 		  if (moment(fecha_reprogramacion_inicio).isSameOrBefore(fecha_termino_corte)) {
+ 		  	  	$("#mjeError").css("display","block");
+				$("#textError").text("Error : El campo Reprogramacion Fecha Inicio debe ser mayor a la fecha de término de corte.");
+				return false
+ 		  }
+
+ 		  if (moment(fecha_reprogramacion_termino).isBefore(fecha_reprogramacion_inicio)) {
+ 		  	  	$("#mjeError").css("display","block");
+				$("#textError").text("Error : La fecha de reprogramación inicio no debe ser superior a la de término.");
+				return false
+ 		  }
+
+ 	     }
+
+ 		  if (fecha_reprogramacion_termino != ""){
+
+ 		  if (moment(fecha_reprogramacion_termino).isSameOrBefore(fecha_termino_corte)) {
+ 		  	  	$("#mjeError").css("display","block");
+				$("#textError").text("Error : El campo Reprogramacion Fecha Término debe ser mayor a la fecha de término de corte.");
+				return false
+ 			  }
+
+ 		  }
+
+
+	  }
+
+
+	   if (estado == 5){ //Sin movimiento
+
+	   var fecha_reprogramacion_inicio= $('#fecha_reprogramacion_inicio').val()
+ 		var fecha_reprogramacion_termino= $('#fecha_reprogramacion_termino').val()
+
+		if (periodicidad != 9  && periodicidad != 10 ){
+
+		 if (fecha_reprogramacion_inicio != ""){
+
+			  if (moment(fecha_reprogramacion_inicio).isSameOrBefore(fecha_termino_corte)) {
+					$("#mjeError").css("display","block");
+					$("#textError").text("Error : El campo Reprogramacion Fecha Inicio debe ser mayor a la fecha de término de corte.");
+					return false
+			  }
+
+			  if (moment(fecha_reprogramacion_termino).isBefore(fecha_reprogramacion_inicio)) {
+ 		  	  	$("#mjeError").css("display","block");
+				$("#textError").text("Error : La fecha de reprogramación inicio no debe ser superior a la de término.");
+				return false
+ 		 	  }
+
+		 }
+
+		  if (fecha_reprogramacion_termino != ""){
+
+ 		  if (moment(fecha_reprogramacion_termino).isSameOrBefore(fecha_termino_corte)) {
+ 		  	  	$("#mjeError").css("display","block");
+				$("#textError").text("Error : El campo Reprogramacion Fecha Término debe ser mayor a la fecha de término de corte.");
+				return false
+ 			  }
+
+ 		  }
+
+
+ 		}
+
+
+
+
+
+	   }
+
+
+//////////////VALIDACIONES SPRINT 13 JR /////////////////
+
 
 
 

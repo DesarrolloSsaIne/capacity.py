@@ -3,12 +3,14 @@ from apps.actividades.models import Ges_Actividad
 from apps.controlador.models import Ges_Controlador
 from apps.estado_actividad.models import Glo_EstadoActividad
 
+
 class GestionActividadesUpdateForm(forms.ModelForm):
 
     def __init__(self,  *args, **kwargs):
         self.request = kwargs.pop('request', None)
         super(GestionActividadesUpdateForm, self).__init__(*args, **kwargs)
-        self.fields['id_estado_actividad'].queryset = Glo_EstadoActividad.objects.filter(id__in=[1,2,3,4, 5])
+        self.fields['id_estado_actividad'].queryset = Glo_EstadoActividad.objects.filter(id__in=[3,4,5,2, 7,10])
+
         # asi vuelves tus campos no requeridos
         for key in self.fields:
             self.fields[key].required = False
@@ -69,6 +71,8 @@ class GestionActividadesUpdateForm(forms.ModelForm):
             'total_horas': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
             'id_estado_actividad': forms.Select(attrs={'class': 'form-control'}),
             'justificacion': forms.Textarea(attrs={'class': 'form-control', 'style': 'height:80px;'}),
+
+
 
 
         }
