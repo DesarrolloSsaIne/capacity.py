@@ -311,13 +311,21 @@ if(estado == 0 || estado == ''){
 $( "#id_id_estado_actividad" ).change(function() {
 
   estado = $( this ).val();
+  fecha_inicio = $("#fecha_inicio_actividad").val();
+  fecha_termino = $("#fecha_termino_actividad").val();
+  var fecha_inicio_corte_str = $('#fecha_inicio_corte').val();
+  var fecha_termino_corte_str = $('#fecha_termino_corte').val();
+  var fecha_inicio_corte = moment(fecha_inicio_corte_str).format('YYYY-MM-DD');
+  var fecha_termino_corte = moment(fecha_termino_corte_str).format('YYYY-MM-DD');
 
   if (estado==2 || estado==3 || estado==4 || estado==5 || estado==7  || estado==10){
   $("#mjeError").css("display","none");
   }
 
   if (estado == 2) //habilita con restraso - Validar
-  {
+ {
+
+
   	$(".hide-justificacion").css("display", "block");
     $(".hide-real_termino").css("display", "none");
     $(".hide-reprogramacion_termino").css("display", "block");
@@ -330,6 +338,8 @@ $( "#id_id_estado_actividad" ).change(function() {
 
 
        }
+
+
        if (estado == 3) //habilita en curso
   {
   	$(".hide-justificacion").css("display", "block");
