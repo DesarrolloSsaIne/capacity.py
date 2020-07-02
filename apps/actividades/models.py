@@ -36,3 +36,7 @@ class Ges_Actividad (models.Model):
     fecha_reprogramacion_termino = models.DateField(blank=True, null=True)
     fecha_reprogramacion_inicio = models.DateField(blank=True, null=True)
     justificacion = models.CharField(max_length=2000, blank=True, null=True)
+
+    flag_reporta= models.IntegerField(null=True, blank=True)
+
+

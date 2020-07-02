@@ -211,7 +211,7 @@
 								</div>
 
 			<div class="modal-footer">
-				<button class="btn btn-primary" type="submit" id="confirmar" >Confirmar</button>
+				<button class="btn btn-primary"   type="submit" id="confirmar" >Confirmar</button>
 				<button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
 			</div>
 
@@ -228,6 +228,16 @@ $(function() {
 	periodicidad = $('#id_id_periodicidad').val();
 
 
+	if(estado == 4){ // No Iniciada
+
+	$(".hide-justificacion").css("display", "none");
+    $(".hide-real_termino").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "none");
+    $(".hide-reprogramacion_inicio").css("display", "none");
+    $("#confirmar").css("display", "none");
+
+	}
+
 
 
 	if(estado == 2){ // Con Retraso - Validar
@@ -235,6 +245,8 @@ $(function() {
     $(".hide-real_termino").css("display", "none");
     $(".hide-reprogramacion_termino").css("display", "block");
     $(".hide-reprogramacion_inicio").css("display", "block");
+     $("#confirmar").css("display", "initial");
+
 	}
 
 
@@ -244,6 +256,7 @@ $(function() {
   //  $(".hide-reprogramacion_termino").css("display", "none");
     $(".hide-reprogramacion_inicio").css("display", "none");
     $('#id_justificacion').prop('required',true);
+         $("#confirmar").css("display", "initial");
 
 	}
 	if(estado == 7){ // Finalizada - Validar
@@ -251,6 +264,7 @@ $(function() {
     $(".hide-real_termino").css("display", "block");
     $(".hide-reprogramacion_termino").css("display", "none");
     $(".hide-reprogramacion_inicio").css("display", "none");
+        $("#confirmar").css("display", "initial");
 
 	}
 	if(estado == 10){ // Eliminada - Validar
@@ -259,6 +273,7 @@ $(function() {
     $(".hide-real_termino").css("display", "none");
     $(".hide-reprogramacion_termino").css("display", "none");
     $(".hide-reprogramacion_inicio").css("display", "none");
+     $("#confirmar").css("display", "initial");
 	}
 
 	if(estado == 5){ // Sin Movimiento
@@ -271,7 +286,7 @@ $(function() {
     $(".hide-real_termino").css("display", "none");
     $(".hide-reprogramacion_termino").css("display", "block");
     $(".hide-reprogramacion_inicio").css("display", "block");
-
+     $("#confirmar").css("display", "initial");
 
 	}else{
 
@@ -279,6 +294,7 @@ $(function() {
     $(".hide-real_termino").css("display", "none");
     $(".hide-reprogramacion_termino").css("display", "none");
     $(".hide-reprogramacion_inicio").css("display", "none");
+     $("#confirmar").css("display", "initial");
 
 
 	}
@@ -292,6 +308,7 @@ if(estado == 0 || estado == ''){
     $(".hide-real_termino").css("display", "none");
     $(".hide-reprogramacion_termino").css("display", "none");
     $(".hide-reprogramacion_inicio").css("display", "none");
+     $("#confirmar").css("display", "none");
 
 	$('#fecha_real_termino').removeAttr('required');
     $('#fecha_reprogramacion_inicio').removeAttr('required');
@@ -322,6 +339,16 @@ $( "#id_id_estado_actividad" ).change(function() {
   $("#mjeError").css("display","none");
   }
 
+         if (estado == 4) // No Iniciada
+  {
+  	$(".hide-justificacion").css("display", "none");
+    $(".hide-real_termino").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "none");
+    $(".hide-reprogramacion_inicio").css("display", "none");
+      $("#confirmar").css("display", "none");
+    }
+
+
   if (estado == 2) //habilita con restraso - Validar
  {
 
@@ -330,6 +357,7 @@ $( "#id_id_estado_actividad" ).change(function() {
     $(".hide-real_termino").css("display", "none");
     $(".hide-reprogramacion_termino").css("display", "block");
     $(".hide-reprogramacion_inicio").css("display", "block");
+        $("#confirmar").css("display", "initial");
 
     $('#fecha_real_termino').removeAttr('required').val('');
     $('#fecha_reprogramacion_inicio').prop('required',false);
@@ -346,6 +374,7 @@ $( "#id_id_estado_actividad" ).change(function() {
     $(".hide-real_termino").css("display", "none");
     $(".hide-reprogramacion_termino").css("display", "block");
     $(".hide-reprogramacion_inicio").css("display", "none");
+     $("#confirmar").css("display", "initial");
 
     $('#fecha_real_termino').removeAttr('required').val('');
     $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
@@ -360,6 +389,7 @@ $( "#id_id_estado_actividad" ).change(function() {
     $(".hide-real_termino").css("display", "block");
     $(".hide-reprogramacion_termino").css("display", "none");
     $(".hide-reprogramacion_inicio").css("display", "none");
+     $("#confirmar").css("display", "initial");
 
      $('#fecha_real_termino').prop('required',true);
     $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
@@ -373,6 +403,7 @@ $( "#id_id_estado_actividad" ).change(function() {
     $(".hide-real_termino").css("display", "none");
     $(".hide-reprogramacion_termino").css("display", "none");
     $(".hide-reprogramacion_inicio").css("display", "none");
+    $("#confirmar").css("display", "initial");
 
 
      $('#fecha_real_termino').removeAttr('required').val('');
@@ -393,6 +424,7 @@ $( "#id_id_estado_actividad" ).change(function() {
     $(".hide-real_termino").css("display", "none");
     $(".hide-reprogramacion_termino").css("display", "block");
     $(".hide-reprogramacion_inicio").css("display", "block");
+     $("#confirmar").css("display", "initial");
 
     $('#fecha_real_termino').removeAttr('required').val('');
     $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
@@ -407,6 +439,7 @@ $( "#id_id_estado_actividad" ).change(function() {
     $(".hide-real_termino").css("display", "none");
     $(".hide-reprogramacion_termino").css("display", "none");
     $(".hide-reprogramacion_inicio").css("display", "none");
+     $("#confirmar").css("display", "initial");
 
     $('#fecha_real_termino').removeAttr('required').val('');
     $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
@@ -438,6 +471,9 @@ var fecha_termino_corte = moment(fecha_termino_corte_str).format('YYYY-MM-DD');
 
   estado = $('#id_id_estado_actividad').val();
   periodicidad = $('#id_id_periodicidad').val();
+   var tdate = new Date();
+   var anio_actual = tdate.getFullYear();
+
 
 	 if (estado == 7){ // Finalizada - Validar
 
@@ -476,32 +512,68 @@ var fecha_termino_corte = moment(fecha_termino_corte_str).format('YYYY-MM-DD');
 		var fecha_reprogramacion_inicio= $('#fecha_reprogramacion_inicio').val()
  		var fecha_reprogramacion_termino= $('#fecha_reprogramacion_termino').val()
 
+ 		anio_fecha_inicio= moment(fecha_reprogramacion_inicio,"YYYY-MM-DD").year()
+ 		anio_fecha_termino= moment(fecha_reprogramacion_termino,"YYYY-MM-DD").year()
+
+
+
+ 		if (fecha_reprogramacion_inicio == "" && fecha_reprogramacion_termino == ""){
+
+ 		$("#mjeError").css("display","block");
+				$("#textError").text("Error : Debe ingresar al menos 1 fecha de reprogramación.");
+				return false
+
+ 		}
+
+ 		if (fecha_reprogramacion_inicio == "" && fecha_reprogramacion_termino == ""){
+
+ 		$("#mjeError").css("display","block");
+				$("#textError").text("Error : Debe ingresar al menos 1 fecha de reprogramación.");
+				return false
+
+ 		}
 
  		 if (fecha_reprogramacion_inicio != ""){
 
- 		  if (moment(fecha_reprogramacion_inicio).isSameOrBefore(fecha_termino_corte)) {
- 		  	  	$("#mjeError").css("display","block");
-				$("#textError").text("Error : El campo Reprogramacion Fecha Inicio debe ser mayor a la fecha de término de corte.");
-				return false
- 		  }
+			 if (anio_fecha_inicio != anio_actual){
 
- 		  if (moment(fecha_reprogramacion_termino).isBefore(fecha_reprogramacion_inicio)) {
- 		  	  	$("#mjeError").css("display","block");
-				$("#textError").text("Error : La fecha de reprogramación inicio no debe ser superior a la de término.");
-				return false
- 		  }
+					$("#mjeError").css("display","block");
+					$("#textError").text("Error : La fecha debe estar contenida dentro del año en curso.");
+					return false
+
+			 }
+
+			  if (moment(fecha_reprogramacion_inicio).isSameOrBefore(fecha_termino_corte)) {
+					$("#mjeError").css("display","block");
+					$("#textError").text("Error : El campo Reprogramacion Fecha Inicio debe ser mayor a la fecha de término de corte.");
+					return false
+			  }
+
+			  if (moment(fecha_reprogramacion_termino).isBefore(fecha_reprogramacion_inicio)) {
+					$("#mjeError").css("display","block");
+					$("#textError").text("Error : La fecha de reprogramación inicio no debe ser superior a la de término.");
+					return false
+			  }
 
  	     }
 
  		  if (fecha_reprogramacion_termino != ""){
 
- 		  if (moment(fecha_reprogramacion_termino).isSameOrBefore(fecha_termino_corte)) {
- 		  	  	$("#mjeError").css("display","block");
-				$("#textError").text("Error : El campo Reprogramacion Fecha Término debe ser mayor a la fecha de término de corte.");
-				return false
- 			  }
+			  if (anio_fecha_termino != anio_actual){
 
- 		  }
+					$("#mjeError").css("display","block");
+					$("#textError").text("Error : La fecha debe estar contenida dentro del año en curso.");
+					return false
+
+			 }
+
+			  if (moment(fecha_reprogramacion_termino).isSameOrBefore(fecha_termino_corte)) {
+					$("#mjeError").css("display","block");
+					$("#textError").text("Error : El campo Reprogramacion Fecha Término debe ser mayor a la fecha de término de corte.");
+					return false
+				  }
+
+			  }
 
 
 	  }

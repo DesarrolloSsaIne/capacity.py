@@ -21,14 +21,17 @@ if __name__=='__main__':
     config = imgkit.config(wkhtmltoimage=path_wkthmltoimage)
     # imgkit.from_file('mihtml.html', 'table.jpg',config=config)
 
-    html_str='<img src="1.png" width="150" height="150"><div>INE</div>'
+    now_estampa = datetime.now()
+    now_estampa = now_estampa.strftime("%Y-%m-%dT%H:%M:%S")
+
+    html_str='<img src="1.png" width="150" height="150"><div>'+now_estampa+'</div>'
     Html_file = open("mihtml.html", "w")
     Html_file.write(html_str)
     Html_file.close()
     options = {
 
-        'crop-h': '400',
-        'crop-w': '170',
+        'crop-h': '180',
+        'crop-w': '160',
         'quiet': '',
 
     }
@@ -52,7 +55,7 @@ if __name__=='__main__':
 
     otp='759228'
 
-    layout='<AgileSignerConfig><Application id=\"THIS-CONFIG\"><pdfPassword/><Signature><Visible active=\"true\" layer2=\"true\" label=\"true\" pos=\"1\"><llx>30</llx><lly>110</lly><urx>400</urx><ury>220</ury><page>LAST</page><image>BASE64</image><BASE64VALUE>'+str(jpg_file64)+'</BASE64VALUE></Visible></Signature></Application></AgileSignerConfig>'
+    layout='<AgileSignerConfig><Application id=\"THIS-CONFIG\"><pdfPassword/><Signature><Visible active=\"true\" layer2=\"false\" label=\"true\" pos=\"1\"><llx>400</llx><lly>150</lly><urx>500</urx><ury>250</ury><page>LAST</page><image>BASE64</image><BASE64VALUE>'+str(jpg_file64)+'</BASE64VALUE></Visible></Signature></Application></AgileSignerConfig>'
 
 
     tokenDesatendido = jwt.encode({'entity': 'Instituto Nacional de Estadísticas',

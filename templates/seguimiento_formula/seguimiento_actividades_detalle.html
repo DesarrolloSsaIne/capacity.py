@@ -84,17 +84,22 @@ Actividades Asociadas al Objetivo
 
 
 
-                                                    <td  style="width:80px; text-align:center;"  >
+                                                    <td  style="width:80px; text-align:center;  "   >
 
-														<button {%if objetivo.id_estado_actividad_id == 6 or objetivo.id_estado_actividad_id == 9%} disabled="disabled" {%endif%} type="button" title="Reportar Avance de la Actividad" title="Fecha de Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" class="update btn btn-sm btn-primary" data-id="{% url 'RegistroActividadEditarSeguimiento' objetivo.id %}">
-														<span class="fa fa-check-square-o"></span></button>
+
+														<button  {%if objetivo.id_estado_actividad_id == 6 or objetivo.id_estado_actividad_id == 9%} disabled="disabled" {%endif%} type="button" id="notification_ok" title="Reportar Avance de la Actividad" title="Fecha de Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" class="update btn btn-sm btn-primary" data-id="{% url 'RegistroActividadEditarSeguimiento' objetivo.id %}">
+
+                                                            <span class="fa fa-check-square-o" ></span>
+                                                        {%if objetivo.flag_reporta == 1%}<span class="badge" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" title="Actividad Actualizada!"  >&#x2713;</span>{%endif%}
+
+                                                        </button>
 
 													</td>
 <!--													<td style="width:60px; align:center;" >-->
 
 <!--														<a  type="button" title="Observaciones Asociadas a la Actividad" id="notification" class="objetivos btn btn-sm btn-primary"  href="">-->
 <!--														<span class="fa fa-comments" ></span>-->
-<!--							 							{% if objetivo.count_no_vistos != 0 and objetivo.count_no_vistos != none %} <span class="badge" title="Nuevas Observaciones" >{{ objetivo.count_no_vistos }}</span> {% endif %}-->
+<!--							 							<span class="badge" title="Nuevas Observaciones" >ok</span>-->
 <!--														</a>-->
 
 <!--                                                    </td>-->

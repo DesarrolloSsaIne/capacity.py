@@ -3,16 +3,16 @@ import io
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 import PyPDF2
-
 import PyPDF2 as pypdf
 
 if __name__=='__main__':
 
-    nombre_pdf_original = "08.05.2020 Rex AUTORIZA PAGO SANDRA BRAVO (transacción).pdf" # Cambia aquí el nombre de tu documento original
+    nombre_pdf_original = "Tutorial Publicar Sitio Python.pdf" # Cambia aquí el nombre de tu documento original
     nombre_pdf_salida = "doc.pdf" # Cambia aquí el nombre del PDF de salida
 
 
     ####################MENSAJE BLANCO PARA TOAS LAS PAGINAS (EXCEPTO LA ÚLTIMA)####################################
+
     mensaje_blanco = ""
     packet_blanco = io.BytesIO()
 

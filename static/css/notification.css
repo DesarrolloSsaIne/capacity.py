@@ -17,3 +17,26 @@
   background: red;
   color: white;
 }
+
+
+#notification_ok {
+  position: relative;
+  display: inline-block;
+  border-radius: 1px;
+
+}
+
+#notification_ok:hover {
+
+}
+
+#notification_ok .badge {
+  position: absolute;
+  top: -8px;
+  right: -15px;
+  padding: 5px 10px;
+  border-radius: 50%;
+  background: #2ea32e;
+  color: white;
+
+}
