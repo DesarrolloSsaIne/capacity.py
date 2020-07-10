@@ -35,8 +35,10 @@
   top: -8px;
   right: -15px;
   padding: 5px 10px;
-  border-radius: 50%;
+  border-radius: 60%;
   background: #2ea32e;
   color: white;
+  font-size:10px;
+
 
 }

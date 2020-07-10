@@ -28,6 +28,7 @@ urlpatterns = [
     path(r'planificacion_admin/', include('apps.planificacion_admin.urls')),
     path(r'revision_planificacion/', include('apps.revision_planificacion.urls')),
     path(r'seguimiento_formula/', include('apps.seguimiento_formula.urls')),
+    path(r'reportes/', include('apps.reportes.urls')),
 ]
 
 

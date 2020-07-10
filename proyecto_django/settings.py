@@ -98,6 +98,7 @@ INSTALLED_APPS = [
     'django_python3_ldap',
     'sitetree',
 
+
     'apps.eje',
     'apps.registration',
     'apps.periodos',

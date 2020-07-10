@@ -90,7 +90,7 @@ Actividades Asociadas al Objetivo
 														<button  {%if objetivo.id_estado_actividad_id == 6 or objetivo.id_estado_actividad_id == 9%} disabled="disabled" {%endif%} type="button" id="notification_ok" title="Reportar Avance de la Actividad" title="Fecha de Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" class="update btn btn-sm btn-primary" data-id="{% url 'RegistroActividadEditarSeguimiento' objetivo.id %}">
 
                                                             <span class="fa fa-check-square-o" ></span>
-                                                        {%if objetivo.flag_reporta == 1%}<span class="badge" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" title="Actividad Actualizada!"  >&#x2713;</span>{%endif%}
+                                                        {%if objetivo.flag_reporta == 1%}<span class="badge" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" title="Actividad Reportada!"  >&#x2713;</span>{%endif%}
 
                                                         </button>
 

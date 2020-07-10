@@ -268,7 +268,7 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
             if self.request.session['id_orden'] == 4:
                 id_objetivo = Ges_Objetivo_Operativo.objects.get(id=self.request.session['id_objetivo'])
                 form.instance.id_objetivo_operativo = id_objetivo
-
+            form.instance.flag_reporta=1
             form.save()
             request.session['message_class'] = "alert alert-success"
             messages.success(self.request, "Los datos fueron actualizados correctamente!")

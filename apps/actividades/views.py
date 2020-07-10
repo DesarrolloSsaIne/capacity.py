@@ -431,6 +431,8 @@ class ActividadCreate(SuccessMessageMixin, CreateView):
         if dias_habiles_brutos_feriados == total_horas_post: # LO MODIFIQUÉ DE == A > EL 01/05 ME FUE IMPOSIBLE AGREGAR UNA ACTIVIDAD CON ESA CONDICION
             if form.is_valid():
                 #form.instance.total_horas= 1
+                form.instance.id_estado_actividad_id=4
+                form.instance.flag_reporta=0
                 form.instance.estado=1
                 form.instance.id_controlador = usuario_controlador
                 form.instance.id_periodo = periodo_actual
@@ -515,6 +517,8 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
         if dias_habiles_brutos_feriados == total_horas_post:
             if form.is_valid():
                 # form.instance.total_horas= 1
+                # form.instance.id_estado_actividad_id = 4
+                form.instance.flag_reporta=0
                 form.instance.estado = 1
                 form.instance.id_controlador = usuario_controlador
                 form.instance.id_periodo = periodo_actual

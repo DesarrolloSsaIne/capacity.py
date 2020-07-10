@@ -17,6 +17,9 @@ import xlwt
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.contrib import messages
+from django.db.models.functions import TruncMonth
+from django.db.models import Count
+import datetime
 from django.contrib.messages.views import SuccessMessageMixin
 
 # Create your views here.
@@ -37,9 +40,52 @@ class ClubChartView(TemplateView):
         ps3 = Ges_Controlador.objects.filter(id_periodo=3).values(
             'analista_asignado__first_name','analista_asignado__last_name').annotate(
             CantidadPlan=Count('id'))  # Cantidad planes por analista
+
+
+        meses=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+        mesesacum = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+        ValMeses = []
+        ValMesesAcum = []
+
+        ValMesesEjec = []
+        ValMesesAcumEjec = []
+
+
+        mydate = datetime.datetime.now()
+        Mes=mydate.month
+
+
+
+        for i in meses:
+            val = Ges_Actividad.objects.filter(Q(fecha_inicio_actividad__month=i) & Q(id_periodo=3)).count()
+            ValMeses.append(val)
+
+
+        for i in mesesacum:
+
+            if i==0:
+                ValMesesAcum.append(ValMeses[i])
+            else:
+                ValMesesAcum.append(ValMeses[i] + ValMesesAcum[i-1])
+
+
+        for i in meses:
+            val = Ges_Actividad.objects.filter(Q(fecha_inicio_actividad__month=i) & Q(id_periodo=3) & (Q(id_estado_actividad_id=6) | Q(id_estado_actividad_id=7))).count()
+            ValMesesEjec.append(val)
+
+        for i in range(0, Mes):
+            if i==0:
+                ValMesesAcumEjec.append(ValMesesEjec[i])
+            else:
+                ValMesesAcumEjec.append(ValMesesEjec[i] + ValMesesAcumEjec[i-1])
+
         context["qs"] = ps
         context["qs2"] = ps2
         context["qs3"] = ps3
+        context = {"ValMesesAcum":ValMesesAcum, "ValMesesAcumEjec":ValMesesAcumEjec,
+
+                   }
         return context
 
 
