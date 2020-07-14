@@ -35,7 +35,7 @@ var myChart1 = new Chart(ctx1, {
     options: {
    			   title: {
 					display: true,
-					text: 'Gráfico de Avance por Actividad',
+					text: 'Avance por Actividad',
 					position:'top',
 				},
 	           legend: {
@@ -102,7 +102,7 @@ var myChart2 = new Chart(ctx2, {
     options: {
    			 title: {
 					display: true,
-					text: 'Gráfico de Avance por Planes'
+					text: 'Avance por Planes'
 				},
 	           legend: {
            		 display: true,
@@ -167,12 +167,25 @@ var myChart3 = new Chart(ctx3, {
 
     			title: {
 					display: true,
-					text: 'Gráfico Avance por Unidad'
+					text: 'Avance por Unidad'
 				},
 
 	           legend: {
            		 display: false
          		},
+
+         		scales: {
+					yAxes: [{
+
+
+					  ticks: {
+						beginAtZero:true,
+						// max:plugin.settings.maxDataValue,
+						//maxTicksLimit: 5
+						suggestedMin:0,
+					  }
+					}]
+				},
 
       		  plugins: {
 			  datalabels: {
