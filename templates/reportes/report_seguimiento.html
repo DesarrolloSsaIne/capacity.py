@@ -71,6 +71,20 @@ var myLineChart = new Chart(ctx1, {
          		},
 
 
+			 plugins: {
+			  datalabels: {
+				anchor: 'end',
+				align: 'top',
+				formatter: Math.round,
+				color: '#a7a7a7',
+				font: {
+				  size: '10'
+
+				}
+			  }
+			},
+
+
 			   scales: {
 				yAxes: [{
 					ticks: {
@@ -84,32 +98,7 @@ var myLineChart = new Chart(ctx1, {
 
     },
 
-    plugins: [{
-   afterDatasetsDraw: function(chart) {
-      var ctx = chart.ctx;
-      chart.data.datasets.forEach(function(dataset, index) {
-         var datasetMeta = chart.getDatasetMeta(index);
-         if (datasetMeta.hidden) return;
-         datasetMeta.data.forEach(function(point, index) {
-            var value = dataset.data[index],
-                x = point.getCenterPoint().x,
-                y = point.getCenterPoint().y,
-                radius = point._model.radius,
-                fontSize = 10,
-                fontFamily = 'Verdana',
-                fontColor = '#a0a0a0',
-                fontStyle = 'normal';
-            ctx.save();
-            ctx.textBaseline = 'middle';
-            ctx.textAlign = 'center';
-            ctx.font = fontStyle + ' ' + fontSize + 'px' + ' ' + fontFamily;
-            ctx.fillStyle = fontColor;
-            ctx.fillText(value, x, y - radius - fontSize);
-            ctx.restore();
-         });
-      });
-   }
-}]
+
 
 });
 
@@ -229,7 +218,7 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 
 
 							<div style="text-align:right;">
-								 <a  type="button" style="width:30px; height:30px; "  class="create btn btn-sm btn-success" href="{% url 'export_users_csv' %}"  name="button" title="Descargar Tabla en MS Excel" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
+								 <a  type="button" style="width:30px; height:30px; "  class="create btn btn-sm btn-success" href="{% url 'export_xls' %}"  name="button" title="Descargar Tabla en MS Excel" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
 									 <span style="margin-left:-1px; " class="fa fa-file-excel-o"></span></a>
 							</div>
 

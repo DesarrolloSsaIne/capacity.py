@@ -34,7 +34,7 @@ class GestionHorasForm(forms.ModelForm):
             'id_user': forms.Select(attrs={'class': 'form-control','id':'siteID'}),
             'fecha_inicio': DateInput(attrs={'class': 'form-control'}),
             'fecha_termino': DateInput(attrs={'class': 'form-control'}),
-            'notas': forms.Textarea(attrs={'class': 'form-control', 'style':'width:550px;'}),
+            'notas': forms.Textarea(attrs={'class': 'form-control','style':'height:100px;'}),
 
 
         }
@@ -78,7 +78,7 @@ class GestionHorasUpdateForm(forms.ModelForm):
             'id_user': forms.Select(attrs={'class': 'form-control','id':'siteID'}),
            # 'fecha_inicio': forms.DateInput(format='%d-%m-%Y', attrs={'class': 'datepicker form-control'}),
             #'fecha_termino': forms.DateInput(format='%d-%m-%Y', attrs={'class': 'datepicker form-control'}),
-            'notas': forms.Textarea(attrs={'class': 'form-control','style':'width:550px;'}),
+            'notas': forms.Textarea(attrs={'class': 'form-control','style':'height:100px;'}),
 
 
         }

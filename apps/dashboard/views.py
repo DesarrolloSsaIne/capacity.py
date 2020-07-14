@@ -19,6 +19,7 @@ from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.db.models.functions import TruncMonth
 from django.db.models import Count
+
 import datetime
 from django.contrib.messages.views import SuccessMessageMixin
 
@@ -28,64 +29,76 @@ from django.contrib.messages.views import SuccessMessageMixin
 # Dirije al dashboard al momento del login además agrega la variable se sesión grupo #
 
 
-class ClubChartView(TemplateView):
+class InicioDashboard(TemplateView):
     template_name = 'dashboard/dashboard.html'
 
+
     def get_context_data(self, **kwargs):
-        context = super(ClubChartView, self).get_context_data(**kwargs)
+        context = super(InicioDashboard, self).get_context_data(**kwargs)
+        #
+        Grupo = Group.objects.filter(user=self.request.user)
+
+        for MiGrupo in Grupo:
+            result = str(MiGrupo)
+            self.request.session['grupo'] = result
+
+
         # ps = Ges_Actividad.objects.filter(id_periodo=3).values('id_controlador__id_jefatura__id_user__first_name','id_controlador__id_jefatura__id_user__last_name').annotate(CantidadAct=Count('id')) # Cantidad act. por jefatura
 
-        ps = Ges_Controlador.objects.filter(id_periodo=3).values('estado_flujo__descripcion_estado').annotate(CantidadEst=Count('id')) # estado por jefatura
-        ps2 = Ges_Actividad.objects.filter(id_periodo=3).values('id_controlador__id_jefatura__id_nivel__descripcion_nivel').annotate(CantidadAct=Count('id'))# Cantidad act. por areas
-        ps3 = Ges_Controlador.objects.filter(id_periodo=3).values(
-            'analista_asignado__first_name','analista_asignado__last_name').annotate(
+        ps = Ges_Actividad.objects.filter(id_periodo=3).values('id_estado_actividad__descripcion_estado').annotate(CantidadEst=Count('id')).order_by('id_estado_actividad__orden') # estado por jefatura
+        ps2 = Ges_Controlador.objects.filter(id_periodo=3).values('estado_flujo__descripcion_estado').annotate(CantidadAct=Count('id'))# Cantidad act. por areas
+        ps3 = Ges_Actividad.objects.filter(id_periodo=3).values(
+            'id_controlador__id_jefatura__id_nivel__descripcion_nivel').annotate(
             CantidadPlan=Count('id'))  # Cantidad planes por analista
+        ps4 = Ges_Actividad.objects.filter(Q(id_periodo=3) & (Q(id_estado_actividad=9) | Q(id_estado_actividad=7)) ).values(
+            'id_controlador__id_jefatura__id_nivel__descripcion_nivel').annotate(
+            CantidadPlanFin=Count('id'))  # Cantidad planes por analista
 
-
-        meses=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-        mesesacum = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-
-        ValMeses = []
-        ValMesesAcum = []
-
-        ValMesesEjec = []
-        ValMesesAcumEjec = []
-
-
-        mydate = datetime.datetime.now()
-        Mes=mydate.month
-
-
-
-        for i in meses:
-            val = Ges_Actividad.objects.filter(Q(fecha_inicio_actividad__month=i) & Q(id_periodo=3)).count()
-            ValMeses.append(val)
-
-
-        for i in mesesacum:
-
-            if i==0:
-                ValMesesAcum.append(ValMeses[i])
-            else:
-                ValMesesAcum.append(ValMeses[i] + ValMesesAcum[i-1])
-
-
-        for i in meses:
-            val = Ges_Actividad.objects.filter(Q(fecha_inicio_actividad__month=i) & Q(id_periodo=3) & (Q(id_estado_actividad_id=6) | Q(id_estado_actividad_id=7))).count()
-            ValMesesEjec.append(val)
-
-        for i in range(0, Mes):
-            if i==0:
-                ValMesesAcumEjec.append(ValMesesEjec[i])
-            else:
-                ValMesesAcumEjec.append(ValMesesEjec[i] + ValMesesAcumEjec[i-1])
+        # meses=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+        # mesesacum = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+        #
+        # ValMeses = []
+        # ValMesesAcum = []
+        #
+        # ValMesesEjec = []
+        # ValMesesAcumEjec = []
+        #
+        #
+        # mydate = datetime.datetime.now()
+        # Mes=mydate.month
+        #
+        #
+        #
+        # for i in meses:
+        #     val = Ges_Actividad.objects.filter(Q(fecha_inicio_actividad__month=i) & Q(id_periodo=3)).count()
+        #     ValMeses.append(val)
+        #
+        #
+        # for i in mesesacum:
+        #
+        #     if i==0:
+        #         ValMesesAcum.append(ValMeses[i])
+        #     else:
+        #         ValMesesAcum.append(ValMeses[i] + ValMesesAcum[i-1])
+        #
+        #
+        # for i in meses:
+        #     val = Ges_Actividad.objects.filter(Q(fecha_inicio_actividad__month=i) & Q(id_periodo=3) & (Q(id_estado_actividad_id=6) | Q(id_estado_actividad_id=7))).count()
+        #     ValMesesEjec.append(val)
+        #
+        # for i in range(0, Mes):
+        #     if i==0:
+        #         ValMesesAcumEjec.append(ValMesesEjec[i])
+        #     else:
+        #         ValMesesAcumEjec.append(ValMesesEjec[i] + ValMesesAcumEjec[i-1])
 
         context["qs"] = ps
         context["qs2"] = ps2
         context["qs3"] = ps3
-        context = {"ValMesesAcum":ValMesesAcum, "ValMesesAcumEjec":ValMesesAcumEjec,
-
-                   }
+        context["qs4"] = ps4
+        # context = {"ValMesesAcum":ValMesesAcum, "ValMesesAcumEjec":ValMesesAcumEjec,
+        #
+        #            }
         return context
 
 
@@ -185,13 +198,13 @@ def modificar_estado(request, id):
     # })
 
 
-def ir_dashboard(request):
-    Grupo = Group.objects.filter(user=request.user)
-
-    for MiGrupo in Grupo:
-        result = str(MiGrupo)
-        request.session['grupo']= result
-
-    return render(request, 'dashboard/dashboard2.html')
+# def ir_dashboard(request):
+#     Grupo = Group.objects.filter(user=request.user)
+#
+#     for MiGrupo in Grupo:
+#         result = str(MiGrupo)
+#         request.session['grupo']= result
+#
+#     return render(request, 'dashboard/dashboard.html')
 
 

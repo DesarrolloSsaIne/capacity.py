@@ -2,7 +2,7 @@
 {% load sitetree %}
 
 {% block title %}
-Dashboard
+Inicio
 {% endblock %}
 
 {% block extrajs %}
@@ -10,119 +10,213 @@ Dashboard
 
 		<script type="text/javascript">
 
-
-
 $( document ).ready(function() {
 /////////////////////////////////////////////////1111////////////////////////////////////////////////////////////////////
 
 var ctx1 = $('#chart_uno');
 
-var myLineChart = new Chart(ctx1, {
-    type: 'line',
+var nElementos= 0;
+{% for item in qs %}
+var nElementos= nElementos + 1;
+{% endfor %}
+
+var myChart1 = new Chart(ctx1, {
+    type: 'bar',
     data: {
-        labels: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+        labels: [{% for item in qs %}'{{ item.id_estado_actividad__descripcion_estado }}', {% endfor %}],
         datasets: [{
-         label: "N° de Actividades Planificadas (Acumuladas)",
-
-         data:  {{ ValMesesAcum }},
-
-         borderColor: ['rgba(54, 162, 235, 1)'],
-		 backgroundColor: ['rgba(240, 240, 240, 0)'],
-		 pointBackgroundColor: "rgba(54, 162, 235, 1)",
-		 pointBorderColor: "rgba(54, 162, 235, 1)",
-		 pointHoverBackgroundColor:"rgba(52,108,176,1)",
-		 pointHoverBorderColor: "rgba(52,108,176,1)",
-   		 pointHoverBorderWidth: 2,
-   		 pointHoverRadius:6,
-		 borderWidth: 2,
-		 pointBorderWidth:1,
-		 pointRadius: 4
-		},{
-
-		 label: "N° de Actividades Ejecutadas (Acumuladas)",
-
-         data: {{ ValMesesAcumEjec }},
-
-         borderColor: ['rgba(255, 104, 136, 1)'],
-		 backgroundColor: ['rgba(240, 240, 240, 0)'],
-		 pointBackgroundColor: "rgba(255,104,136,1)",
-		 pointBorderColor: "rgba(255,104,136,1)",
-		 pointHoverBackgroundColor:"rgba(255,45,87,1)",
-		 pointHoverBorderColor: "rgba(255,45,87,1)",
-   		 pointHoverBorderWidth: 2,
-   		 pointHoverRadius:6,
-		 borderWidth: 2,
-		 pointBorderWidth:1,
-		 pointRadius: 4
-
-
-
+      	    showLine: false,
+            label: 'Nro. Actividades',
+            data: [{% for item in qs %}{{ item.CantidadEst }}, {% endfor %}],
+			backgroundColor:poolColors(nElementos),
+            borderWidth: 0,
         }]
-     },
+    },
     options: {
-			 title: {
+   			   title: {
 					display: true,
-					text: 'Curva de ejecución actividades programadas (acumulada)'
+					text: 'Gráfico de Avance por Actividad',
+					position:'top',
+				},
+	           legend: {
+           		 display: false
+         		},
+
+				scales: {
+					yAxes: [{
+
+
+					  ticks: {
+						beginAtZero:true,
+						// max:plugin.settings.maxDataValue,
+						//maxTicksLimit: 5
+						//suggestedMax
+					  }
+					}]
+				},
+
+
+			 plugins: {
+			  datalabels: {
+				anchor: 'end',
+				align: 'top',
+				offset:-5,
+
+				color: '#a7a7a7',
+				font: {
+				  size: '10'
+
+				}
+			  }
+			}
+
+
+
+    }
+});
+
+
+
+
+
+////////////////////////////////////////////////22222/////////////////////////////////////////////////////////////////////
+
+var ctx2 =$('#chart_dos');
+
+var nElementos= 0;
+{% for item in qs2 %}
+var nElementos= nElementos + 1;
+{%  endfor %}
+
+var myChart2 = new Chart(ctx2, {
+    type: 'doughnut',
+    data: {
+        labels: [{% for item2 in qs2 %}'{{ item2.estado_flujo__descripcion_estado }}', {% endfor %}],
+        datasets: [{
+            label: 'Nro. Planes',
+            data: [{% for item2 in qs2 %}{{ item2.CantidadAct }}, {% endfor %}],
+			backgroundColor: poolColors(nElementos),
+            borderWidth: 3,
+        }]
+    },
+    options: {
+   			 title: {
+					display: true,
+					text: 'Gráfico de Avance por Planes'
 				},
 	           legend: {
            		 display: true,
-
-
+           		 position:'left'
          		},
 
+         		 plugins: {
+				  datalabels: {
+					anchor: 'center',
+					align: 'center',
+					formatter: Math.round,
+					color: '#ffffff',
+					font: {
+					  size: '12'
 
-			   scales: {
-				yAxes: [{
-					ticks: {
-						//suggestedMin: 0,
-						//suggestedMax: 10,
-						 beginAtZero: true,
 					}
-				}]
-     		   },
+				  }
+				}
 
 
+
+
+    }
+
+
+
+});
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////22222/////////////////////////////////////////////////////////////////////
+
+var ctx3 = document.getElementById('chart_tres').getContext('2d');
+
+var nElementos= 0;
+{% for item in qs3 %}
+var nElementos= nElementos + 1;
+{%  endfor %}
+
+var myChart3 = new Chart(ctx3, {
+    type: 'bar',
+    data: {
+        labels: [{% for item3 in qs3 %}'{{ item3.id_controlador__id_jefatura__id_nivel__descripcion_nivel}} ', {% endfor %}],
+        datasets: [{
+            label: 'Actividades Totales',
+            data: [{% for item3 in qs3 %}{{ item3.CantidadPlan }}, {% endfor %}],
+			backgroundColor: poolColors(nElementos),
+            borderWidth: 0,
+        },{
+			label: 'Actividades Finalizadas o Eliminadas',
+       		 data: [{% for item4 in qs4 %}{{ item4.CantidadPlanFin }}, {% endfor %}],
+       		 borderWidth: 0,
+       		 backgroundColor: poolColors(nElementos),
+
+
+        }]
     },
+    options: {
 
-    plugins: [{
-   afterDatasetsDraw: function(chart) {
-      var ctx = chart.ctx;
-      chart.data.datasets.forEach(function(dataset, index) {
-         var datasetMeta = chart.getDatasetMeta(index);
-         if (datasetMeta.hidden) return;
-         datasetMeta.data.forEach(function(point, index) {
-            var value = dataset.data[index],
-                x = point.getCenterPoint().x,
-                y = point.getCenterPoint().y,
-                radius = point._model.radius,
-                fontSize = 10,
-                fontFamily = 'Verdana',
-                fontColor = '#a0a0a0',
-                fontStyle = 'normal';
-            ctx.save();
-            ctx.textBaseline = 'middle';
-            ctx.textAlign = 'center';
-            ctx.font = fontStyle + ' ' + fontSize + 'px' + ' ' + fontFamily;
-            ctx.fillStyle = fontColor;
-            ctx.fillText(value, x, y - radius - fontSize);
-            ctx.restore();
-         });
-      });
-   }
-}]
+    			title: {
+					display: true,
+					text: 'Gráfico Avance por Unidad'
+				},
 
+	           legend: {
+           		 display: false
+         		},
+
+      		  plugins: {
+			  datalabels: {
+				anchor: 'end',
+				align: 'top',
+				formatter: Math.round,
+				color: '#a7a7a7',
+				font: {
+				  size: '10'
+
+				}
+			  }
+			}
+
+
+
+
+    }
 });
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-$("#download").click(function(){
-  /*Get image of canvas element*/
-  var url_base64jp = document.getElementById("chart_uno").toDataURL("image/jpg");
-  /*get download button (tag: <a></a>) */
-  var a =  document.getElementById("download");
-  /*insert chart image url to download button (tag: <a></a>) */
-  a.href = url_base64jp;
-});
 
+
+
+
+
+
+
+function dynamicColors() {
+    var r = Math.floor(Math.random() * 255);
+    var g = Math.floor(Math.random() * 255);
+    var b = Math.floor(Math.random() * 255);
+    return "rgba(" + r + "," + g + "," + b + ", 1)";
+}
+
+function poolColors(a) {
+    var pool = [];
+    for(i = 0; i < a; i++) {
+        pool.push(dynamicColors());
+    }
+    return pool;
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
    	 // JS modal actualiza Registro
    $(".update").each(function () {
@@ -135,6 +229,35 @@ $("#download").click(function(){
      $(this).remove();
   });
 
+});
+
+
+$("#download_por_actividad").click(function(){
+  /*Get image of canvas element*/
+  var url_base64jp = document.getElementById("chart_uno").toDataURL("image/jpg");
+  /*get download button (tag: <a></a>) */
+  var a =  document.getElementById("download_por_actividad");
+  /*insert chart image url to download button (tag: <a></a>) */
+  a.href = url_base64jp;
+});
+
+
+$("#download_por_planes").click(function(){
+  /*Get image of canvas element*/
+  var url_base64jp = document.getElementById("chart_dos").toDataURL("image/jpg");
+  /*get download button (tag: <a></a>) */
+  var a =  document.getElementById("download_por_planes");
+  /*insert chart image url to download button (tag: <a></a>) */
+  a.href = url_base64jp;
+});
+
+$("#download_por_unidad").click(function(){
+  /*Get image of canvas element*/
+  var url_base64jp = document.getElementById("chart_tres").toDataURL("image/jpg");
+  /*get download button (tag: <a></a>) */
+  var a =  document.getElementById("download_por_unidad");
+  /*insert chart image url to download button (tag: <a></a>) */
+  a.href = url_base64jp;
 });
 
 
@@ -160,36 +283,79 @@ $("#download").click(function(){
 
 <!--{{ request.session.grupo }}-->
 <!--<div class="row"></div>-->
+<div class="col-md-6" >
+<section class="panel" >
+<!--		<header class="panel-heading">-->
+<!--			<div class="panel-actions">-->
+<!--&lt;!&ndash;				<button type="button" class="create btn btn-sm btn-success" name="button">&ndash;&gt;-->
+<!--&lt;!&ndash;					<span class="fa fa-plus"></span>&ndash;&gt;-->
+<!--&lt;!&ndash;				</button>&ndash;&gt;-->
+<!--			</div>-->
+
+<!--		<h2 class="panel-title"><a href="{% url 'export_users_csv' %}">Export all users</a></h2>-->
+<!--	 <button type="button" class="update btn btn-sm btn-primary" data-id="{% url 'modificar' 27 %}" >-->
+<!--														Modal</button>-->
+
+<!--		</header>-->
+
+
+
+		<div class="panel-body"  >
+
+
+<canvas id="chart_uno" height="200"></canvas>
+<div style="text-align:right; position:relative; z-index:1; ">
+											<a id="download_por_actividad" style="width:20px; height:20px; "  name="download_por_actividad"  download="Avance_por_Actividad.jpg" href="" class="btn btn-sm btn-success" title="Descargar Gráfico" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
+											<span style="margin-left:-5px; " class="fa fa-download"></span>
+											</a>
+									</div>
+
+
+
+		</div>
+	</section>
 
 
 
 
-<div class="col-md-12">
+<div class="modal fade" tabindex="-1" role="dialog" id="modalUpdate">
+  <div class="modal-dialog modal-lg" role="document">
+	<div class="modal-content">
+
+    </div>
+  </div>
+</div>
+
+</div>
+
+
+
+<div class="col-md-6">
 <section class="panel">
-		<header class="panel-heading">
-			<div class="panel-actions">
-<!--				<button type="button" class="create btn btn-sm btn-success" name="button">-->
-<!--					<span class="fa fa-plus"></span>-->
-<!--				</button>-->
-<a id="download" style="width:30px; height:30px;"  name="download"  download="Curva_de_ejecucion_actividades_programadas.jpg" href="" class="btn btn-sm btn-success" title="Descargar Gráfico" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
-<span style="margin-left:-2px;" class="fa fa-download"></span>
-</a>
+<!--		<header class="panel-heading">-->
+<!--			<div class="panel-actions">-->
+<!--&lt;!&ndash;				<button type="button" class="create btn btn-sm btn-success" name="button">&ndash;&gt;-->
+<!--&lt;!&ndash;					<span class="fa fa-plus"></span>&ndash;&gt;-->
+<!--&lt;!&ndash;				</button>&ndash;&gt;-->
+<!--			</div>-->
 
-			</div>
-
-		<h2 class="panel-title">Gráfico</h2>
-		</header>
+<!--		<h2 class="panel-title"></h2>-->
+<!--		</header>-->
 
 		<div class="panel-body">
 
 
-<canvas id="chart_uno" >
+<canvas id="chart_dos"   height="200">
 
 </canvas>
-
+<div style="text-align:right; position:relative; z-index:1;">
+					<a id="download_por_planes" style="width:20px; height:20px;"  name="download_por_planes"  download="Avance_por_planes.jpg" href="" class="btn btn-sm btn-success" title="Descargar Gráfico" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
+						<span style="margin-left:-5px; " class="fa fa-download"></span>
+					</a>
 		</div>
 
 
+		</div>
 </section>
 
 
@@ -198,6 +364,25 @@ $("#download").click(function(){
 
 
 
+<div class="col-md-12">
+<section class="panel">
 
+
+		<div class="panel-body">
+
+
+<canvas id="chart_tres" >
+
+</canvas>
+<div style="text-align:right; ">
+					<a id="download_por_unidad" style="width:20px; height:20px;"  name="download_por_unidad"  download="Avance_por_unidad.jpg" href="" class="btn btn-sm btn-success" title="Descargar Gráfico" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
+						<span style="margin-left:-5px; " class="fa fa-download"></span>
+					</a>
+		</div>
+		</div>
+</section>
+
+
+</div>
 
 	{% endblock %}

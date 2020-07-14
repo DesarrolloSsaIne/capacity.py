@@ -61,19 +61,23 @@ Actividades Asociadas al Objetivo
 													<td style="width:150px;" > {{ objetivo.fecha_inicio_actividad}}</td>
 													<td style="width:150px;"> {{ objetivo.fecha_termino_actividad}}</td>
 													<td   {% if objetivo.id_estado_actividad_id == 1  %}
-														 style="color:red; width:140px; "
+														 style="color:#ff8000; width:140px; "
 														  {% elif objetivo.id_estado_actividad_id == 2  %}
-														 style="color:#3688fc; width:140px; "
+														 style="color:#ff8000; width:140px; "
 														  {% elif objetivo.id_estado_actividad_id == 3  %}
-														 style="color:#47a447; width:140px; "
+														 style="color:#346cb0; width:140px; "
 														  {% elif objetivo.id_estado_actividad_id == 4  %}
-														 style="color:#47a447; width:140px; "
+														 style="color:black; width:140px; "
 														   {% elif objetivo.id_estado_actividad_id == 5  %}
-														 style="color:red; width:140px; "
+														 style="color:#008080; width:140px; "
 														   {% elif objetivo.id_estado_actividad_id == 6  %}
-														 style="color:red; width:140px; "
+														 style="color:#13a013; width:140px; "
 														   {% elif objetivo.id_estado_actividad_id == 7  %}
-														 style="color:red; width:140px; "
+														 style="color:#13a013; width:140px; "
+														     {% elif objetivo.id_estado_actividad_id == 9  %}
+														 style="color:#797963; width:140px; "
+														     {% elif objetivo.id_estado_actividad_id == 10  %}
+														 style="color:#797963; width:140px; "
 
 
 
