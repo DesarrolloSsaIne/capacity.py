@@ -97,6 +97,7 @@ INSTALLED_APPS = [
 
     'django_python3_ldap',
     'sitetree',
+    'mathfilters',
 
 
     'apps.eje',
@@ -123,7 +124,10 @@ INSTALLED_APPS = [
     'apps.estado_seguimiento',
     'apps.revision_planificacion',
     'apps.seguimiento_formula',
+    'apps.templatetags',
     'apps.reportes',
+
+
 
 
 

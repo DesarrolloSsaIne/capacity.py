@@ -49,10 +49,10 @@ class InicioDashboard(TemplateView):
         ps2 = Ges_Controlador.objects.filter(id_periodo=3).values('estado_flujo__descripcion_estado').annotate(CantidadAct=Count('id'))# Cantidad act. por areas
         ps3 = Ges_Actividad.objects.filter(id_periodo=3).values(
             'id_controlador__id_jefatura__id_nivel__descripcion_nivel').annotate(
-            CantidadPlan=Count('id'))  # Cantidad planes por analista
+            CantidadPlan=Count('id'))
         ps4 = Ges_Actividad.objects.filter(Q(id_periodo=3) & (Q(id_estado_actividad=9) | Q(id_estado_actividad=7)) ).values(
             'id_controlador__id_jefatura__id_nivel__descripcion_nivel').annotate(
-            CantidadPlanFin=Count('id'))  # Cantidad planes por analista
+            CantidadPlanFin=Count('id'))
 
         # meses=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
         # mesesacum = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]

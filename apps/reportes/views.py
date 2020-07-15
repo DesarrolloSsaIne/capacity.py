@@ -8,6 +8,8 @@ import datetime
 from apps.periodos.models import Glo_Periodos
 from openpyxl import Workbook
 
+from django.db.models import Subquery, OuterRef, Count, Sum
+
 
 # Create your views here.
 class GeneraReportCurvaEjecucion(TemplateView):
@@ -65,6 +67,71 @@ class GeneraReportCurvaEjecucion(TemplateView):
 
         lista_datos = Ges_Actividad.objects.filter(id_periodo=periodo_actual)
         context['object_list'] = lista_datos
+
+
+        lista_datos_count = Ges_Actividad.objects.filter(Q(id_periodo=3)).values(
+            'id_controlador__nivel_inicial',
+            'id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__descripcion_nivel', # N4
+            'id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__descripcion_nivel', # N3
+            'id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__descripcion_nivel', # N2
+            'id_controlador__id_jefatura__id_nivel__descripcion_nivel').annotate(
+            CountNoIniciadas=Count('id', filter=Q(id_estado_actividad=4)),
+            CountFinalizadas=Count('id', filter=Q(id_estado_actividad=7)),
+            CountConRetraso=Count('id', filter=Q(id_estado_actividad=1)),
+            CountSinMovimiento=Count('id', filter=Q(id_estado_actividad=6)),
+            CountEliminadas=Count('id', filter=Q(id_estado_actividad=9)),
+            CountTotal=Count('id', filter=(~Q(id_estado_actividad=2) & ~Q(id_estado_actividad=3) & ~Q(id_estado_actividad=5) & ~Q(id_estado_actividad=10)))
+
+        )
+
+        lista_datos_unidades = Ges_Actividad.objects.filter(Q(id_periodo=3)).values(
+            'id_controlador__nivel_inicial',
+            'id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__descripcion_nivel', # N4
+            'id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__descripcion_nivel', # N3
+            'id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__descripcion_nivel' # N2
+            ).distinct()
+
+
+
+
+
+
+        context['object_count'] = lista_datos_count
+        context['object_unidades'] = lista_datos_unidades
+
+        # count_no_vistos = Ges_Observaciones.objects.values('id_objetivo').filter(
+        #     id_objetivo=OuterRef('pk')).annotate(
+        #     count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (
+        #         ~Q(user_observa=id_usuario_actual))))
+        #
+        # count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(
+        #     id_objetivo=OuterRef('pk')).annotate(
+        #     count_id_actividad=Count('id'))
+        #
+        # count_actividades = Ges_Actividad.objects.values('id_objetivo_tacticotn').filter(
+        #     id_objetivo_tacticotn=OuterRef('pk')).annotate(
+        #     count_id_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id)))
+        #
+        # count_no_vistos_obj = Ges_Observaciones_sr.objects.values('id_objetivo_tacticotn').filter(
+        #     id_objetivo_tacticotn=OuterRef('pk')).annotate(
+        #     count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (
+        #         ~Q(user_observa=id_usuario_actual))))
+        #
+        # replies2 = Ges_Objetivo_TacticoTN.objects.filter(
+        #     Q(id_tercer_nivel_id=id_nivel.id_tercer_nivel_id) & Q(id_periodo=periodo_actual.id)).annotate(
+        #     count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
+        #     count_actividades=Subquery(count_actividades.values('count_id_actividad')),
+        #     count_no_vistos_obj=Subquery(count_no_vistos_obj.values('count_id_actividad')),
+        #     count_observaciones=Subquery(count_observaciones.values('count_id_actividad'))).order_by(
+        #     '-count_no_vistos', '-count_observaciones')
+
+
+
+
+
+
+
+
 
         return context
 
