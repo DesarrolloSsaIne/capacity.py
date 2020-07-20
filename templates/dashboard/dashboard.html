@@ -294,40 +294,26 @@ $("#download_por_unidad").click(function(){
 
 	{% endif %}
 
-<!--{{ request.session.grupo }}-->
-<!--<div class="row"></div>-->
+
+{% if GrupoDashboard == 'GrupoAdmin' %}
+
 <div class="col-md-6" >
 <section class="panel" >
-<!--		<header class="panel-heading">-->
-<!--			<div class="panel-actions">-->
-<!--&lt;!&ndash;				<button type="button" class="create btn btn-sm btn-success" name="button">&ndash;&gt;-->
-<!--&lt;!&ndash;					<span class="fa fa-plus"></span>&ndash;&gt;-->
-<!--&lt;!&ndash;				</button>&ndash;&gt;-->
-<!--			</div>-->
 
-<!--		<h2 class="panel-title"><a href="{% url 'export_users_csv' %}">Export all users</a></h2>-->
-<!--	 <button type="button" class="update btn btn-sm btn-primary" data-id="{% url 'modificar' 27 %}" >-->
-<!--														Modal</button>-->
-
-<!--		</header>-->
+	<div class="panel-body"  >
 
 
+		<canvas id="chart_uno" height="200"></canvas>
 
-		<div class="panel-body"  >
-
-
-<canvas id="chart_uno" height="200"></canvas>
-<div style="text-align:right; position:relative; z-index:1; ">
-											<a id="download_por_actividad" style="width:20px; height:20px; "  name="download_por_actividad"  download="Avance_por_Actividad.jpg" href="" class="btn btn-sm btn-success" title="Descargar Gráfico" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
-											<span style="margin-left:-5px; " class="fa fa-download"></span>
-											</a>
-									</div>
-
-
-
+		<div style="text-align:right; position:relative; z-index:1; ">
+			<a id="download_por_actividad" style="width:20px; height:20px; "  name="download_por_actividad"  download="Avance_por_Actividad.jpg" href="" class="btn btn-sm btn-success" title="Descargar Gráfico" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
+				<span style="margin-left:-5px; " class="fa fa-download"></span>
+			</a>
 		</div>
-	</section>
 
+	</div>
+
+</section>
 
 
 
@@ -345,57 +331,168 @@ $("#download_por_unidad").click(function(){
 
 <div class="col-md-6">
 <section class="panel">
-<!--		<header class="panel-heading">-->
-<!--			<div class="panel-actions">-->
-<!--&lt;!&ndash;				<button type="button" class="create btn btn-sm btn-success" name="button">&ndash;&gt;-->
-<!--&lt;!&ndash;					<span class="fa fa-plus"></span>&ndash;&gt;-->
-<!--&lt;!&ndash;				</button>&ndash;&gt;-->
-<!--			</div>-->
+	<div class="panel-body">
 
-<!--		<h2 class="panel-title"></h2>-->
-<!--		</header>-->
+	<canvas id="chart_dos"   height="200"></canvas>
+		<div style="text-align:right; position:relative; z-index:1;">
+			<a id="download_por_planes" style="width:20px; height:20px;"  name="download_por_planes"  download="Avance_por_planes.jpg" href="" class="btn btn-sm btn-success" title="Descargar Gráfico" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
+			<span style="margin-left:-5px; " class="fa fa-download"></span>
+		</a>
+	</div>
 
-		<div class="panel-body">
-
-
-<canvas id="chart_dos"   height="200">
-
-</canvas>
-<div style="text-align:right; position:relative; z-index:1;">
-					<a id="download_por_planes" style="width:20px; height:20px;"  name="download_por_planes"  download="Avance_por_planes.jpg" href="" class="btn btn-sm btn-success" title="Descargar Gráfico" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
-						<span style="margin-left:-5px; " class="fa fa-download"></span>
-					</a>
-		</div>
-
-
-		</div>
+	</div>
 </section>
 
 
 </div>
-
-
 
 
 <div class="col-md-12">
 <section class="panel">
 
+<div class="panel-body">
 
-		<div class="panel-body">
-
-
-<canvas id="chart_tres" >
-
-</canvas>
-<div style="text-align:right; ">
-					<a id="download_por_unidad" style="width:20px; height:20px;"  name="download_por_unidad"  download="Avance_por_unidad.jpg" href="" class="btn btn-sm btn-success" title="Descargar Gráfico" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
-						<span style="margin-left:-5px; " class="fa fa-download"></span>
-					</a>
+	<canvas id="chart_tres" ></canvas>
+		<div style="text-align:right; ">
+			<a id="download_por_unidad" style="width:20px; height:20px;"  name="download_por_unidad"  download="Avance_por_unidad.jpg" href="" class="btn btn-sm btn-success" title="Descargar Gráfico" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
+			<span style="margin-left:-5px; " class="fa fa-download"></span>
+			</a>
 		</div>
-		</div>
+	</div>
 </section>
+</div>
+
+
+{% endif %}
+
+
+{% if GrupoDashboard == 'GrupoFormula' %}
+
+<div class="col-md-4" >
+<section class="panel">
+
+<div class="panel-body" style="background-color: #0088cc; color: white;">
+
+
+<h5>Estado del Flujo:</h5> <div style=" text-align:right; margin-top:-27px;"><h4 ><b>{{ estado_flujo.estado}}</b></h4></div>
+
+</div>
+</section>
+</div>
+
+<div class="col-md-4">
+<section class="panel">
+
+<div class="panel-body" style="background-color: #0088cc; color: white;">
+
+<h5>Estado del Plan:</h5> <div style=" text-align:right; margin-top:-27px;"><h4 ><b>{{estado_plan.estado}}</b></h4></div>
 
 
 </div>
+</section>
+</div>
+<div class="col-md-4">
+<section class="panel">
+
+<div class="panel-body" style="background-color: #0088cc; color: white;">
+
+<h5>Etapa Seguimiento:</h5> <div style=" text-align:right; margin-top:-27px;"><h4 ><b>{{estado_seguimiento.estado}}</b></h4></div>
+
+
+</div>
+</section>
+</div>
+
+
+<div class="col-md-12">
+<section class="panel">
+<!--											<header class="panel-heading">-->
+<!--												<div class="panel-actions">-->
+<!--													<a href="#" class="fa fa-caret-down"></a>-->
+<!--													<a href="#" class="fa fa-times"></a>-->
+<!--												</div>-->
+
+<!--												<h2 class="panel-title">Easy Pie Chart</h2>-->
+<!--												<p class="panel-subtitle">Lightweight jQuery plugin to render and animate nice pie charts with the HTML5 canvas element.</p>-->
+<!--											</header>-->
+
+											<div class="panel-body">
+												<div class="row text-center">
+													<div class="col-md-2">
+														<div  class="circular-bar">
+															<div class="circular-bar-chart" data-percent="{{actividades.total_finalizada_per}}" data-plugin-options='{"size": 127, "barColor": "#70ad47", "delay": 300 }'>
+																<strong style="font-size:15px;" >Finalizadas</strong>
+																<label><span style="font-size:14px; " class="percent">{{actividades.total_finalizada_per}}</span>%</label>
+																<label style="margin-top:20px; margin-left:-2px; font-size:14px;"><span class="">({{actividades.total_finalizada}})</span></label>
+															</div>
+														</div>
+													</div>
+													<div class="col-md-2">
+														<div class="circular-bar">
+															<div class="circular-bar-chart" data-percent="{{actividades.total_en_curso_per}}" data-plugin-options='{"size": 127, "barColor": "#2BAAB1", "delay": 600 }'>
+																<strong style="font-size:15px;">En Curso</strong>
+																<label><span style="font-size:14px; " class="percent">{{actividades.total_en_curso_per}}</span>%</label>
+																<label style="margin-top:20px; margin-left:-2px; font-size:14px;"><span class="">({{actividades.total_en_curso}})</span></label>
+															</div>
+														</div>
+													</div>
+
+													<div class="col-md-2">
+														<div class="circular-bar">
+															<div class="circular-bar-chart" data-percent="{{actividades.total_no_iniciadas_per}}" data-plugin-options='{ "size": 127,"barColor": "#e6ac00", "delay": 600 }'>
+																<strong style="font-size:15px;">No Iniciadas</strong>
+																<label><span style="font-size:14px; " class="percent">{{actividades.total_no_iniciadas_per}}</span>%</label>
+																<label style="margin-top:20px; margin-left:-2px; font-size:14px;"><span class="">({{actividades.total_no_iniciadas}})</span></label>
+															</div>
+														</div>
+													</div>
+													<div  class="col-md-2">
+														<div  class="circular-bar">
+															<div  class="circular-bar-chart" data-percent="{{actividades.total_con_retraso_per}}" data-plugin-options='{"size": 127, "barColor": "#ca3939", "delay": 600 }'>
+																<strong style="font-size:15px;">Con Retraso</strong>
+																<label><span style="font-size:14px; " class="percent">{{actividades.total_con_retraso_per}}</span>%</label>
+																<label style="margin-top:20px; margin-left:-2px; font-size:14px;"><span class="">({{actividades.total_con_retraso}})</span></label>
+															</div>
+														</div>
+													</div>
+																										<div  class="col-md-2">
+														<div  class="circular-bar">
+															<div  class="circular-bar-chart" data-percent="{{actividades.total_sin_movimiento_per}}" data-plugin-options='{"size": 127, "barColor": "#81a9da", "delay": 600 }'>
+																<strong style="font-size:13px;">Sin Movimiento</strong>
+																<label><span style="font-size:14px; " class="percent">{{actividades.total_sin_movimiento_per}}</span>%</label>
+																<label style="margin-top:20px; margin-left:-2px; font-size:14px;"><span class="">({{actividades.total_sin_movimiento}})</span></label>
+															</div>
+														</div>
+													</div>
+																										<div  class="col-md-2">
+														<div  class="circular-bar">
+															<div  class="circular-bar-chart" data-percent="{{actividades.total_eliminada_per}}" data-plugin-options='{"size": 127, "barColor": "#797963", "delay": 600 }'>
+																<strong style="font-size:15px;">Eliminadas</strong>
+																<label><span style="font-size:14px; " class="percent">{{actividades.total_eliminada_per}}</span>%</label>
+																<label style="margin-top:20px; margin-left:-2px; font-size:14px;"><span class="">({{actividades.total_eliminada}})</span></label>
+															</div>
+														</div>
+													</div>
+
+
+
+												</div>
+											</div>
+										</section>
+
+</div>
+
+<div class="col-md-12">
+<section class="panel">
+
+<div class="panel-body" >
+	<div style="text-align:right;"> Total Actividades:<b>  {{total_actividades.total}}</b></div>
+
+
+</div>
+</section>
+</div>
+
+{% endif %}
 
 	{% endblock %}

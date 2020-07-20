@@ -15,6 +15,8 @@ Reportes
 
 $( document ).ready(function() {
 
+
+
 $('#Tabla_filter').find("input").css("display", "none");  /// desaparezco el input de busqueda
 $('#Tabla_filter').find("input").val($('').val())
 $('#Tabla_filter').find("input").val($('#list_estados').val()) // asigno al input de busqueda el primer valor del select
@@ -23,6 +25,7 @@ Calcular();
 
 /////////////////////////////////////////////////1111////////////////////////////////////////////////////////////////////
 
+var des=10;
 
 var ctx1 = $('#chart_uno');
 
@@ -48,7 +51,7 @@ var myLineChart = new Chart(ctx1, {
 		 pointRadius: 4
 		},{
 
-		 label: "N° de Actividades Ejecutadas (Acumuladas)",
+		 label: "N° de Actividades Ejecutadas (Acumuladas) " ,
 
          data: {{ ValMesesAcumEjec }},
 
@@ -63,6 +66,15 @@ var myLineChart = new Chart(ctx1, {
 		 borderWidth: 2,
 		 pointBorderWidth:1,
 		 pointRadius: 4
+
+		},{
+
+ 		label: "Desviación: {{ ValDesviacion }}% " ,
+
+         data: [],
+          borderColor: ['rgba(128, 128, 128, 1)'],
+          backgroundColor: ['rgba(128, 128, 128, 1)'],
+          fontStyle:'bold',
 
 
 
@@ -120,6 +132,22 @@ $("#download").click(function(){
   /*insert chart image url to download button (tag: <a></a>) */
   a.href = url_base64jp;
 });
+
+
+
+
+	$("#downloadTable").click(function(){
+
+
+  $("#Tabla").table2excel({
+    // exclude CSS class
+    exclude:".noExl",
+    name:"Worksheet Name",
+    filename:"EstadoCumplimiento",//do not include extension
+    fileext:".xls" // file extension
+  });
+});
+
 
 
    	 // JS modal actualiza Registro
@@ -229,12 +257,22 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 
 
 
+
+
+
     });
 
 
 
 
+
 		</script>
+
+      <script>
+
+      </script>
+
+
 	{% endblock %}
 
 
@@ -262,7 +300,7 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 										<a aria-expanded="false" href="#popular1" data-toggle="tab"> Gráfico C.E.A.P</a>
 									</li>
 									<li >
-										<a aria-expanded="true" href="#recent1" data-toggle="tab">Datos</a>
+										<a aria-expanded="true" href="#recent1" data-toggle="tab">Datos C.E.A.P</a>
 									</li>
 									<li>
 										<a aria-expanded="true" href="#cumplimiento1" data-toggle="tab">Estado Cumplimiento</a>
@@ -274,125 +312,7 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 								<div class="tab-content">
 
 
-									<div class="tab-pane" id="cumplimiento1">
-										<section class="panel">
 
-											<div class="panel-body">
-							<div class="form-group">
-							<label>Seleccione Unidad Nivel Superior</label>
-							<select class="form-control" id="list_estados" style="max-width:500px;">
-
-  {% for actividad_count in object_unidades %}
-                             <option value=		{% if actividad_count.id_controlador__nivel_inicial == 4 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__descripcion_nivel }} {% endif %}
-														{% if actividad_count.id_controlador__nivel_inicial == 3 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__descripcion_nivel }} {% endif %}
-														{% if actividad_count.id_controlador__nivel_inicial == 2 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__descripcion_nivel }} {% endif %}>
-
-
-		{% if actividad_count.id_controlador__nivel_inicial == 4 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__descripcion_nivel }} {% endif %}
-														{% if actividad_count.id_controlador__nivel_inicial == 3 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__descripcion_nivel }} {% endif %}
-														{% if actividad_count.id_controlador__nivel_inicial == 2 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__descripcion_nivel }} {% endif %}
-
-								 {% endfor %}
-							 </option>
-								<option value="">Todos</option>
-
-
-                            </select>
-
-						    </div>
-
-
-
-
-								<table class="table table-bordered table-striped mb-none" id="Tabla"  data-page-length='100'>
-									<thead>
-										<tr style="font-size:11px;">
-
-											<th colspan="1" style="background-color:#bec1cb; " ></th>
-											<th style="text-align:center; background-color:#1e7799; color:#ffffff;" colspan="2">No Iniciadas</th>
-											<th style="text-align:center; background-color:#70ad47; color:#ffffff;" colspan="2">Finalizadas</th>
-											<th style="text-align:center; background-color:#808080; color:#ffffff;" colspan="2">Con Retraso </th>
-											<th style="text-align:center; background-color:#e6ac00; color:#ffffff;" colspan="2">Sin Movimiento </th>
-											<th style="text-align:center; background-color:#ed7d31; color:#ffffff;" colspan="2">Eliminadas </th>
-											<th  style="text-align:center; background-color:#408080; color:#ffffff;"> Total</th>
-
-										</tr>
-
-											<tr style="font-size:11px;">
-											<th style="display:none;" >Nivel</th>
-											<th style="display:none;">Superior</th>
-											<th>Unidades</th>
-											<th>N° Total Actividades</th><th>% Total Actividades</th>
-											<th>N° Total Actividades</th><th>% Total Actividades</th>
-											<th>N° Total Actividades</th><th>% Total Actividades</th>
-											<th>N° Total Actividades</th><th>% Total Actividades</th>
-											<th>N° Total Actividades</th><th>% Total Actividades</th>
-											<th>Total </th>
-
-										</tr>
-
-									</thead>
-									<tbody >
-
-                                            {% for actividad_count in object_count %}
-                                                <tr style="font-size:11px;">
-													<td style="display:none;"> {{ actividad_count.id_controlador__nivel_inicial }} </td>
-													<td style="display:none;">
-														{% if actividad_count.id_controlador__nivel_inicial == 4 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__descripcion_nivel }} {% endif %}
-														{% if actividad_count.id_controlador__nivel_inicial == 3 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__descripcion_nivel }} {% endif %}
-														{% if actividad_count.id_controlador__nivel_inicial == 2 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__descripcion_nivel }} {% endif %}
-													</td>
-													<td> {{ actividad_count.id_controlador__id_jefatura__id_nivel__descripcion_nivel }} </td>
-													<td><span class="CountNoIniciadas"> {{ actividad_count.CountNoIniciadas }}</span></td><td>{{ actividad_count.CountNoIniciadas|mul:100 |div:actividad_count.CountTotal }}% </td>
-													<td><span class="CountFinalizadas">{{ actividad_count.CountFinalizadas }}</span> </td><td>{{ actividad_count.CountFinalizadas|mul:100 |div:actividad_count.CountTotal }}% </td>
-													<td><span class="CountConRetraso">{{ actividad_count.CountConRetraso }}</span> </td><td>{{ actividad_count.CountConRetraso|mul:100 |div:actividad_count.CountTotal }}% </td>
-													<td><span class="CountSinMovimiento">{{ actividad_count.CountSinMovimiento }}</span> </td><td>{{ actividad_count.CountSinMovimiento|mul:100 |div:actividad_count.CountTotal }}% </td>
-													<td><span class="CountEliminadas">{{ actividad_count.CountEliminadas }} </span></td><td>{{ actividad_count.CountEliminadas|mul:100 |div:actividad_count.CountTotal }}% </td>
-													<td><span class="countTotal">{{ actividad_count.CountTotal }} </span></td>
-
-
-
-
-                                                </tr>
-                                            {% endfor %}
-
-									</tbody>
-
-									<tbody >
-
-
-                                                <tr style="font-size:11px;">
-													<td style="display:none;">  </td>
-													<td style="display:none;">
-
-													</td>
-													<td style="background-color:#bec1cb; font-weight: bold; color:#4f4f4f; width:150px;"> Total General</td>
-													<td style="background-color:#1e7799; font-weight: bold; color:#ffffff;"><span class="CountNoIniciadasVal"></span> </td><td style="background-color:#1e7799; font-weight: bold; color:#ffffff;"> <span class="CountNoIniciadasValPer"></span>%</td>
-													<td style="background-color:#70ad47; font-weight: bold; color:#ffffff;"><span class="CountFinalizadasVal"></span> </td><td style="background-color:#70ad47; font-weight: bold; color:#ffffff;"> <span class="CountFinalizadasValPer"></span>%</td>
-													<td style="background-color:#808080; font-weight: bold; color:#ffffff;"><span class="CountConRetrasoVal"></span> </td><td style="background-color:#808080; font-weight: bold; color:#ffffff;"> <span class="CountConRetrasoValPer"></span>%</td>
-													<td style="background-color:#e6ac00; font-weight: bold; color:#ffffff;"><span class="CountSinMovimientoVal"></span> </td><td style="background-color:#e6ac00; font-weight: bold; color:#ffffff;"> <span class="CountSinMovimientoValPer"></span>%</td>
-													<td style="background-color:#ed7d31; font-weight: bold; color:#ffffff;"><span class="CountEliminadasVal"></span></td><td style="background-color:#ed7d31; font-weight: bold; color:#ffffff;"><span class="CountEliminadasValPer"></span>%</td>
-													<td style="background-color:#408080; font-weight: bold; color:#ffffff;" ><span class="totalCountVal"></span></td>
-
-
-
-
-                                                </tr>
-
-
-									</tbody>
-
-
-
-
-								</table>
-
-							</div>
-
-
-
-										</section>
-									</div>
 
 
 
@@ -529,7 +449,139 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 									</div>
 
 
+<!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
 
+
+
+									<div class="tab-pane" id="cumplimiento1">
+										<section class="panel">
+
+											<div style="text-align:right; position:relative; z-index:1;;">
+											<button id="downloadTable" style="width:30px; height:30px;"  name="downloadTable" title="Descargar Tabla en MS Excel" class="btn btn-sm btn-success" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
+											<span style="margin-left:-1px;" class="fa fa-file-excel-o"></span>
+											</button>
+
+									</div>
+
+
+											<div class="panel-body" style="margin-top:-40px;">
+							<div class="form-group">
+							<label>Seleccione Unidad Nivel Superior</label>
+							<select class="form-control" id="list_estados" style="max-width:500px;">
+
+  {% for actividad_count in object_unidades %}
+                             <option value=		{% if actividad_count.id_controlador__nivel_inicial == 4 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__descripcion_nivel }} {% endif %}
+														{% if actividad_count.id_controlador__nivel_inicial == 3 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__descripcion_nivel }} {% endif %}
+														{% if actividad_count.id_controlador__nivel_inicial == 2 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__descripcion_nivel }} {% endif %}>
+
+
+		{% if actividad_count.id_controlador__nivel_inicial == 4 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__descripcion_nivel }} {% endif %}
+														{% if actividad_count.id_controlador__nivel_inicial == 3 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__descripcion_nivel }} {% endif %}
+														{% if actividad_count.id_controlador__nivel_inicial == 2 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__descripcion_nivel }} {% endif %}
+
+								 {% endfor %}
+							 </option>
+								<option value="">Todos</option>
+
+
+                            </select>
+
+						    </div>
+
+
+
+								<table class="table table-bordered table-striped mb-none" id="Tabla"  data-page-length='1000'>
+									<thead>
+										<tr style="font-size:11px;">
+
+											<th colspan="1" style="background-color:#bec1cb; " ></th>
+											<th style="text-align:center; background-color:#1e7799; color:#ffffff;" colspan="2">No Iniciadas</th>
+											<th style="text-align:center; background-color:#70ad47; color:#ffffff;" colspan="2">Finalizadas</th>
+											<th style="text-align:center; background-color:#808080; color:#ffffff;" colspan="2">Con Retraso </th>
+											<th style="text-align:center; background-color:#e6ac00; color:#ffffff;" colspan="2">Sin Movimiento </th>
+											<th style="text-align:center; background-color:#ed7d31; color:#ffffff;" colspan="2">Eliminadas </th>
+											<th  style="text-align:center; background-color:#408080; color:#ffffff;"> Total</th>
+
+										</tr>
+
+											<tr style="font-size:11px;">
+											<th class="noExl" style="display:none;" >Nivel</th>
+											<th class="noExl" style="display:none;">Superior</th>
+											<th>Unidades</th>
+											<th>N° Total Actividades</th><th>% Total Actividades</th>
+											<th>N° Total Actividades</th><th>% Total Actividades</th>
+											<th>N° Total Actividades</th><th>% Total Actividades</th>
+											<th>N° Total Actividades</th><th>% Total Actividades</th>
+											<th>N° Total Actividades</th><th>% Total Actividades</th>
+											<th>Total </th>
+
+										</tr>
+
+									</thead>
+									<tbody >
+
+                                            {% for actividad_count in object_count %}
+                                                <tr style="font-size:11px;">
+													<td class="noExl"  style="display:none;"> {{ actividad_count.id_controlador__nivel_inicial }} </td>
+													<td class="noExl"  style="display:none;">
+														{% if actividad_count.id_controlador__nivel_inicial == 4 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__descripcion_nivel }} {% endif %}
+														{% if actividad_count.id_controlador__nivel_inicial == 3 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__descripcion_nivel }} {% endif %}
+														{% if actividad_count.id_controlador__nivel_inicial == 2 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__descripcion_nivel }} {% endif %}
+													</td>
+													<td> {{ actividad_count.id_controlador__id_jefatura__id_nivel__descripcion_nivel }} </td>
+													<td><span class="CountNoIniciadas"> {{ actividad_count.CountNoIniciadas }}</span></td><td>{{ actividad_count.CountNoIniciadas|mul:100 |div:actividad_count.CountTotal }}% </td>
+													<td><span class="CountFinalizadas">{{ actividad_count.CountFinalizadas }}</span> </td><td>{{ actividad_count.CountFinalizadas|mul:100 |div:actividad_count.CountTotal }}% </td>
+													<td><span class="CountConRetraso">{{ actividad_count.CountConRetraso }}</span> </td><td>{{ actividad_count.CountConRetraso|mul:100 |div:actividad_count.CountTotal }}% </td>
+													<td><span class="CountSinMovimiento">{{ actividad_count.CountSinMovimiento }}</span> </td><td>{{ actividad_count.CountSinMovimiento|mul:100 |div:actividad_count.CountTotal }}% </td>
+													<td><span class="CountEliminadas">{{ actividad_count.CountEliminadas }} </span></td><td>{{ actividad_count.CountEliminadas|mul:100 |div:actividad_count.CountTotal }}% </td>
+													<td><span class="countTotal">{{ actividad_count.CountTotal }} </span></td>
+
+
+
+
+                                                </tr>
+                                            {% endfor %}
+
+									</tbody>
+
+									<tbody >
+
+
+                                                <tr style="font-size:11px;">
+													<td class="noExl"  style="display:none;">  </td>
+													<td class="noExl"  style="display:none;">
+
+													</td>
+													<td style="background-color:#bec1cb; font-weight: bold; color:#4f4f4f; width:150px;"> Total General</td>
+													<td style="background-color:#1e7799; font-weight: bold; color:#ffffff;"><span class="CountNoIniciadasVal"></span> </td><td style="background-color:#1e7799; font-weight: bold; color:#ffffff;"> <span class="CountNoIniciadasValPer"></span>%</td>
+													<td style="background-color:#70ad47; font-weight: bold; color:#ffffff;"><span class="CountFinalizadasVal"></span> </td><td style="background-color:#70ad47; font-weight: bold; color:#ffffff;"> <span class="CountFinalizadasValPer"></span>%</td>
+													<td style="background-color:#808080; font-weight: bold; color:#ffffff;"><span class="CountConRetrasoVal"></span> </td><td style="background-color:#808080; font-weight: bold; color:#ffffff;"> <span class="CountConRetrasoValPer"></span>%</td>
+													<td style="background-color:#e6ac00; font-weight: bold; color:#ffffff;"><span class="CountSinMovimientoVal"></span> </td><td style="background-color:#e6ac00; font-weight: bold; color:#ffffff;"> <span class="CountSinMovimientoValPer"></span>%</td>
+													<td style="background-color:#ed7d31; font-weight: bold; color:#ffffff;"><span class="CountEliminadasVal"></span></td><td style="background-color:#ed7d31; font-weight: bold; color:#ffffff;"><span class="CountEliminadasValPer"></span>%</td>
+													<td style="background-color:#408080; font-weight: bold; color:#ffffff;" ><span class="totalCountVal"></span></td>
+
+
+
+
+                                                </tr>
+
+
+									</tbody>
+
+
+
+
+								</table>
+
+
+
+
+							</div>
+
+
+
+										</section>
+									</div>
 
 
 

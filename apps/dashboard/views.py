@@ -2,9 +2,10 @@ from django.shortcuts import render
 from django.contrib.auth.models import User, Group
 from apps.controlador.models import Ges_Controlador
 from apps.actividades.models import Ges_Actividad
+from apps.periodos.models import Glo_Seguimiento
 
 from apps.jefaturas.models import Ges_Jefatura
-from django.db.models import Subquery, OuterRef, Count
+from django.db.models import Subquery, OuterRef, Count, Max, Sum
 from django.db.models import QuerySet
 from django.db.models import Q
 from apps.objetivos.models import Ges_Objetivo_Estrategico, Ges_Objetivo_Operativo, Ges_Objetivo_Tactico, Ges_Objetivo_TacticoTN
@@ -35,86 +36,136 @@ class InicioDashboard(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(InicioDashboard, self).get_context_data(**kwargs)
-        #
-        Grupo = Group.objects.filter(user=self.request.user)
 
-        for MiGrupo in Grupo:
-            result = str(MiGrupo)
-            self.request.session['grupo'] = result
+        id_usuario_actual = self.request.user.id  # obtiene id usuario actual
 
 
-        # ps = Ges_Actividad.objects.filter(id_periodo=3).values('id_controlador__id_jefatura__id_user__first_name','id_controlador__id_jefatura__id_user__last_name').annotate(CantidadAct=Count('id')) # Cantidad act. por jefatura
+        Grupo = Group.objects.get(user=self.request.user)
 
-        ps = Ges_Actividad.objects.filter(id_periodo=3).values('id_estado_actividad__descripcion_estado').annotate(CantidadEst=Count('id')).order_by('id_estado_actividad__orden') # estado por jefatura
-        ps2 = Ges_Controlador.objects.filter(id_periodo=3).values('estado_flujo__descripcion_estado').annotate(CantidadAct=Count('id'))# Cantidad act. por areas
-        ps3 = Ges_Actividad.objects.filter(id_periodo=3).values(
-            'id_controlador__id_jefatura__id_nivel__descripcion_nivel').annotate(
-            CantidadPlan=Count('id'))
-        ps4 = Ges_Actividad.objects.filter(Q(id_periodo=3) & (Q(id_estado_actividad=9) | Q(id_estado_actividad=7)) ).values(
-            'id_controlador__id_jefatura__id_nivel__descripcion_nivel').annotate(
-            CantidadPlanFin=Count('id'))
+        self.request.session['grupo'] = str(Grupo)
 
-        # meses=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-        # mesesacum = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-        #
-        # ValMeses = []
-        # ValMesesAcum = []
-        #
-        # ValMesesEjec = []
-        # ValMesesAcumEjec = []
-        #
-        #
-        # mydate = datetime.datetime.now()
-        # Mes=mydate.month
-        #
-        #
-        #
-        # for i in meses:
-        #     val = Ges_Actividad.objects.filter(Q(fecha_inicio_actividad__month=i) & Q(id_periodo=3)).count()
-        #     ValMeses.append(val)
-        #
-        #
-        # for i in mesesacum:
-        #
-        #     if i==0:
-        #         ValMesesAcum.append(ValMeses[i])
-        #     else:
-        #         ValMesesAcum.append(ValMeses[i] + ValMesesAcum[i-1])
-        #
-        #
-        # for i in meses:
-        #     val = Ges_Actividad.objects.filter(Q(fecha_inicio_actividad__month=i) & Q(id_periodo=3) & (Q(id_estado_actividad_id=6) | Q(id_estado_actividad_id=7))).count()
-        #     ValMesesEjec.append(val)
-        #
-        # for i in range(0, Mes):
-        #     if i==0:
-        #         ValMesesAcumEjec.append(ValMesesEjec[i])
-        #     else:
-        #         ValMesesAcumEjec.append(ValMesesEjec[i] + ValMesesAcumEjec[i-1])
-
-        context["qs"] = ps
-        context["qs2"] = ps2
-        context["qs3"] = ps3
-        context["qs4"] = ps4
-        # context = {"ValMesesAcum":ValMesesAcum, "ValMesesAcumEjec":ValMesesAcumEjec,
-        #
-        #            }
-        return context
+        try:
+            periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+        except Glo_Periodos.DoesNotExist:
+            return None
 
 
+        if Grupo.id==2 or Grupo.id==5 or Grupo.id==6:
 
-# def export_users_csv(request):
-#     response = HttpResponse(content_type='text/csv')
-#     response['Content-Disposition'] = 'attachment; filename="users.csv"'
-#
-#     writer = csv.writer(response)
-#     writer.writerow(['Username', 'First name', 'Last name', 'Email address'])
-#
-#     users = User.objects.all().values_list('username', 'first_name', 'last_name', 'email')
-#     for user in users:
-#         writer.writerow(user)
-#
-#     return response
+            # ps = Ges_Actividad.objects.filter(id_periodo=3).values('id_controlador__id_jefatura__id_user__first_name','id_controlador__id_jefatura__id_user__last_name').annotate(CantidadAct=Count('id')) # Cantidad act. por jefatura
+
+            ps = Ges_Actividad.objects.filter(id_periodo=periodo_actual).values('id_estado_actividad__descripcion_estado').annotate(CantidadEst=Count('id')).order_by('id_estado_actividad__orden') # estado por jefatura
+            ps2 = Ges_Controlador.objects.filter(id_periodo=periodo_actual).values('estado_flujo__descripcion_estado').annotate(CantidadAct=Count('id'))# Cantidad act. por areas
+            ps3 = Ges_Actividad.objects.filter(id_periodo=periodo_actual).values(
+                'id_controlador__id_jefatura__id_nivel__descripcion_nivel').annotate(
+                CantidadPlan=Count('id'))
+            ps4 = Ges_Actividad.objects.filter(Q(id_periodo=periodo_actual) & (Q(id_estado_actividad=9) | Q(id_estado_actividad=7)) ).values(
+                'id_controlador__id_jefatura__id_nivel__descripcion_nivel').annotate(
+                CantidadPlanFin=Count('id'))
+
+
+            context["qs"] = ps
+            context["qs2"] = ps2
+            context["qs3"] = ps3
+            context["qs4"] = ps4
+            context["GrupoDashboard"] = 'GrupoAdmin'
+
+            return context
+
+        if Grupo.id == 1: #Si pertenece a un usuario que formula
+            id_jefatura = Ges_Jefatura.objects.get(id_user=id_usuario_actual)
+            try:
+                id_controlador = Ges_Controlador.objects.get(
+                    Q(id_jefatura=id_jefatura) & Q(id_periodo=periodo_actual.id))
+            except Ges_Controlador.DoesNotExist:
+                id_controlador = 0
+                pass
+
+
+            if id_controlador != 0:
+                context['estado_flujo'] = {'estado': id_controlador.estado_flujo}
+                context['estado_plan'] = {'estado': id_controlador.id_estado_plan}
+            else:
+                context['estado_flujo'] = {'estado': '-'}
+                context['estado_plan'] = {'estado': '-'}
+
+
+            try:
+                estado_seguimiento = Glo_Seguimiento.objects.order_by('-id')[0]
+            except Glo_Seguimiento.DoesNotExist:
+                estado_seguimiento = 0
+                pass
+
+            if estado_seguimiento != 0:
+                context['estado_seguimiento'] = {'estado': estado_seguimiento.id_estado_seguimiento}
+            else:
+                context['estado_seguimiento'] = {'estado': '-'}
+
+
+
+            total_actividades = list(Ges_Actividad.objects.filter(Q(id_controlador=id_controlador) & Q(id_periodo=periodo_actual.id)).aggregate(Count('id')).values())[0]
+
+            if total_actividades ==0: #Para que no divida por 0 en el caso que no posea actividades ingresadas.
+                context['total_actividades'] = {'total': 0}
+                total_actividades=1
+            else:
+                context['total_actividades'] = {'total': total_actividades}
+
+            total_actividades_finalizadas = list(Ges_Actividad.objects.filter(
+                Q(id_controlador=id_controlador) & Q(id_periodo=periodo_actual.id) & Q(id_estado_actividad=7)).aggregate(Count('id')).values())[0]
+            total_actividades_en_curso = list(Ges_Actividad.objects.filter(
+                Q(id_controlador=id_controlador) & Q(id_periodo=periodo_actual.id) & (Q(id_estado_actividad=3) | Q(id_estado_actividad=8))).aggregate(Count('id')).values())[0]
+            total_actividades_no_iniciadas = list(Ges_Actividad.objects.filter(
+                Q(id_controlador=id_controlador) & Q(id_periodo=periodo_actual.id) & Q(id_estado_actividad=4)).aggregate(Count('id')).values())[0]
+            total_actividades_con_retraso = list(Ges_Actividad.objects.filter(
+                Q(id_controlador=id_controlador) & Q(id_periodo=periodo_actual.id) & (Q(id_estado_actividad=1) | Q(id_estado_actividad=2))).aggregate(Count('id')).values())[0]
+            total_actividades_sin_movimiento = list(Ges_Actividad.objects.filter(
+                Q(id_controlador=id_controlador) & Q(id_periodo=periodo_actual.id) & (Q(id_estado_actividad=5) | Q(id_estado_actividad=6))).aggregate(Count('id')).values())[0]
+            total_actividades_eliminadas = list(Ges_Actividad.objects.filter(
+                Q(id_controlador=id_controlador) & Q(id_periodo=periodo_actual.id) & (Q(id_estado_actividad=9) | Q(id_estado_actividad=10))).aggregate(Count('id')).values())[0]
+
+
+
+            context['actividades'] = {'total_finalizada': total_actividades_finalizadas,
+                                      'total_finalizada_per': "{0:.2f}".format(((total_actividades_finalizadas*100)/total_actividades)),
+
+                                      'total_en_curso': total_actividades_en_curso,
+                                      'total_en_curso_per': "{0:.2f}".format(
+                                          ((total_actividades_en_curso * 100) / total_actividades)),
+
+                                      'total_no_iniciadas': total_actividades_no_iniciadas,
+                                      'total_no_iniciadas_per': "{0:.2f}".format(
+                                          ((total_actividades_no_iniciadas * 100) / total_actividades)),
+
+                                      'total_con_retraso': total_actividades_con_retraso,
+                                      'total_con_retraso_per': "{0:.2f}".format(
+                                          ((total_actividades_con_retraso * 100) / total_actividades)),
+
+                                      'total_sin_movimiento': total_actividades_sin_movimiento,
+                                      'total_sin_movimiento_per': "{0:.2f}".format(
+                                          ((total_actividades_sin_movimiento * 100) / total_actividades)),
+
+                                      'total_eliminada': total_actividades_eliminadas,
+                                      'total_eliminada_per': "{0:.2f}".format(
+                                          ((total_actividades_eliminadas * 100) / total_actividades))
+
+
+
+
+                                      }
+
+
+
+
+            context["GrupoDashboard"] = 'GrupoFormula'
+
+            return context
+
+
+
+
+
+
 
 
 def export_users_xls(request):
@@ -167,44 +218,5 @@ def modificar_estado(request, id):
 
     return render(request, template_name, context)
 
-
-    # class ClubChartView(TemplateView):
-    #     template_name = 'dashboard/dashboard.html'
-    #
-    #     def get_context_data(self, **kwargs):
-    #         context = super().get_context_data(**kwargs)
-    #
-    #         # context= Ges_Actividad.objects.annotate(num_act=Count('id_controlador'))
-    #
-    #         contexto = Ges_Actividad.objects.all()
-    #         context["qs"] = contexto
-    #         return context
-
-
-
-    # def Char_Uno(request):
-    #     labels = []
-    #     data = []
-
-    # queryset = Ges_Actividad.objects.filter(id_periodo=3)
-    #
-    # for city in queryset:
-    #     labels.append(str(city.id_controlador.id_jefatura.id_nivel))
-    #     data.append(city.total_horas)
-    #
-    # return render(request, 'dashboard/dashboard.html', {
-    #     'labels': labels,
-    #     'Midata': data,
-    # })
-
-
-# def ir_dashboard(request):
-#     Grupo = Group.objects.filter(user=request.user)
-#
-#     for MiGrupo in Grupo:
-#         result = str(MiGrupo)
-#         request.session['grupo']= result
-#
-#     return render(request, 'dashboard/dashboard.html')
 
 

@@ -61,8 +61,16 @@ class GeneraReportCurvaEjecucion(TemplateView):
             else:
                 ValMesesAcumEjec.append(ValMesesEjec[i] + ValMesesAcumEjec[i-1])
 
+        acumPlan= ValMesesAcum[Mes-1]
+        acumFin= ValMesesAcumEjec[Mes-1]
+
+        ValDesviacion= "{0:.2f}".format(((acumFin/acumPlan)-1)*100)
+
+
+
         context = {"ValMesesAcum":ValMesesAcum,
-                   "ValMesesAcumEjec":ValMesesAcumEjec, }
+                   "ValMesesAcumEjec":ValMesesAcumEjec,
+                   "ValDesviacion":ValDesviacion,}
 
 
         lista_datos = Ges_Actividad.objects.filter(id_periodo=periodo_actual)
