@@ -368,10 +368,13 @@ class ActividadesDetail(ListView): #clase modificada por JR- sprint 8 - Ok
 
 
 
+
 class ActividadCreate(SuccessMessageMixin, CreateView):
     model = Ges_Actividad
     form_class = ActividadForm
     template_name = 'actividades/actividades_form.html'
+
+
 
     def get_form_kwargs(self, **kwargs):
         kwargs = super(ActividadCreate, self).get_form_kwargs()
@@ -382,14 +385,28 @@ class ActividadCreate(SuccessMessageMixin, CreateView):
     def post(self, request, *args, **kwargs):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
-
-
-        id_usuario_actual= self.request.user.id #obtiene id usuario actual
+        response_data = {}
 
         try:
             periodo_actual = Glo_Periodos.objects.get(id_estado=1)
         except Glo_Periodos.DoesNotExist:
             return None
+
+        id_usuario_actual= self.request.user.id #obtiene id usuario actual
+
+        if self.request.POST.get('action') == 'post': #Ajax para enviar el calulo de feriados
+
+            fecha_inicio_actividad = self.request.POST.get('fecha_inicio_actividad')
+            fecha_termino_actividad = self.request.POST.get('fecha_termino_actividad')
+
+            feriados = Ges_Feriados.objects.filter(Q(id_periodo=periodo_actual.id) & Q(fecha_feriado__range=(
+                fecha_inicio_actividad, fecha_termino_actividad))).count()
+
+            response_data['feriados'] = feriados
+
+            return JsonResponse(response_data)
+
+
 
         try:
             id_jefatura = Ges_Jefatura.objects.get(Q(id_user=id_usuario_actual) & Q(id_periodo=periodo_actual.id))
@@ -428,39 +445,41 @@ class ActividadCreate(SuccessMessageMixin, CreateView):
         dias_habiles_brutos_feriados = dias_habiles_brutos_feriados * 8
         dias_habiles_brutos_feriados = int(dias_habiles_brutos_feriados)
         total_horas_post = int(total_horas_post)
-        if dias_habiles_brutos_feriados == total_horas_post: # LO MODIFIQUÉ DE == A > EL 01/05 ME FUE IMPOSIBLE AGREGAR UNA ACTIVIDAD CON ESA CONDICION
-            if form.is_valid():
-                #form.instance.total_horas= 1
-                form.instance.id_estado_actividad_id=4
-                form.instance.flag_reporta=0
-                form.instance.estado=1
-                form.instance.id_controlador = usuario_controlador
-                form.instance.id_periodo = periodo_actual
-                if self.request.session['id_orden'] == 2:
-                    id_objetivo=Ges_Objetivo_Tactico.objects.get(id=self.request.session['id_objetivo'])
-                    form.instance.id_objetivo_tactico= id_objetivo
 
-                if self.request.session['id_orden'] == 3:
-                    id_objetivo = Ges_Objetivo_TacticoTN.objects.get(id=self.request.session['id_objetivo'])
-                    form.instance.id_objetivo_tacticotn= id_objetivo
+        # if dias_habiles_brutos_feriados == total_horas_post: # LO MODIFIQUÉ DE == A > EL 01/05 ME FUE IMPOSIBLE AGREGAR UNA ACTIVIDAD CON ESA CONDICION
+        if form.is_valid():
+            # form.instance.total_horas= 1
+            form.instance.id_estado_actividad_id = 4
+            form.instance.flag_reporta = 0
+            form.instance.estado = 1
+            form.instance.id_controlador = usuario_controlador
+            form.instance.id_periodo = periodo_actual
+            if self.request.session['id_orden'] == 2:
+                id_objetivo = Ges_Objetivo_Tactico.objects.get(id=self.request.session['id_objetivo'])
+                form.instance.id_objetivo_tactico = id_objetivo
 
-                if self.request.session['id_orden'] == 4:
-                    id_objetivo = Ges_Objetivo_Operativo.objects.get(id=self.request.session['id_objetivo'])
-                    form.instance.id_objetivo_operativo= id_objetivo
+            if self.request.session['id_orden'] == 3:
+                id_objetivo = Ges_Objetivo_TacticoTN.objects.get(id=self.request.session['id_objetivo'])
+                form.instance.id_objetivo_tacticotn = id_objetivo
 
-                form.save()
-                request.session['message_class'] = "alert alert-success"
-                messages.success(self.request, "Los datos fueron creados correctamente!")
-                return HttpResponseRedirect('/actividades/detalle/' + str(self.request.session['id_objetivo']))
-            else:
-                request.session['message_class'] = "alert alert-danger"
-                messages.error(self.request, "Error interno: No se ha creado el registro. Comuníquese con el administrador.")
-                return HttpResponseRedirect('/actividades/detalle/' + str(self.request.session['id_objetivo']))
-        else:
-            request.session['message_class'] = "alert alert-warning"
-            messages.error(self.request,
-                           "Aviso :  El total de horas de la actividad supera el total de horas entre la fecha de inicio y término.")
+            if self.request.session['id_orden'] == 4:
+                id_objetivo = Ges_Objetivo_Operativo.objects.get(id=self.request.session['id_objetivo'])
+                form.instance.id_objetivo_operativo = id_objetivo
+
+            form.save()
+            request.session['message_class'] = "alert alert-success"
+            messages.success(self.request, "Los datos fueron creados correctamente!")
             return HttpResponseRedirect('/actividades/detalle/' + str(self.request.session['id_objetivo']))
+        else:
+            request.session['message_class'] = "alert alert-danger"
+            messages.error(self.request,
+                           "Error interno: No se ha creado el registro. Comuníquese con el administrador.")
+            return HttpResponseRedirect('/actividades/detalle/' + str(self.request.session['id_objetivo']))
+        # else:
+        #     request.session['message_class'] = "alert alert-warning"
+        #     messages.error(self.request,
+        #                    "Aviso :  El total de horas de la actividad supera el total de horas entre la fecha de inicio y término.")
+        #     return HttpResponseRedirect('/actividades/detalle/' + str(self.request.session['id_objetivo']))
 
 class ActividadEdit(SuccessMessageMixin, UpdateView ):
     model = Ges_Actividad

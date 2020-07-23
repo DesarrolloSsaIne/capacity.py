@@ -231,6 +231,14 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 		$('.CountNoIniciadasValPer').text(((sum6*100)/sum1).toFixed(2));
 		});
 
+		var sum7 = 0;
+		$(".CountEnCurso").each(function(){
+		sum7 += parseInt($(this).html()) || 0;
+		$('.CountEnCursoVal').text(sum7.toFixed(0));
+		$('.CountEnCursoValPer').text(((sum7*100)/sum1).toFixed(2));
+		});
+
+
 
  	}
 
@@ -497,6 +505,7 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 											<th colspan="1" style="background-color:#bec1cb; " ></th>
 											<th style="text-align:center; background-color:#1e7799; color:#ffffff;" colspan="2">No Iniciadas</th>
 											<th style="text-align:center; background-color:#70ad47; color:#ffffff;" colspan="2">Finalizadas</th>
+											<th style="text-align:center; background-color:#6783b5; color:#ffffff;" colspan="2">En Curso</th>
 											<th style="text-align:center; background-color:#808080; color:#ffffff;" colspan="2">Con Retraso </th>
 											<th style="text-align:center; background-color:#e6ac00; color:#ffffff;" colspan="2">Sin Movimiento </th>
 											<th style="text-align:center; background-color:#ed7d31; color:#ffffff;" colspan="2">Eliminadas </th>
@@ -508,6 +517,7 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 											<th class="noExl" style="display:none;" >Nivel</th>
 											<th class="noExl" style="display:none;">Superior</th>
 											<th>Unidades</th>
+											<th>N° Total Actividades</th><th>% Total Actividades</th>
 											<th>N° Total Actividades</th><th>% Total Actividades</th>
 											<th>N° Total Actividades</th><th>% Total Actividades</th>
 											<th>N° Total Actividades</th><th>% Total Actividades</th>
@@ -531,6 +541,7 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 													<td> {{ actividad_count.id_controlador__id_jefatura__id_nivel__descripcion_nivel }} </td>
 													<td><span class="CountNoIniciadas"> {{ actividad_count.CountNoIniciadas }}</span></td><td>{{ actividad_count.CountNoIniciadas|mul:100 |div:actividad_count.CountTotal }}% </td>
 													<td><span class="CountFinalizadas">{{ actividad_count.CountFinalizadas }}</span> </td><td>{{ actividad_count.CountFinalizadas|mul:100 |div:actividad_count.CountTotal }}% </td>
+													<td><span class="CountEnCurso">{{ actividad_count.CountEnCurso }}</span> </td><td>{{ actividad_count.CountEnCurso|mul:100 |div:actividad_count.CountTotal }}% </td>
 													<td><span class="CountConRetraso">{{ actividad_count.CountConRetraso }}</span> </td><td>{{ actividad_count.CountConRetraso|mul:100 |div:actividad_count.CountTotal }}% </td>
 													<td><span class="CountSinMovimiento">{{ actividad_count.CountSinMovimiento }}</span> </td><td>{{ actividad_count.CountSinMovimiento|mul:100 |div:actividad_count.CountTotal }}% </td>
 													<td><span class="CountEliminadas">{{ actividad_count.CountEliminadas }} </span></td><td>{{ actividad_count.CountEliminadas|mul:100 |div:actividad_count.CountTotal }}% </td>
@@ -555,6 +566,7 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 													<td style="background-color:#bec1cb; font-weight: bold; color:#4f4f4f; width:150px;"> Total General</td>
 													<td style="background-color:#1e7799; font-weight: bold; color:#ffffff;"><span class="CountNoIniciadasVal"></span> </td><td style="background-color:#1e7799; font-weight: bold; color:#ffffff;"> <span class="CountNoIniciadasValPer"></span>%</td>
 													<td style="background-color:#70ad47; font-weight: bold; color:#ffffff;"><span class="CountFinalizadasVal"></span> </td><td style="background-color:#70ad47; font-weight: bold; color:#ffffff;"> <span class="CountFinalizadasValPer"></span>%</td>
+													<td style="background-color:#6783b5; font-weight: bold; color:#ffffff;"><span class="CountEnCursoVal"></span> </td><td style="background-color:#6783b5; font-weight: bold; color:#ffffff;"> <span class="CountEnCursoValPer"></span>%</td>
 													<td style="background-color:#808080; font-weight: bold; color:#ffffff;"><span class="CountConRetrasoVal"></span> </td><td style="background-color:#808080; font-weight: bold; color:#ffffff;"> <span class="CountConRetrasoValPer"></span>%</td>
 													<td style="background-color:#e6ac00; font-weight: bold; color:#ffffff;"><span class="CountSinMovimientoVal"></span> </td><td style="background-color:#e6ac00; font-weight: bold; color:#ffffff;"> <span class="CountSinMovimientoValPer"></span>%</td>
 													<td style="background-color:#ed7d31; font-weight: bold; color:#ffffff;"><span class="CountEliminadasVal"></span></td><td style="background-color:#ed7d31; font-weight: bold; color:#ffffff;"><span class="CountEliminadasValPer"></span>%</td>

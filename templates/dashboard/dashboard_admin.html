@@ -142,46 +142,48 @@ var myChart3 = new Chart(ctx3, {
         labels: [{% for item3 in UnidadesAsociadas %}'{{ item3.id_controlador__id_jefatura__id_nivel__descripcion_nivel}} ', {% endfor %}],
         datasets: [{
             label: 'Actividades Totales',
+
             data: [{% for item3 in UnidadesAsociadas %}{{ item3.CantidadPlan }}, {% endfor %}],
 			backgroundColor: poolColors(nElementos),
             borderWidth: 0,
        },{
 
+			minBarLength: 1,
 			label: 'Actividades Finalizadas',
        		 data: {{ valores.ValFinalizadas }},
        		 borderWidth: 0,
        		 backgroundColor: poolColors(nElementos),
 
         },{
-
+			 minBarLength: 1,
         	 label: 'Actividades En Curso',
        		 data: {{ valores.ValEnCurso }},
        		 borderWidth: 0,
        		 backgroundColor: poolColors(nElementos),
 
         },{
-
+			minBarLength: 1,
      	     label: 'Actividades No Iniciadas',
        		 data: {{ valores.ValNoIniciado }},
        		 borderWidth: 0,
        		 backgroundColor: poolColors(nElementos),
 
         },{
-
+			 minBarLength: 1,
      	     label: 'Actividades Con Retraso',
        		 data: {{ valores.ValConRetraso }},
        		 borderWidth: 0,
        		 backgroundColor: poolColors(nElementos),
 
         },{
-
+			 minBarLength: 1,
      	     label: 'Actividades Sin Movimiento',
        		 data: {{ valores.ValSinMovimiento }},
        		 borderWidth: 0,
        		 backgroundColor: poolColors(nElementos),
 
         },{
-
+			 minBarLength: 1,
              label: 'Actividades Eliminadas',
        		 data: {{ valores.ValEliminadas }},
        		 borderWidth: 0,
@@ -190,6 +192,8 @@ var myChart3 = new Chart(ctx3, {
 
         }]
     },
+
+
     options: {
 
     			title: {
@@ -201,17 +205,25 @@ var myChart3 = new Chart(ctx3, {
            		 display: false
          		},
 
+
+
          		scales: {
+
+
 					yAxes: [{
 
 
 					  ticks: {
-						beginAtZero:true,
+						beginAtZero:false,
 						// max:plugin.settings.maxDataValue,
 						//maxTicksLimit: 5
-						suggestedMin:0,
+
+
+
 					  }
 					}]
+
+
 				},
 
       		  plugins: {

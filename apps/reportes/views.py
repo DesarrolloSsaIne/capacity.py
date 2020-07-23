@@ -88,6 +88,7 @@ class GeneraReportCurvaEjecucion(TemplateView):
             CountConRetraso=Count('id', filter=Q(id_estado_actividad=1)),
             CountSinMovimiento=Count('id', filter=Q(id_estado_actividad=6)),
             CountEliminadas=Count('id', filter=Q(id_estado_actividad=9)),
+            CountEnCurso=Count('id', filter=Q(id_estado_actividad=8)),
             CountTotal=Count('id', filter=(~Q(id_estado_actividad=2) & ~Q(id_estado_actividad=3) & ~Q(id_estado_actividad=5) & ~Q(id_estado_actividad=10)))
 
         )

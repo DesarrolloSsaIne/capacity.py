@@ -95,43 +95,44 @@ var myChart8 = new Chart(ctx8, {
             data: [{% for item3 in UnidadesAsociadas %}{{ item3.CantidadPlan }}, {% endfor %}],
 			backgroundColor: poolColors(nElementos),
             borderWidth: 0,
-                 },{
+       },{
 
+			minBarLength: 1,
 			label: 'Actividades Finalizadas',
        		 data: {{ valores.ValFinalizadas }},
        		 borderWidth: 0,
        		 backgroundColor: poolColors(nElementos),
 
         },{
-
+			 minBarLength: 1,
         	 label: 'Actividades En Curso',
        		 data: {{ valores.ValEnCurso }},
        		 borderWidth: 0,
        		 backgroundColor: poolColors(nElementos),
 
         },{
-
+			minBarLength: 1,
      	     label: 'Actividades No Iniciadas',
        		 data: {{ valores.ValNoIniciado }},
        		 borderWidth: 0,
        		 backgroundColor: poolColors(nElementos),
 
         },{
-
+			 minBarLength: 1,
      	     label: 'Actividades Con Retraso',
        		 data: {{ valores.ValConRetraso }},
        		 borderWidth: 0,
        		 backgroundColor: poolColors(nElementos),
 
         },{
-
+			 minBarLength: 1,
      	     label: 'Actividades Sin Movimiento',
        		 data: {{ valores.ValSinMovimiento }},
        		 borderWidth: 0,
        		 backgroundColor: poolColors(nElementos),
 
         },{
-
+			 minBarLength: 1,
              label: 'Actividades Eliminadas',
        		 data: {{ valores.ValEliminadas }},
        		 borderWidth: 0,
@@ -140,6 +141,7 @@ var myChart8 = new Chart(ctx8, {
 
         }]
     },
+
     options: {
 
     			title: {

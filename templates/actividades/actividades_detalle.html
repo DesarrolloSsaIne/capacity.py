@@ -23,18 +23,16 @@ Actividades Asociadas al Objetivo
 	<section class="panel">
 							<header class="panel-heading">
 								<div class="panel-actions">
-								    <button type="button" class="volver btn btn-sm btn-info"  name="button" title="Volver"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
+									<div  >
+								    <button  type="button" class="volver btn btn-sm btn-info"  name="button" title="Volver"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
       								<span class="fa fa-reply"></span></button>
 									<button  type="button" class="create btn btn-sm btn-success" id="create" name="button" title="Agregar Nueva Actividad"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >
       								<span class="fa fa-plus"></span></button>
 									</div>
+								</div>
 
-									<h2 class="panel-title" style="font-size:16px;"> {{nombre_objetivo.nombre}} </h2>
-									<!--{% for objetivo in object_list|slice:":1" %}
+									<h2  class="panel-title" style="font-size:16px; margin-right:35px;"> {{nombre_objetivo.nombre}} </h2>
 
-								<h2 class="panel-title" style="font-size:16px;"><b>Detalle Actividades</b>  - <b>Objetivo Asociado : </b>  {% if objetivo.id_objetivo_tactico != NULL %} {{ objetivo.id_objetivo_tactico}} {% elif  objetivo.id_objetivo_operativo != NULL %}  {{ objetivo.id_objetivo_operativo}} {% else %}  {{ objetivo.id_objetivo_tacticotn}}  {% endif %}</h2>
-
-  								{% endfor %}-->
 							</header>
 							<div class="panel-body">
 								<table class="table table-bordered table-striped mb-none" id="datatable-default">
@@ -185,6 +183,7 @@ Actividades Asociadas al Objetivo
 
 <script type="text/javascript">
 
+
 $(".volver").click(function() {
     window.location.href = '{% url 'ActividadesObjetivosListar'  %}';
     return false;
@@ -233,6 +232,8 @@ $('#datatable-default').on('click', '.descripcion_actividad', function () {
 $('#datatable-default').DataTable({
 "ordering": false //desactiva el ordenamiento de la tabla para que el order_by del queryset funcione. ("order": [[ 3, "desc" ]]) para ordenar desde jquery.
 });
+
+
 
 
 </script>

@@ -56,12 +56,9 @@ class RegistroHorasList(ListView):
         except Ges_Controlador.DoesNotExist:
             usuario_controlador= 0
             pass
-        try:
-            usuario_controladorTitle = Ges_Controlador.objects.filter(
-                Q(id_jefatura=id_jefatura.id) & Q(id_periodo=periodo_actual.id))
-        except Ges_Controlador.DoesNotExist:
-            usuario_controlador = 0
-            pass
+
+
+        Unidad= Ges_Jefatura.objects.filter(id_user_id=id_usuario_actual).values('id_nivel__descripcion_nivel')
 
 
         if usuario_controlador == 0:
@@ -88,7 +85,8 @@ class RegistroHorasList(ListView):
             else:
                  horas_totales= dias_totales * 8
 
-            context['nivel'] = usuario_controladorTitle
+            context['nivel'] = Unidad
+
             context['estado'] = {'estado': usuario_controlador.estado_flujo}
             context['object_list'] = lista_horas
             context['calculo'] = {'dias_totales': dias_totales ,

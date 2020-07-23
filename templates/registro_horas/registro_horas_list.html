@@ -2,7 +2,7 @@
 
 
 {% block title %}
-Registro de horas
+Registro de Horas
 {% endblock %}
 
 
@@ -47,8 +47,8 @@ Registro de horas
 									<!--<a href="#" class="fa fa-times"></a>-->
 								</div>
 
-								{% for horas in object_list|slice:":1" %}
-								<h2 class="panel-title">  {{ horas.id_nivel}}  </h2>
+								{% for nivel in nivel|slice:":1" %}
+								<h2 class="panel-title">  {{ nivel.id_nivel__descripcion_nivel}}  </h2>
   								{% endfor %}
 							</header>
 							<div class="panel-body">
