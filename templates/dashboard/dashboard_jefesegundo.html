@@ -1,0 +1,307 @@
+{% extends 'base/base.html' %}
+{% load sitetree %}
+
+{% block title %}
+Inicio jefe segundo
+{% endblock %}
+
+{% block extrajs %}
+
+
+<script type="text/javascript">
+
+
+$( document ).ready(function() {
+
+
+
+
+/////////////////////graficos 2ra jefatura////////////////////
+var ctx7 =$('#chart_siete');
+
+var nElementos= 0;
+{% for item in GrafEstadosSJ %}
+var nElementos= nElementos + 1;
+{% endfor %}
+
+var myChart7 = new Chart(ctx7, {
+    type: 'bar',
+    data: {
+        labels: [{% for item in GrafEstadosSJ %}'{{ item.id_estado_actividad__descripcion_estado }}', {% endfor %}],
+        datasets: [{
+      	    showLine: false,
+            label: 'Nro. Actividades',
+            data: [{% for item in GrafEstadosSJ %}{{ item.CantidadEst }}, {% endfor %}],
+			backgroundColor:poolColors(nElementos),
+            borderWidth: 0,
+        }]
+    },
+    options: {
+   			   title: {
+					display: true,
+					text: 'Avance por Actividad Total',
+					position:'top',
+				},
+	           legend: {
+           		 display: false
+         		},
+
+				scales: {
+					yAxes: [{
+
+
+					  ticks: {
+						beginAtZero:true,
+						// max:plugin.settings.maxDataValue,
+						//maxTicksLimit: 5
+						suggestedMin:0
+					  }
+					}]
+				},
+
+
+			 plugins: {
+			  datalabels: {
+				anchor: 'end',
+				align: 'top',
+				offset:-5,
+
+				color: '#a7a7a7',
+				font: {
+				  size: '10'
+
+				}
+			  }
+			}
+
+
+
+    }
+});
+
+var ctx8 = $('#chart_ocho');
+
+var nElementos= 0;
+{% for item in UnidadesAsociadas %}
+var nElementos= nElementos + 1;
+{%  endfor %}
+
+var myChart8 = new Chart(ctx8, {
+    type: 'bar',
+    data: {
+        labels: [{% for item3 in UnidadesAsociadas %}'{{ item3.id_controlador__id_jefatura__id_nivel__descripcion_nivel}} ', {% endfor %}],
+        datasets: [{
+            label: 'Actividades Totales',
+            data: [{% for item3 in UnidadesAsociadas %}{{ item3.CantidadPlan }}, {% endfor %}],
+			backgroundColor: poolColors(nElementos),
+            borderWidth: 0,
+                 },{
+
+			label: 'Actividades Finalizadas',
+       		 data: {{ valores.ValFinalizadas }},
+       		 borderWidth: 0,
+       		 backgroundColor: poolColors(nElementos),
+
+        },{
+
+        	 label: 'Actividades En Curso',
+       		 data: {{ valores.ValEnCurso }},
+       		 borderWidth: 0,
+       		 backgroundColor: poolColors(nElementos),
+
+        },{
+
+     	     label: 'Actividades No Iniciadas',
+       		 data: {{ valores.ValNoIniciado }},
+       		 borderWidth: 0,
+       		 backgroundColor: poolColors(nElementos),
+
+        },{
+
+     	     label: 'Actividades Con Retraso',
+       		 data: {{ valores.ValConRetraso }},
+       		 borderWidth: 0,
+       		 backgroundColor: poolColors(nElementos),
+
+        },{
+
+     	     label: 'Actividades Sin Movimiento',
+       		 data: {{ valores.ValSinMovimiento }},
+       		 borderWidth: 0,
+       		 backgroundColor: poolColors(nElementos),
+
+        },{
+
+             label: 'Actividades Eliminadas',
+       		 data: {{ valores.ValEliminadas }},
+       		 borderWidth: 0,
+       		 backgroundColor: poolColors(nElementos),
+
+
+        }]
+    },
+    options: {
+
+    			title: {
+					display: true,
+					text: 'Avance de Actividades por Unidad'
+				},
+
+	           legend: {
+           		 display: false
+         		},
+
+         		scales: {
+					yAxes: [{
+
+
+					  ticks: {
+						beginAtZero:true,
+						// max:plugin.settings.maxDataValue,
+						//maxTicksLimit: 5
+						suggestedMin:0,
+					  }
+					}]
+				},
+
+      		  plugins: {
+			  datalabels: {
+				anchor: 'end',
+				align: 'top',
+				formatter: Math.round,
+				color: '#a7a7a7',
+				font: {
+				  size: '10'
+
+				}
+			  }
+			}
+
+
+
+
+    }
+});
+
+
+/////////////////////Fin graficos 2ra jefatura////////////////////
+
+
+function dynamicColors() {
+    var r = Math.floor(Math.random() * 255);
+    var g = Math.floor(Math.random() * 255);
+    var b = Math.floor(Math.random() * 255);
+    return "rgba(" + r + "," + g + "," + b + ", 1)";
+}
+
+function poolColors(a) {
+    var pool = [];
+    for(i = 0; i < a; i++) {
+        pool.push(dynamicColors());
+    }
+    return pool;
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+});
+
+
+$("#download_por_actividad_sj").click(function(){
+  /*Get image of canvas element*/
+  var url_base64jp = document.getElementById("chart_siete").toDataURL("image/jpg");
+  /*get download button (tag: <a></a>) */
+  var a =  document.getElementById("download_por_actividad_sj");
+  /*insert chart image url to download button (tag: <a></a>) */
+  a.href = url_base64jp;
+});
+
+
+$("#download_por_actividad_detalleSJ").click(function(){
+  /*Get image of canvas element*/
+  var url_base64jp = document.getElementById("chart_ocho").toDataURL("image/jpg");
+  /*get download button (tag: <a></a>) */
+  var a =  document.getElementById("download_por_actividad_detalleSJ");
+  /*insert chart image url to download button (tag: <a></a>) */
+  a.href = url_base64jp;
+});
+
+
+
+
+		</script>
+	{% endblock %}
+
+
+
+{% block content %}
+
+
+
+
+{% if GrupoDashboard == 'GrupoJefeSegunda' %}
+
+<div class="col-md-6" >
+<section class="panel" >
+	<div class="panel-body"  >
+		<canvas id="chart_siete" height="200"></canvas>
+		<div style="text-align:right; position:relative; z-index:1; ">
+			<a id="download_por_actividad_sj" style="width:20px; height:20px; "  name="download_por_actividad_sj"  download="Avance_por_Actividad.jpg" href="" class="btn btn-sm btn-success" title="Descargar Gráfico" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
+				<span style="margin-left:-5px; " class="fa fa-download"></span>
+			</a>
+		</div>
+	</div>
+</section>
+</div>
+
+
+<div class="col-md-6">
+<section class="panel" >
+	<div class="panel-body" style="height:335px; overflow: auto; " >
+
+		<div style="text-align:center; font-weight:bold; font-family:arial; font-size:12px;">Resumen del Área</div>
+
+		Estado Seguimiento <div  style="text-align:right; margin-top:-22px; font-weight:bold;">{{estado_seguimiento.estado}}</div>
+
+		<div style="border-bottom: 1px solid #3d9b8c; margin-bottom:7px; opacity: 0.6"></div>
+
+
+		Estado Periodo Validación<div  style="text-align:right; margin-top:-22px; font-weight:bold;">{{estado_validacion.estado}}</div>
+		<div style="border-bottom: 1px solid #7632dc; margin-bottom:7px; opacity: 0.6;"></div>
+
+		Actividades Totales Registradas<div  style="text-align:right; margin-top:-22px; font-weight:bold;">{{total_actividades_por_el_departamento.cantidad}}</div>
+		<div style="border-bottom: 1px solid #759e2b; margin-bottom:7px; opacity: 0.6"></div>
+
+
+		<div><b>Estado Flujo</b></div>
+		<div style="border-bottom: 1px solid #e70f28; margin-bottom:7px; opacity: 0.6"></div>
+		{% for items in PlanesPorArea %}
+			{{items.id_controlador__id_jefatura__id_nivel__descripcion_nivel}}<div  style="text-align:right; margin-top:-22px; font-weight:bold;">{{items.id_controlador__estado_flujo__descripcion_estado}}</div>
+
+			<div style="border-bottom: 1px solid #81a9da; margin-bottom:7px; opacity: 0.6"></div>
+		{% endfor %}
+
+
+	</div>
+</section>
+</div>
+
+<div class="col-md-12">
+<section class="panel">
+<div class="panel-body">
+
+	<canvas id="chart_ocho" ></canvas>
+		<div style="text-align:right; ">
+			<a id="download_por_actividad_detalleSJ" style="width:20px; height:20px;"  name="download_por_actividad_detalleSJ"  download="Avance_por_actividad_detalle.jpg" href="" class="btn btn-sm btn-success" title="Descargar Gráfico" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
+			<span style="margin-left:-5px; " class="fa fa-download"></span>
+		</a>
+		</div>
+	</div>
+</section>
+</div>
+
+
+{% endif %}
+
+	{% endblock %}

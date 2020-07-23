@@ -1,0 +1,144 @@
+{% extends 'base/base.html' %}
+{% load sitetree %}
+
+{% block title %}
+Inicio Formulador
+{% endblock %}
+
+{% block extrajs %}
+
+
+<script type="text/javascript">
+
+</script>
+
+{% endblock %}
+
+
+{% block content %}
+
+
+{% if GrupoDashboard == 'GrupoFormula' %}
+
+<div class="col-md-4" >
+<section class="panel">
+
+<div class="panel-body" style="background-color: #0088cc; color: white;">
+
+
+<h5>Estado del Flujo:</h5> <div style=" text-align:right; margin-top:-25px;"><h5 ><b>{{ estado_flujo.estado}}</b></h5></div>
+
+</div>
+</section>
+</div>
+
+<div class="col-md-4">
+<section class="panel">
+
+<div class="panel-body" style="background-color: #0088cc; color: white;">
+
+<h5>Estado del Plan:</h5> <div style=" text-align:right; margin-top:-25px;"><h5 ><b>{{estado_plan.estado}}</b></h5></div>
+
+
+</div>
+</section>
+</div>
+<div class="col-md-4">
+<section class="panel">
+
+<div class="panel-body" style="background-color: #0088cc; color: white;">
+
+<h5>Etapa Seguimiento:</h5> <div style=" text-align:right; margin-top:-25px;"><h5 ><b>{{estado_seguimiento.estado}}</b></h5></div>
+
+
+</div>
+</section>
+</div>
+
+
+<div class="col-md-12">
+<section class="panel">
+
+
+											<div class="panel-body">
+												<div class="row text-center">
+													<div class="col-md-2">
+														<div  class="circular-bar">
+															<div class="circular-bar-chart" data-percent="{{actividades.total_finalizada_per}}" data-plugin-options='{"size": 127, "barColor": "#70ad47", "delay": 300 }'>
+																<strong style="font-size:15px;" >Finalizadas</strong>
+																<label><span style="font-size:14px; " class="percent">{{actividades.total_finalizada_per}}</span>%</label>
+																<label style="margin-top:20px; margin-left:-2px; font-size:14px;"><span class="">({{actividades.total_finalizada}})</span></label>
+															</div>
+														</div>
+													</div>
+													<div class="col-md-2">
+														<div class="circular-bar">
+															<div class="circular-bar-chart" data-percent="{{actividades.total_en_curso_per}}" data-plugin-options='{"size": 127, "barColor": "#2BAAB1", "delay": 600 }'>
+																<strong style="font-size:15px;">En Curso</strong>
+																<label><span style="font-size:14px; " class="percent">{{actividades.total_en_curso_per}}</span>%</label>
+																<label style="margin-top:20px; margin-left:-2px; font-size:14px;"><span class="">({{actividades.total_en_curso}})</span></label>
+															</div>
+														</div>
+													</div>
+
+													<div class="col-md-2">
+														<div class="circular-bar">
+															<div class="circular-bar-chart" data-percent="{{actividades.total_no_iniciadas_per}}" data-plugin-options='{ "size": 127,"barColor": "#e6ac00", "delay": 600 }'>
+																<strong style="font-size:15px;">No Iniciadas</strong>
+																<label><span style="font-size:14px; " class="percent">{{actividades.total_no_iniciadas_per}}</span>%</label>
+																<label style="margin-top:20px; margin-left:-2px; font-size:14px;"><span class="">({{actividades.total_no_iniciadas}})</span></label>
+															</div>
+														</div>
+													</div>
+													<div  class="col-md-2">
+														<div  class="circular-bar">
+															<div  class="circular-bar-chart" data-percent="{{actividades.total_con_retraso_per}}" data-plugin-options='{"size": 127, "barColor": "#ca3939", "delay": 600 }'>
+																<strong style="font-size:15px;">Con Retraso</strong>
+																<label><span style="font-size:14px; " class="percent">{{actividades.total_con_retraso_per}}</span>%</label>
+																<label style="margin-top:20px; margin-left:-2px; font-size:14px;"><span class="">({{actividades.total_con_retraso}})</span></label>
+															</div>
+														</div>
+													</div>
+																										<div  class="col-md-2">
+														<div  class="circular-bar">
+															<div  class="circular-bar-chart" data-percent="{{actividades.total_sin_movimiento_per}}" data-plugin-options='{"size": 127, "barColor": "#81a9da", "delay": 600 }'>
+																<strong style="font-size:13px;">Sin Movimiento</strong>
+																<label><span style="font-size:14px; " class="percent">{{actividades.total_sin_movimiento_per}}</span>%</label>
+																<label style="margin-top:20px; margin-left:-2px; font-size:14px;"><span class="">({{actividades.total_sin_movimiento}})</span></label>
+															</div>
+														</div>
+													</div>
+																										<div  class="col-md-2">
+														<div  class="circular-bar">
+															<div  class="circular-bar-chart" data-percent="{{actividades.total_eliminada_per}}" data-plugin-options='{"size": 127, "barColor": "#797963", "delay": 600 }'>
+																<strong style="font-size:15px;">Eliminadas</strong>
+																<label><span style="font-size:14px; " class="percent">{{actividades.total_eliminada_per}}</span>%</label>
+																<label style="margin-top:20px; margin-left:-2px; font-size:14px;"><span class="">({{actividades.total_eliminada}})</span></label>
+															</div>
+														</div>
+													</div>
+
+
+
+												</div>
+											</div>
+										</section>
+
+</div>
+
+<div class="col-md-12">
+<section class="panel">
+
+<div class="panel-body" >
+	<div style="text-align:right;"> Total Actividades:<b>  {{total_actividades.total}}</b></div>
+
+
+</div>
+</section>
+</div>
+
+{% endif %}
+
+
+
+{% endblock %}

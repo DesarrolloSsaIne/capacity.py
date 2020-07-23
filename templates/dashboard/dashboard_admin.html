@@ -1,0 +1,422 @@
+{% extends 'base/base.html' %}
+{% load sitetree %}
+
+{% block title %}
+Inicio Admin
+{% endblock %}
+
+{% block extrajs %}
+
+
+<script type="text/javascript">
+
+
+$( document ).ready(function() {
+
+
+var ctx1 = $('#chart_uno');
+
+var nElementos= 0;
+{% for item in qs %}
+var nElementos= nElementos + 1;
+{% endfor %}
+
+var myChart1 = new Chart(ctx1, {
+    type: 'bar',
+    data: {
+        labels: [{% for item in qs %}'{{ item.id_estado_actividad__descripcion_estado }}', {% endfor %}],
+        datasets: [{
+      	    showLine: false,
+            label: 'Nro. Actividades',
+            data: [{% for item in qs %}{{ item.CantidadEst }}, {% endfor %}],
+			backgroundColor:poolColors(nElementos),
+            borderWidth: 0,
+        }]
+    },
+    options: {
+   			   title: {
+					display: true,
+					text: 'Avance por Actividad',
+					position:'top',
+				},
+	           legend: {
+           		 display: false
+         		},
+
+				scales: {
+					yAxes: [{
+
+
+					  ticks: {
+						beginAtZero:true,
+						// max:plugin.settings.maxDataValue,
+						//maxTicksLimit: 5
+						suggestedMin:0
+					  }
+					}]
+				},
+
+
+			 plugins: {
+			  datalabels: {
+				anchor: 'end',
+				align: 'top',
+				offset:-5,
+
+				color: '#a7a7a7',
+				font: {
+				  size: '10'
+
+				}
+			  }
+			}
+
+
+
+    }
+});
+
+var ctx2 =$('#chart_dos');
+
+var nElementos= 0;
+{% for item in qs2 %}
+var nElementos= nElementos + 1;
+{%  endfor %}
+
+var myChart2 = new Chart(ctx2, {
+    type: 'doughnut',
+    data: {
+        labels: [{% for item2 in qs2 %}'{{ item2.estado_flujo__descripcion_estado }}', {% endfor %}],
+        datasets: [{
+            label: 'Nro. Planes' ,
+            data: [{% for item2 in qs2 %}{{ item2.CantidadAct }}, {% endfor %}],
+			backgroundColor: poolColors(nElementos),
+            borderWidth: 3,
+        }]
+    },
+    options: {
+   			 title: {
+					display: true,
+					text: 'Avance por Planes'
+				},
+	           legend: {
+           		 display: true,
+           		 position:'left'
+         		},
+
+         		 plugins: {
+				  datalabels: {
+					anchor: 'center',
+					align: 'center',
+					formatter: Math.round,
+					color: '#ffffff',
+					font: {
+					  size: '12'
+
+					}
+				  }
+				}
+
+
+
+
+    }
+
+
+
+});
+
+
+
+
+var ctx3 = $('#chart_tres');
+
+var nElementos= 0;
+{% for item in UnidadesAsociadas %}
+var nElementos= nElementos + 1;
+{%  endfor %}
+
+var myChart3 = new Chart(ctx3, {
+    type: 'bar',
+    data: {
+        labels: [{% for item3 in UnidadesAsociadas %}'{{ item3.id_controlador__id_jefatura__id_nivel__descripcion_nivel}} ', {% endfor %}],
+        datasets: [{
+            label: 'Actividades Totales',
+            data: [{% for item3 in UnidadesAsociadas %}{{ item3.CantidadPlan }}, {% endfor %}],
+			backgroundColor: poolColors(nElementos),
+            borderWidth: 0,
+       },{
+
+			label: 'Actividades Finalizadas',
+       		 data: {{ valores.ValFinalizadas }},
+       		 borderWidth: 0,
+       		 backgroundColor: poolColors(nElementos),
+
+        },{
+
+        	 label: 'Actividades En Curso',
+       		 data: {{ valores.ValEnCurso }},
+       		 borderWidth: 0,
+       		 backgroundColor: poolColors(nElementos),
+
+        },{
+
+     	     label: 'Actividades No Iniciadas',
+       		 data: {{ valores.ValNoIniciado }},
+       		 borderWidth: 0,
+       		 backgroundColor: poolColors(nElementos),
+
+        },{
+
+     	     label: 'Actividades Con Retraso',
+       		 data: {{ valores.ValConRetraso }},
+       		 borderWidth: 0,
+       		 backgroundColor: poolColors(nElementos),
+
+        },{
+
+     	     label: 'Actividades Sin Movimiento',
+       		 data: {{ valores.ValSinMovimiento }},
+       		 borderWidth: 0,
+       		 backgroundColor: poolColors(nElementos),
+
+        },{
+
+             label: 'Actividades Eliminadas',
+       		 data: {{ valores.ValEliminadas }},
+       		 borderWidth: 0,
+       		 backgroundColor: poolColors(nElementos),
+
+
+        }]
+    },
+    options: {
+
+    			title: {
+					display: true,
+					text: 'Avance por Unidad'
+				},
+
+	           legend: {
+           		 display: false
+         		},
+
+         		scales: {
+					yAxes: [{
+
+
+					  ticks: {
+						beginAtZero:true,
+						// max:plugin.settings.maxDataValue,
+						//maxTicksLimit: 5
+						suggestedMin:0,
+					  }
+					}]
+				},
+
+      		  plugins: {
+			  datalabels: {
+				anchor: 'end',
+				align: 'top',
+				formatter: Math.round,
+				color: '#a7a7a7',
+				font: {
+				  size: '10'
+
+				}
+			  }
+			}
+
+
+
+
+    }
+});
+
+
+
+
+function dynamicColors() {
+    var r = Math.floor(Math.random() * 255);
+    var g = Math.floor(Math.random() * 255);
+    var b = Math.floor(Math.random() * 255);
+    return "rgba(" + r + "," + g + "," + b + ", 1)";
+}
+
+function poolColors(a) {
+    var pool = [];
+    for(i = 0; i < a; i++) {
+        pool.push(dynamicColors());
+    }
+    return pool;
+}
+
+$("#download_por_actividad").click(function(){
+  /*Get image of canvas element*/
+  var url_base64jp = document.getElementById("chart_uno").toDataURL("image/jpg");
+  /*get download button (tag: <a></a>) */
+  var a =  document.getElementById("download_por_actividad");
+  /*insert chart image url to download button (tag: <a></a>) */
+  a.href = url_base64jp;
+});
+
+
+$("#download_por_planes").click(function(){
+  /*Get image of canvas element*/
+  var url_base64jp = document.getElementById("chart_dos").toDataURL("image/jpg");
+  /*get download button (tag: <a></a>) */
+  var a =  document.getElementById("download_por_planes");
+  /*insert chart image url to download button (tag: <a></a>) */
+  a.href = url_base64jp;
+});
+
+$("#download_por_unidad").click(function(){
+  /*Get image of canvas element*/
+  var url_base64jp = document.getElementById("chart_tres").toDataURL("image/jpg");
+  /*get download button (tag: <a></a>) */
+  var a =  document.getElementById("download_por_unidad");
+  /*insert chart image url to download button (tag: <a></a>) */
+  a.href = url_base64jp;
+});
+
+
+
+});
+		</script>
+	{% endblock %}
+
+
+{% block content %}
+
+{% if messages %}
+		  {% for message in messages %}
+
+			<div style="border-radius:0;" {% if message.tags %} id="danger-alert" class="{{request.session.message_class}} fade show mb-0" role="alert" {% endif %}>
+			  {{ message }}
+			  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			  </button>
+			</div>
+
+		  {% endfor %}
+
+	{% endif %}
+
+
+{% if GrupoDashboard == 'GrupoAdmin' %}
+
+<div class="col-md-3" >
+<section class="panel" >
+
+<div class="panel-body" style="background-color: #0088cc; color: white;  height:50px;">
+
+<h6 style="margin-top:5px;">Periodo:</h6> <div style=" text-align:right; margin-top:-24px; "><h6 ><b>{{PeriodoActual.estado}}</b></h6></div>
+
+
+</div>
+</section>
+</div>
+
+<div class="col-md-3">
+<section class="panel">
+
+<div class="panel-body" style="background-color: #0088cc; color: white; height:50px;">
+
+<h6 style="margin-top:5px;">Estado Seguimiento:</h6> <div style=" text-align:right; margin-top:-24px;"><h6 ><b>{{estado_seguimiento.estado}}</b></h6></div>
+
+
+</div>
+</section>
+</div>
+<div class="col-md-3">
+<section class="panel">
+
+<div class="panel-body" style="background-color: #0088cc; color: white; height:50px;">
+
+<h6 style="margin-top:5px;">Estado Validación:</h6> <div style=" text-align:right; margin-top:-24px;"><h6 ><b>{{estado_validacion.estado}}</b></h6></div>
+
+
+</div>
+</section>
+</div>
+<div class="col-md-3">
+<section class="panel">
+
+<div class="panel-body" style="background-color: #0088cc; color: white; height:50px;">
+
+<h6 style="margin-top:5px;">Actividades Total:</h6> <div style=" text-align:right; margin-top:-24px;"><h6 ><b>{{total_actividades_institucion.cantidad}}</b></h6></div>
+
+
+</div>
+</section>
+</div>
+
+<div class="col-md-6" >
+<section class="panel" >
+
+	<div class="panel-body"  >
+
+
+		<canvas id="chart_uno" height="200"></canvas>
+
+		<div style="text-align:right; position:relative; z-index:1; ">
+			<a id="download_por_actividad" style="width:20px; height:20px; "  name="download_por_actividad"  download="Avance_por_Actividad.jpg" href="" class="btn btn-sm btn-success" title="Descargar Gráfico" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
+				<span style="margin-left:-5px; " class="fa fa-download"></span>
+			</a>
+		</div>
+
+	</div>
+
+</section>
+
+
+
+
+</div>
+
+
+
+
+
+<div class="col-md-6">
+<section class="panel">
+	<div class="panel-body">
+
+	<canvas id="chart_dos"   height="200"></canvas>
+		<div style="text-align:right; position:relative; z-index:1;">
+			<a id="download_por_planes" style="width:20px; height:20px;"  name="download_por_planes"  download="Avance_por_planes.jpg" href="" class="btn btn-sm btn-success" title="Descargar Gráfico" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
+			<span style="margin-left:-5px; " class="fa fa-download"></span>
+		</a>
+	</div>
+
+	</div>
+</section>
+
+
+</div>
+
+
+
+<div class="col-md-12">
+<section class="panel">
+
+<div class="panel-body">
+
+	<canvas id="chart_tres" ></canvas>
+		<div style="text-align:right; ">
+			<a id="download_por_unidad" style="width:20px; height:20px;"  name="download_por_unidad"  download="Avance_por_unidad.jpg" href="" class="btn btn-sm btn-success" title="Descargar Gráfico" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
+			<span style="margin-left:-5px; " class="fa fa-download"></span>
+			</a>
+		</div>
+	</div>
+</section>
+</div>
+
+
+
+
+{% endif %}
+
+
+
+	{% endblock %}

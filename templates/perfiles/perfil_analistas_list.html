@@ -1,7 +1,9 @@
 {% extends 'base/base.html' %}
 {% block title %}
-Gestionar Jefaturas Asociadas a la Estructura Institucional
+Gestionar Perfiles de Analistas de Planificación
 {% endblock %}
+
+
 {% block content %}
 
 {% if messages %}
@@ -22,9 +24,10 @@ Gestionar Jefaturas Asociadas a la Estructura Institucional
 							<header class="panel-heading">
 								<div class="panel-actions">
 
+<!--				    <button type="button" class="volver btn btn-sm btn-info"  name="button" title="Volver" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >-->
+<!--      								<span class="fa fa-reply"></span></button>-->
 
-
-								 <button  type="button" class="create btn btn-sm btn-success"  name="button" title="Agregar Funcionario">
+								 <button  type="button" class="create btn btn-sm btn-success"  name="button" title="Agregar Analista de Planificación" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
       								<span class="fa fa-plus"></span></button>
 
 
@@ -32,7 +35,7 @@ Gestionar Jefaturas Asociadas a la Estructura Institucional
 								</div>
 
 
-								<h2 class="panel-title">  Listado Jefaturas Registradas  </h2>
+								<h2 class="panel-title">  Listado de Analistas de Planificación </h2>
 
 							</header>
 							<div class="panel-body">
@@ -40,27 +43,24 @@ Gestionar Jefaturas Asociadas a la Estructura Institucional
 									<thead>
 										<tr>
 
-											<th>Nombre Jefatura</th>
-											<th>Nivel Jefatura</th>
+<!--											<th>Nombre Jefatura</th>-->
+											<th>Usuario</th>
 
                                             <th>Opciones</th>
 										</tr>
 									</thead>
 									<tbody>
 
-                                            {% for jefatura in object_list %}
+                                            {% for usuario in object_list %}
                                                 <tr>
 
-                                                    <td> {{ jefatura.id_user.first_name }} {{ jefatura.id_user.last_name }}</td>
+                                                    <td> {{ usuario.first_name }} {{ usuario.last_name }}</td>
 
-													<td> {{ jefatura.id_nivel}}</td>
+<!--													<td> {{ analista.id}}</td>-->
 
+    												 <td style="width:40px; text-align:center;">
 
-
-    												 <td style="width:40px;">
-														 <button type="button" title="Actualizar Registro" class="update btn btn-sm btn-primary" data-id="{% url 'JefaturaEditar' jefatura.id %}" >
-														<span class="fa fa-pencil"></span></button>
-														 <button type="button" title="Eliminar Registro" class="delete btn btn-sm btn-danger" data-id="{% url 'JefaturaEliminar' jefatura.id %}">
+														 <button type="button"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" title="Eliminar Usuario del Grupo" class="delete btn btn-sm btn-danger" data-id="{% url 'PerfilEliminarAnalista' usuario.id %}">
       													  <span class="fa fa-trash-o"></span></button>
                                                     </td>
                                                 </tr>
@@ -78,7 +78,7 @@ Gestionar Jefaturas Asociadas a la Estructura Institucional
 
 <!--Cabecera del modal -->
 <div class="modal fade" tabindex="-1" role="dialog" id="modalCreate">
-  <div class="modal-dialog modal-md" role="document">
+  <div class="modal-dialog modal-xs" role="document">
 	<div class="modal-content">
 
     </div>
@@ -94,7 +94,7 @@ Gestionar Jefaturas Asociadas a la Estructura Institucional
 
 </div>
 <div class="modal fade" tabindex="-1" role="dialog" id="modalUpdate">
-  <div class="modal-dialog modal-md" role="document">
+  <div class="modal-dialog modal-lg" role="document">
 	<div class="modal-content">
 
     </div>
@@ -120,13 +120,13 @@ Gestionar Jefaturas Asociadas a la Estructura Institucional
 <script type="text/javascript">
 
 $('.volver').click(function() {
-    window.location.href = '{% url 'PrimerNivelListar' %}';
+    window.location.href = '{% url 'PerfilListarAnalistas' %}';
     return false;
 });
 
 
 	// JS modal crea Registro
-  	 $(".create").modalForm(  {formURL: "{% url 'JefaturaCrear' %}", modalID: $("#modalCreate")});
+  	 $(".create").modalForm(  {formURL: "{% url 'PerfilCrearAnalista' %}", modalID: $("#modalCreate")});
 
 
    	 // JS modal actualiza Registro

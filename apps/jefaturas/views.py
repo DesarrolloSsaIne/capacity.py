@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from apps.jefaturas.models import Ges_Jefatura
-from apps.jefaturas.forms import JefaturasForm
+from apps.jefaturas.forms import JefaturasForm,JefaturasFormUpdate
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
 from django.contrib.messages.views import SuccessMessageMixin
@@ -97,7 +97,7 @@ class JefaturaDelete(SuccessMessageMixin, DeleteView ):
 
 class JefaturaUpdate(UpdateView):
     model = Ges_Jefatura
-    form_class = JefaturasForm
+    form_class = JefaturasFormUpdate
     template_name = 'jefaturas/jefaturas_form.html'
 
 
