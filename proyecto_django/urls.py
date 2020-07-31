@@ -4,7 +4,6 @@ from django.conf.urls import handler404
 
 
 urlpatterns = [
-
     path(r'accounts/', include('apps.registration.urls')),
     path(r'admin/', admin.site.urls),
     path(r'dashboard/', include('apps.dashboard.urls')),
@@ -29,6 +28,7 @@ urlpatterns = [
     path(r'revision_planificacion/', include('apps.revision_planificacion.urls')),
     path(r'seguimiento_formula/', include('apps.seguimiento_formula.urls')),
     path(r'reportes/', include('apps.reportes.urls')),
+    path(r'valida_seguimiento/', include('apps.valida_seguimiento.urls')),
 ]
 
 

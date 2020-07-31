@@ -1,0 +1,1015 @@
+			<header class="panel-heading">
+				<div class="panel-actions">
+				<a class="fa fa-times" data-dismiss="modal"></a>
+				</div>
+				<h2 class="panel-title">Gestión Actividades </h2>
+			</header>
+
+			<form  method="post"  action="" >
+
+				<div class="panel-body">
+					{% csrf_token %}
+
+					 <div class="{% if form.non_field_errors %}invalid{% endif %} mb-2">
+    					  {% for error in form.non_field_errors %}
+        					{{ error }}
+     					 {% endfor %}
+    				</div>
+		<div class="alert" id="modalValidacion" style="display:none" role="alert">
+		  <strong>Mensaje: </strong> <label id="mensajeError"></label>.
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		  </button>
+		</div>
+		<div class="row show-grid">
+<div class="col-md-6">
+	<input style="display:none;"  id="id_actividad" type="text" value="{{ fechas.id_actividad }}">
+	<input style="display:none;"  id="id_periodo_validacion" type="text" value="{{ fechas.id_periodo_validacion  }}">
+<div  id="xfecha_inicio_corte"  style="border-top: 1px solid #bbbbbb; border-bottom: 1px solid #bbbbbb; " > <b>Fecha Inicio Corte : </b>{{ fechas.fecha_inicio_corte }}</div>
+	<input style="display:none;" id="fecha_inicio_corte" type="text" value="{{ fechas.fecha_inicio_corte_str }}">
+	<br>
+</div>
+			<div class="col-md-6">
+
+<div  style="border-top: 1px solid #bbbbbb; border-bottom: 1px solid #bbbbbb; " ><b>Fecha Término Corte : </b>{{ fechas.fecha_termino_corte }}</div>
+<input style="display:none;"  id="fecha_termino_corte" type="text" value="{{ fechas.fecha_termino_corte_str }}">
+				<br>
+			</div>
+		</div>
+
+<div class="row show-grid">
+
+<div class="col-md-6">
+
+                <span class="show-grid-block">
+
+                    <div class="form-group">
+
+
+					<label >Periodicidad</label>
+
+		      	       {{ form.id_periodicidad}}
+
+
+
+
+				    </div>
+
+
+					   <div class="form-group">
+					<label >Producto Estadístico</label>
+					{{ form.id_producto_estadistico}}
+				</div>
+
+											<div class="form-group">
+					<label >Total Horas</label>
+		      	       {{ form.total_horas}}
+				    </div>
+
+
+                </span>
+                </div>
+
+
+	<div class="col-md-6">
+
+                <span class="show-grid-block">
+
+                    <div class="form-group">
+					<label >Horas Asociadas</label>
+		      	       {{ form.horas_actividad}}
+				    </div>
+					<div class="form-group">
+					<label >Volumen</label>
+		      	       {{ form.volumen}}
+				    </div>
+					<div class="form-group">
+					<label >Personas Asignadas</label>
+		      	       {{ form.personas_asignadas}}
+				    </div>
+
+
+
+
+
+
+                </span>
+                </div>
+
+
+		<div class="col-md-6">
+
+                <span class="show-grid-block">
+<br>
+	 <label >Fecha Inicio Actividad </label>
+				<div class="input-group">
+				<span class="input-group-addon">
+					<i class="fa fa-calendar"></i>
+				</span>
+					<input id="fecha_inicio_actividad" readonly="readonly"  type="date"  class="form-control" aria-valuetext="{{ form.fecha_inicio_actividad }} <!--">-->
+
+				</div>
+
+<br>
+
+
+
+
+	      </span>
+                </div>
+
+
+			<div class="col-md-6">
+
+                <span class="show-grid-block">
+<br>
+					 <label >Fecha Término Actividad </label>
+				<div class="input-group">
+				<span class="input-group-addon">
+					<i class="fa fa-calendar"></i>
+				</span>
+				<input id="fecha_termino_actividad"  type="date"  readonly="readonly" class="form-control" aria-valuetext="{{ form.fecha_termino_actividad }} <!--">-->
+				</div>
+
+
+
+	      </span>
+                </div>
+
+
+
+</div>
+
+<div class="row show-grid">
+
+                    <div class="col-md-12">
+                        <span class="show-grid-block">
+
+						   <div class="form-group">
+					<label >Reportar Estado</label>
+					{{ form.id_estado_actividad}}
+				</div>
+
+
+					<div class="hide-reprogramacion_inicio">
+												    <label >Reprogramacion Fecha Inicio  </label>
+				<div class="input-group">
+				<span class="input-group-addon">
+					<i class="fa fa-calendar"></i>
+				</span>
+					<input id="fecha_reprogramacion_inicio" readonly="readonly" type="date"  class="form-control" aria-valuetext="{{ form.fecha_reprogramacion_inicio }} <!--">-->
+
+				</div>
+					</div>
+						<div class="hide-reprogramacion_termino">
+											 <label >Reprogramación Fecha Término </label>
+				<div class="input-group">
+				<span class="input-group-addon">
+					<i class="fa fa-calendar"></i>
+				</span>
+				<input id="fecha_reprogramacion_termino" readonly="readonly" type="date"  class="form-control" aria-valuetext="{{ form.fecha_reprogramacion_termino }} <!--">-->
+				</div>
+						</div>
+                   </span>
+					</div>
+
+    			 <div class="col-md-6">
+                        <span class="show-grid-block">
+					<div class="hide-real_termino">
+						<label > Fecha Real Término  </label>
+				<div class="input-group">
+				<span class="input-group-addon">
+					<i class="fa fa-calendar"></i>
+				</span>
+					<input id="fecha_real_termino"  type="date"  class="form-control" aria-valuetext="{{ form.fecha_real_termino }} <!--">-->
+
+				</div>
+					</div>
+
+
+     </span>
+
+                    </div>
+	<div class="col-md-12">
+		<div class="hide-justificacion">
+					<label >Justificación</label>
+					{{ form.justificacion }}
+		</div>
+				</div>
+                <span class="show-grid-block">
+
+				</span>
+</div>
+
+
+
+
+
+
+
+</div>
+</div>
+			</div>
+
+												<div class="alert alert-danger" style="display:none;" id="mjeError">
+
+										<p id="textError"></p>
+								</div>
+
+			<div class="modal-footer">
+				<button type="button"  title="Aceptar cambios."  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" class="aceptar btn btn-sm btn-success" data-id="">
+                            <span class="fa fa-check-circle"></span> Aceptar</button>
+				<button type="button"  title="Rechazar cambios."     data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" class="rechazar btn btn-sm btn-danger" data-id="">
+                            <span class="fa fa-ban"></span> Rechazar</button>
+
+				<button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
+			</div>
+
+
+			</form>
+
+	<div class="modal valida" id="confirm-plan" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+    <header class="panel-heading">
+				<div class="panel-actions">
+
+				</div>
+				<h2 class="panel-title">Validación actividad</h2>
+			</header>
+      <div class="modal-body">
+
+<form method="post" action="" id="post-form">
+  {% csrf_token %}
+    <div class="panel-body">
+    <div class="modal-wrapper">
+        <div class="modal-icon">
+            <i class="fa fa-warning"></i>
+                </div>
+            <div class="modal-text">
+                <h4>Atención</h4>
+				<p>¿Está seguro que desea <strong>aceptar</strong> los cambios?. </p>
+
+				<textarea id="id_observacion_acepta"  cols="40" rows="10" class="form-control" style="height:80px;display:none" maxlength="2000"  placeholder="Ingrese un observación a la validación"></textarea>
+            </div>
+        </div>
+    </div>
+  <div class="modal-footer">
+    <button class="btn btn-danger" type="submit" >Confirmar</button>
+     <button class="btn btn-default" type="button"  onclick="$('#confirm-plan').hide();" >Cancelar</button>
+  </div>
+
+</form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+			<div class="modal" id="confirm-plan-rechaza" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+    <header class="panel-heading">
+				<div class="panel-actions">
+
+				</div>
+				<h2 class="panel-title">Validación actividad</h2>
+			</header>
+      <div class="modal-body">
+
+<form method="post" action="" id="post-form-rechaza">
+  {% csrf_token %}
+    <div class="panel-body">
+    <div class="modal-wrapper">
+        <div class="modal-icon">
+            <i class="fa fa-warning"></i>
+                </div>
+            <div class="modal-text">
+                <h4>Atención</h4>
+				<p>¿Está seguro que desea <strong>rechazar</strong> los cambios?. </p>
+
+            	<textarea  placeholder="Ingrese un observación a la validación"  cols="40" rows="10" class="form-control" style="height:80px;display:none" maxlength="2000" id="id_observacion_rechaza"></textarea>
+
+			</div>
+        </div>
+    </div>
+  <div class="modal-footer">
+    <button class="btn btn-danger" type="submit" >Confirmar</button>
+     <button class="btn btn-default" type="button" onclick="$('#confirm-plan-rechaza').hide();">Cancelar</button>
+  </div>
+
+</form>
+      </div>
+
+    </div>
+  </div>
+</div>
+<script>
+
+
+$('#modalUpdate').on("click", ".aceptar", function(event){
+    $('#confirm-plan').show();
+});
+
+
+$('#modalUpdate').on("click", ".rechazar", function(event){
+    $('#confirm-plan-rechaza').show();
+});
+
+
+$(function() {
+
+//////////////acepta o rechaza actividad//////////////////////
+
+
+ $(document).on('submit', '#post-form',function(e){
+     e.preventDefault();
+     var fecha_final_post= "";
+	var fecha_inicio_post= "";
+	var estado_final_post = ""
+
+	var fecha_reprograma_inicio = $('#fecha_reprogramacion_inicio').val()
+	var fecha_reprograma_termino = $('#fecha_reprogramacion_termino').val()
+	var id_estado_actividad_actual = $('#id_id_estado_actividad').val()
+	var observacion = $('#id_observacion_acepta').val()
+
+	if(id_estado_actividad_actual == 2){
+
+
+	//atraso
+	estado_final_post = 4;
+		if (fecha_reprograma_inicio != "" && fecha_reprograma_termino != "" )
+
+		{
+			fecha_inicio_post = $('#fecha_reprogramacion_inicio').val()
+			fecha_final_post = $('#fecha_reprogramacion_termino').val()
+
+		}
+		//atraso
+		if (fecha_reprograma_inicio != "" && fecha_reprograma_termino == "" )
+
+		{
+			fecha_inicio_post = $('#fecha_reprogramacion_inicio').val()
+			fecha_final_post = $('#fecha_termino_actividad').val()
+
+		}
+
+		if (fecha_reprograma_inicio == "" && fecha_reprograma_termino != "" )
+
+		{
+			fecha_inicio_post = $('#fecha_inicio_actividad').val()
+			fecha_final_post = $('#fecha_reprogramacion_termino').val()
+
+		}
+
+	}//fin estado atraso validar
+	if (id_estado_actividad_actual == 3){
+	estado_final_post = 8;
+		if (fecha_reprograma_termino != "" )
+
+		{
+			fecha_inicio_post = $('#fecha_inicio_actividad').val()
+			fecha_final_post = $('#fecha_reprogramacion_termino').val()
+
+		}
+
+
+
+	}// fin estado en curso por validar
+
+	if(id_estado_actividad_actual == 5){
+	estado_final_post = 4;
+	//atraso
+		if (fecha_reprograma_inicio != "" && fecha_reprograma_termino != "" )
+
+		{
+			fecha_inicio_post = $('#fecha_reprogramacion_inicio').val()
+			fecha_final_post = $('#fecha_reprogramacion_termino').val()
+
+		}
+		//atraso
+		if (fecha_reprograma_inicio != "" && fecha_reprograma_termino == "" )
+
+		{
+			fecha_inicio_post = $('#fecha_reprogramacion_inicio').val()
+			fecha_final_post = $('#fecha_termino_actividad').val()
+
+		}
+
+		if (fecha_reprograma_inicio == "" && fecha_reprograma_termino != "" )
+
+		{
+			fecha_inicio_post = $('#fecha_inicio_actividad').val()
+			fecha_final_post = $('#fecha_reprogramacion_termino').val()
+
+		}
+
+	}//fin sin movimiento
+
+
+		if (id_estado_actividad_actual == 10){
+		estado_final_post = 9;
+
+	}// fin estado en curso por eliminar
+
+    $.ajax({
+        type:'POST',
+        url:'{% url "update_actividad" %}',
+        data:{
+            id_actividad:$('#id_actividad').val(),
+            id_periodo_validacion:$('#id_periodo_validacion').val(),
+            csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+            estado_validacion:1,
+            fecha_inicio: fecha_inicio_post,
+            fecha_termino:fecha_final_post,
+            estado_final: estado_final_post,
+            observacion:observacion,
+            action: 'post'
+        },
+        success:function(json){
+        $("#confirm-plan").hide();
+        $("#modalValidacion").removeClass( "alert-danger" ).addClass("alert-success");
+       	$("#modalValidacion").css("display","block");
+		$("#mensajeError").text(json.error);
+		$(".aceptar, .rechazar").css("display", "none")
+		 $('#confirm-plan').hide();
+		setInterval(function() {
+			window.location.reload();
+		}, 3000);
+
+        },
+        error : function(xhr,errmsg,err) {
+        $('#confirm-plan').hide();
+        $("#modalValidacion").removeClass( "alert-success" ).addClass("alert-danger");
+		$("#modalValidacion").css("display","block");
+		$("#mensajeError").text(json.error + "post:" + xhr.responseText);
+        console.log(xhr.status + ": " + xhr.responseText);
+    }
+    });
+});
+
+ $(document).on('submit', '#post-form-rechaza',function(e){
+     e.preventDefault();
+
+
+	var estado_final_post = ""
+		var observacion = $('#id_observacion_rechaza').val()
+		var id_estado_actividad_actual = $('#id_id_estado_actividad').val()
+		var fecha_inicio = $('#fecha_inicio_actividad').val()
+		var fecha_termino = $('#fecha_termino_actividad').val()
+		var fecha_inicio_corte = $('#fecha_inicio_corte').val()
+		var fecha_termino_corte = $('#fecha_termino_corte').val()
+
+		if (id_estado_actividad_actual == 2){
+
+			estado_final_post = 1;
+		}
+		if (id_estado_actividad_actual == 3){
+
+			estado_final_post = 8;
+
+		}
+		if (id_estado_actividad_actual == 5){
+
+			estado_final_post = 6;
+
+		}
+
+		if (id_estado_actividad_actual == 10){
+
+			if (moment(fecha_inicio).isBefore(fecha_inicio_corte) && moment(fecha_termino).isBefore(fecha_termino_corte)  ) {
+				estado_final_post = 1;
+			}
+				if (moment(fecha_inicio).isAfter(fecha_inicio_corte)) {
+				estado_final_post = 4;
+			}
+
+				if (moment(fecha_inicio).isBefore(fecha_inicio_corte) && moment(fecha_termino).isAfter(fecha_termino_corte)  ) {
+				estado_final_post = 8;
+			}
+
+		}// fin estado en rechaza por eliminar
+
+    $.ajax({
+        type:'POST',
+        url:'{% url "update_actividad_rechaza" %}',
+        data:{
+            id_actividad:$('#id_actividad').val(),
+            id_periodo_validacion:$('#id_periodo_validacion').val(),
+            csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+            estado_validacion:2,
+            observacion:observacion,
+            estado_final:estado_final_post,
+            action: 'post'
+        },
+        success:function(json){
+
+        $("#confirm-plan-rechaza").hide();
+        $("#modalValidacion").removeClass( "alert-danger" ).addClass("alert-success");
+       	$("#modalValidacion").css("display","block");
+		$("#mensajeError").text(json.error);
+		$(".aceptar, .rechazar").css("display", "none")
+		setInterval(function() {
+			window.location.reload();
+		}, 3000);
+
+        },
+        error : function(xhr,errmsg,err) {
+        $('#confirm-plan-rechaza').hide();
+        $("#modalValidacion").removeClass( "alert-success" ).addClass("alert-danger");
+		$("#modalValidacion").css("display","block");
+		$("#mensajeError").text(json.error + "post:" + xhr.responseText);
+        console.log(xhr.status + ": " + xhr.responseText);
+
+    }
+    });
+});
+
+///////////////////////////////////////////////////////////
+
+	$('#id_id_producto_estadistico option:not(:selected)').attr('disabled',true);
+	$('#id_id_periodicidad option:not(:selected)').attr('disabled',true);
+
+	estado = $('#id_id_estado_actividad').val();
+	periodicidad = $('#id_id_periodicidad').val();
+
+
+
+	if(estado == 2){ // Con Retraso - Validar
+	$(".hide-justificacion").css("display", "block");
+   $(".hide-real_termino").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "block");
+    $(".hide-reprogramacion_inicio").css("display", "block");
+     $("#confirmar").css("display", "initial");
+
+	}
+
+
+	if(estado == 3){ // en curso - validar
+	//	$(".hide-justificacion").css("display", "none");
+    $(".hide-real_termino").css("display", "none");
+  //  $(".hide-reprogramacion_termino").css("display", "none");
+    $(".hide-reprogramacion_inicio").css("display", "none");
+    $('#id_justificacion').prop('required',true);
+         $("#confirmar").css("display", "initial");
+
+	}
+
+	if(estado == 10){ // Eliminada - Validar
+
+		$(".hide-justificacion").css("display", "block");
+    $(".hide-real_termino").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "none");
+    $(".hide-reprogramacion_inicio").css("display", "none");
+     $("#confirmar").css("display", "initial");
+	}
+
+
+if(estado == 0 || estado == ''){
+
+	$(".hide-justificacion").css("display", "none");
+    $(".hide-real_termino").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "none");
+    $(".hide-reprogramacion_inicio").css("display", "none");
+     $("#confirmar").css("display", "none");
+
+	$('#fecha_real_termino').removeAttr('required');
+    $('#fecha_reprogramacion_inicio').removeAttr('required');
+    $('#fecha_reprogramacion_termino').removeAttr('required');
+    $('#id_justificacion').removeAttr('required');
+    $("#id_id_estado_actividad").prop('required',true);
+	}
+
+	if (estado == 5){ // sin movimiento
+		periodicidad = $('#id_id_periodicidad').val();
+
+	if (periodicidad != 9  && periodicidad != 10 ){
+
+  	$(".hide-justificacion").css("display", "block");
+    $(".hide-real_termino").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "block");
+    $(".hide-reprogramacion_inicio").css("display", "block");
+     $("#confirmar").css("display", "initial");
+
+    $('#fecha_real_termino').removeAttr('required').val('');
+    $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
+    $('#fecha_reprogramacion_termino').removeAttr('required').val('');
+    $('#id_justificacion').prop('required',true).val('');
+
+
+
+	}else{
+
+	  	$(".hide-justificacion").css("display", "block");
+    $(".hide-real_termino").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "none");
+    $(".hide-reprogramacion_inicio").css("display", "none");
+     $("#confirmar").css("display", "initial");
+
+    $('#fecha_real_termino').removeAttr('required').val('');
+    $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
+    $('#fecha_reprogramacion_termino').removeAttr('required').val('');
+    $('#id_justificacion').prop('required',true).val('');
+
+
+	}
+
+
+       }
+
+
+
+
+
+
+});
+
+
+$( "#id_id_estado_actividad" ).change(function() {
+
+  estado = $( this ).val();
+  fecha_inicio = $("#fecha_inicio_actividad").val();
+  fecha_termino = $("#fecha_termino_actividad").val();
+  var fecha_inicio_corte_str = $('#fecha_inicio_corte').val();
+  var fecha_termino_corte_str = $('#fecha_termino_corte').val();
+  var fecha_inicio_corte = moment(fecha_inicio_corte_str).format('YYYY-MM-DD');
+  var fecha_termino_corte = moment(fecha_termino_corte_str).format('YYYY-MM-DD');
+
+  if (estado==2 || estado==3 || estado==4 || estado==5 || estado==7  || estado==10){
+  $("#mjeError").css("display","none");
+  }
+
+         if (estado == 4) // No Iniciada
+  {
+  	$(".hide-justificacion").css("display", "none");
+    $(".hide-real_termino").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "none");
+    $(".hide-reprogramacion_inicio").css("display", "none");
+      $("#confirmar").css("display", "none");
+    }
+
+
+  if (estado == 2) //habilita con restraso - Validar
+ {
+
+
+  	$(".hide-justificacion").css("display", "block");
+    $(".hide-real_termino").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "block");
+    $(".hide-reprogramacion_inicio").css("display", "block");
+        $("#confirmar").css("display", "initial");
+
+    $('#fecha_real_termino').removeAttr('required').val('');
+    $('#fecha_reprogramacion_inicio').prop('required',false);
+    $('#fecha_reprogramacion_termino').prop('required',false);
+    $('#id_justificacion').prop('required',true);
+
+
+       }
+
+
+       if (estado == 3) //habilita en curso
+  {
+  	$(".hide-justificacion").css("display", "block");
+    $(".hide-real_termino").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "block");
+    $(".hide-reprogramacion_inicio").css("display", "none");
+     $("#confirmar").css("display", "initial");
+
+    $('#fecha_real_termino').removeAttr('required').val('');
+    $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
+    $('#fecha_reprogramacion_termino').removeAttr('required').val('');
+    $('#id_justificacion').prop('required',true);
+   // $('#id_justificacion').removeAttr('required').val('');
+
+       }
+   if (estado == 7) //habilita finalizada - Validar
+  {
+  	$(".hide-justificacion").css("display", "block");
+    //$(".hide-real_termino").css("display", "block");
+    $(".hide-reprogramacion_termino").css("display", "none");
+    $(".hide-reprogramacion_inicio").css("display", "none");
+     $("#confirmar").css("display", "initial");
+
+     $('#fecha_real_termino').prop('required',true);
+    $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
+    $('#fecha_reprogramacion_termino').removeAttr('required').val('');
+    $('#id_justificacion').removeAttr('required').val('');
+       }
+
+        if (estado == 10) //habilita eliminada - validar
+  {
+  	$(".hide-justificacion").css("display", "block");
+    $(".hide-real_termino").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "none");
+    $(".hide-reprogramacion_inicio").css("display", "none");
+    $("#confirmar").css("display", "initial");
+
+
+     $('#fecha_real_termino').removeAttr('required').val('');
+    $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
+    $('#fecha_reprogramacion_termino').removeAttr('required').val('');
+    $('#id_justificacion').prop('required',true);
+       }
+
+
+
+
+        if (estado == 5){ //habilita sin movimiento
+		periodicidad = $('#id_id_periodicidad').val();
+
+	if (periodicidad != 9  && periodicidad != 10 ){
+
+  	$(".hide-justificacion").css("display", "block");
+    $(".hide-real_termino").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "block");
+    $(".hide-reprogramacion_inicio").css("display", "block");
+     $("#confirmar").css("display", "initial");
+
+    $('#fecha_real_termino').removeAttr('required').val('');
+    $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
+    $('#fecha_reprogramacion_termino').removeAttr('required').val('');
+    $('#id_justificacion').prop('required',true).val('');
+
+
+
+	}else{
+
+	  	$(".hide-justificacion").css("display", "block");
+    $(".hide-real_termino").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "none");
+    $(".hide-reprogramacion_inicio").css("display", "none");
+     $("#confirmar").css("display", "initial");
+
+    $('#fecha_real_termino').removeAttr('required').val('');
+    $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
+    $('#fecha_reprogramacion_termino').removeAttr('required').val('');
+    $('#id_justificacion').prop('required',true).val('');
+
+
+	}
+
+
+       }
+
+
+});
+
+$("#confirmar").click(function(){
+
+var horas_actividad;
+var horas_disponibles;
+
+
+//////////////VALIDACIONES SPRINT 13 JR /////////////////
+
+var fecha_inicio_corte_str = $('#fecha_inicio_corte').val();
+var fecha_termino_corte_str = $('#fecha_termino_corte').val();
+var fecha_inicio_corte = moment(fecha_inicio_corte_str).format('YYYY-MM-DD');
+var fecha_termino_corte = moment(fecha_termino_corte_str).format('YYYY-MM-DD');
+
+
+  estado = $('#id_id_estado_actividad').val();
+  periodicidad = $('#id_id_periodicidad').val();
+   var tdate = new Date();
+   var anio_actual = tdate.getFullYear();
+
+
+	 if (estado == 7){ // Finalizada - Validar
+
+		var fecha_real_termino = $('#fecha_real_termino').val();
+
+			if (moment(fecha_real_termino).isAfter(fecha_termino_corte)) {
+				$("#mjeError").css("display","block");
+				$("#textError").text("Error : La fecha real de término no puede ser superior a la fecha de término de corte.");
+				return false
+
+			}
+
+	 }
+
+
+	  if (estado == 3){ // En Curso
+
+	  var fecha_reprogramacion_termino= $('#fecha_reprogramacion_termino').val()
+
+	  	  if (fecha_reprogramacion_termino != ""){
+
+	  	  	 if (moment(fecha_reprogramacion_termino).isSameOrBefore(fecha_termino_corte)) {
+
+	  	  		$("#mjeError").css("display","block");
+				$("#textError").text("Error : La fecha de témino de reprogramación debe ser mayor a la fecha de termino de corte.");
+				return false
+			}
+
+	  	  }
+
+
+	  }
+
+
+	  if (estado == 2){ // Con retraso - validar
+		var fecha_reprogramacion_inicio= $('#fecha_reprogramacion_inicio').val()
+ 		var fecha_reprogramacion_termino= $('#fecha_reprogramacion_termino').val()
+
+ 		anio_fecha_inicio= moment(fecha_reprogramacion_inicio,"YYYY-MM-DD").year()
+ 		anio_fecha_termino= moment(fecha_reprogramacion_termino,"YYYY-MM-DD").year()
+
+
+
+ 		if (fecha_reprogramacion_inicio == "" && fecha_reprogramacion_termino == ""){
+
+ 		$("#mjeError").css("display","block");
+				$("#textError").text("Error : Debe ingresar al menos 1 fecha de reprogramación.");
+				return false
+
+ 		}
+
+ 		if (fecha_reprogramacion_inicio == "" && fecha_reprogramacion_termino == ""){
+
+ 		$("#mjeError").css("display","block");
+				$("#textError").text("Error : Debe ingresar al menos 1 fecha de reprogramación.");
+				return false
+
+ 		}
+
+ 		 if (fecha_reprogramacion_inicio != ""){
+
+			 if (anio_fecha_inicio != anio_actual){
+
+					$("#mjeError").css("display","block");
+					$("#textError").text("Error : La fecha debe estar contenida dentro del año en curso.");
+					return false
+
+			 }
+
+			  if (moment(fecha_reprogramacion_inicio).isSameOrBefore(fecha_termino_corte)) {
+					$("#mjeError").css("display","block");
+					$("#textError").text("Error : El campo Reprogramacion Fecha Inicio debe ser mayor a la fecha de término de corte.");
+					return false
+			  }
+
+			  if (moment(fecha_reprogramacion_termino).isBefore(fecha_reprogramacion_inicio)) {
+					$("#mjeError").css("display","block");
+					$("#textError").text("Error : La fecha de reprogramación inicio no debe ser superior a la de término.");
+					return false
+			  }
+
+ 	     }
+
+ 		  if (fecha_reprogramacion_termino != ""){
+
+			  if (anio_fecha_termino != anio_actual){
+
+					$("#mjeError").css("display","block");
+					$("#textError").text("Error : La fecha debe estar contenida dentro del año en curso.");
+					return false
+
+			 }
+
+			  if (moment(fecha_reprogramacion_termino).isSameOrBefore(fecha_termino_corte)) {
+					$("#mjeError").css("display","block");
+					$("#textError").text("Error : El campo Reprogramacion Fecha Término debe ser mayor a la fecha de término de corte.");
+					return false
+				  }
+
+			  }
+
+
+	  }
+
+
+	   if (estado == 5){ //Sin movimiento
+
+	   var fecha_reprogramacion_inicio= $('#fecha_reprogramacion_inicio').val()
+ 		var fecha_reprogramacion_termino= $('#fecha_reprogramacion_termino').val()
+
+		if (periodicidad != 9  && periodicidad != 10 ){
+
+		 if (fecha_reprogramacion_inicio != ""){
+
+			  if (moment(fecha_reprogramacion_inicio).isSameOrBefore(fecha_termino_corte)) {
+					$("#mjeError").css("display","block");
+					$("#textError").text("Error : El campo Reprogramacion Fecha Inicio debe ser mayor a la fecha de término de corte.");
+					return false
+			  }
+
+			  if (moment(fecha_reprogramacion_termino).isBefore(fecha_reprogramacion_inicio)) {
+ 		  	  	$("#mjeError").css("display","block");
+				$("#textError").text("Error : La fecha de reprogramación inicio no debe ser superior a la de término.");
+				return false
+ 		 	  }
+
+		 }
+
+		  if (fecha_reprogramacion_termino != ""){
+
+ 		  if (moment(fecha_reprogramacion_termino).isSameOrBefore(fecha_termino_corte)) {
+ 		  	  	$("#mjeError").css("display","block");
+				$("#textError").text("Error : El campo Reprogramacion Fecha Término debe ser mayor a la fecha de término de corte.");
+				return false
+ 			  }
+
+ 		  }
+
+
+ 		}
+
+
+
+
+
+	   }
+
+
+//////////////VALIDACIONES SPRINT 13 JR /////////////////
+
+
+
+
+horas_actividad= $('#total_horas_id').val();
+horas_disponibles = $('#total_disponible_id').val()
+
+horas_actividad= parseInt(horas_actividad)
+horas_disponibles = parseInt(horas_disponibles)
+
+if (horas_actividad>horas_disponibles){
+	$("#mjeError").css("display","block");
+	$("#textError").text("Error : No cuenta con saldo de horas disponibles para asignar a la actividad.");
+return false
+}
+
+if (horas_actividad==0){
+	$("#mjeError").css("display","block");
+	$("#textError").text("Error : El total de horas no puede ser igual a 0.");
+return false
+}
+
+
+var anio_actual= moment().year();
+
+fecha_inicio = $("#fecha_inicio_actividad").val();
+fecha_termino = $("#fecha_termino_actividad").val();
+
+
+
+
+var valuesStart = fecha_inicio.split("-");
+var anio_inicio = valuesStart[0];
+
+var valuesStart = fecha_termino.split("-");
+var anio_termino = valuesStart[0];
+
+
+if (anio_inicio==anio_actual && anio_termino==anio_actual){
+	//alert('ok');
+}else{
+	$("#mjeError").css("display","block");
+	$("#textError").text("Error : Las fechas seleccionadas deben corresponder al año en curso.");
+return false
+}
+
+
+if (moment(fecha_inicio).isBefore(fecha_termino) || moment(fecha_inicio).isSameOrBefore(fecha_termino)){
+	//alert('ok');
+}else{
+	$("#mjeError").css("display","block");
+	$("#textError").text("Error : La fecha de inicio no puede ser superior a la fecha de término.");
+return false
+}
+
+
+});
+
+
+
+
+
+
+
+Date.prototype.getWeekNumber = function(){
+  var d = new Date(Date.UTC(this.getFullYear(), this.getMonth(), this.getDate()));
+  var dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+  return Math.ceil((((d - yearStart) / 86400000) + 1)/7)
+};
+
+function checkWeek($fecha) {
+  var s = $fecha;
+  var m = moment(s, 'YYYY-MM-DD');
+  //alert(m.format('W'));
+  var $semana = m.toDate().getWeekNumber()
+  return $semana
+}
+
+
+
+
+
+
+
+
+</script>
+
+

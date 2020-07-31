@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from apps.periodos.models import Glo_Seguimiento
 # Create your views here.
-from apps.actividades.models import Ges_Actividad
+from apps.actividades.models import Ges_Actividad, Ges_log_reportes, Ges_Actividad_Historia
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.db.models import Case, CharField, Value, When
 from apps.controlador.models import Ges_Controlador
@@ -12,6 +12,7 @@ from apps.jefaturas.models import Ges_Jefatura
 from apps.objetivos.models import Ges_Objetivo_Operativo, Ges_Objetivo_TacticoTN, Ges_Objetivo_Tactico
 from apps.periodos.models import Glo_Periodos, Glo_Seguimiento
 from django.contrib.messages.views import SuccessMessageMixin
+from apps.estado_actividad.models import Glo_EstadoActividad
 
 from apps.registration.models import logEventos
 from apps.seguimiento_formula.forms import  GestionActividadesUpdateForm, PlanUpdateForm
@@ -236,6 +237,11 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
             return None
 
         try:
+            id_periodo_seguimiento = Glo_Seguimiento.objects.get(id_estado_seguimiento=1)
+        except Glo_Seguimiento.DoesNotExist:
+            return None
+
+        try:
             id_jefatura = Ges_Jefatura.objects.get(Q(id_user=id_usuario_actual) & Q(id_periodo=periodo_actual.id))
         except Ges_Jefatura.DoesNotExist:
             return None
@@ -247,13 +253,29 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
         fecha_real_termino = request.POST['fecha_real_termino']
         fecha_inicio_reprogramacion = request.POST['fecha_reprogramacion_inicio']
         fecha_termino_reprogramacion = request.POST['fecha_reprogramacion_termino']
+        justificacion = request.POST['justificacion']
+
+        id_estado_actividad = request.POST['id_estado_actividad']
+
+        try:
+            id_actividad_instancia = Ges_Actividad.objects.get(Q(id=id_actividad) & Q(id_periodo=periodo_actual.id))
+        except id_actividad_instancia.DoesNotExist:
+            return None
+
+        try:
+            id_estado_actividad_instancia = Glo_EstadoActividad.objects.get(id=id_estado_actividad)
+        except id_estado_actividad_instancia.DoesNotExist:
+            return None
 
         if fecha_real_termino == '':
             form.instance.fecha_real_termino = None
+            fecha_real_termino = None
         if fecha_inicio_reprogramacion == '':
             form.instance.fecha_reprogramacion_inicio = None
+            fecha_inicio_reprogramacion = None
         if fecha_termino_reprogramacion == '':
             form.instance.fecha_reprogramacion_termino = None
+            fecha_termino_reprogramacion = None
 
         if form.is_valid():
 
@@ -269,6 +291,22 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
                 id_objetivo = Ges_Objetivo_Operativo.objects.get(id=self.request.session['id_objetivo'])
                 form.instance.id_objetivo_operativo = id_objetivo
             form.instance.flag_reporta = 1
+
+
+
+            try:
+                actualiza= Ges_Actividad_Historia.objects.get(Q(id_actividad=id_actividad) & Q(id_periodo_seguimiento=id_periodo_seguimiento) & Q(id_periodo=periodo_actual.id))
+
+            except Ges_Actividad_Historia.DoesNotExist:
+                actualiza = 0
+
+
+            ActividadesHistoria(id_periodo_seguimiento, id_actividad_instancia, fecha_inicio_reprogramacion ,fecha_termino_reprogramacion, fecha_real_termino,
+                                  id_estado_actividad_instancia, periodo_actual, justificacion, actualiza)
+
+
+
+
             form.save()
             request.session['message_class'] = "alert alert-success"
             messages.success(self.request, "Los datos fueron actualizados correctamente!")
@@ -295,6 +333,11 @@ class iniciaSeguimiento(UpdateView):
         except Glo_Periodos.DoesNotExist:
             return None
 
+        try:
+            id_periodo_seguimiento = Glo_Seguimiento.objects.get(id_estado_seguimiento=1)
+        except Glo_Seguimiento.DoesNotExist:
+            return None
+
         controladorPlan = self.model.objects.get(Q(id=id_controlador) & Q(id_periodo=periodo_actual.id))
         #Se debe cambiar por email Analistas
         email_jefatura = controladorPlan.id_jefatura.id_user.email  # correo de rechazo
@@ -310,8 +353,13 @@ class iniciaSeguimiento(UpdateView):
         #form = self.form_class(request.POST, instance=controladorPlan)
         estado = 2
         controladorPlan.id_estado_plan_id = int(estado)
+
+
         try:
+
             controladorPlan.save()
+            CopiarActividades_a_Historial(id_periodo_seguimiento, id_controlador, periodo_actual)
+
 
             idcorreoJefatura = [email_jefatura, email_jefatura_primera, email_jefatura_segunda]
             subject = 'Plan Aceptado ' + controladorPlan.id_jefatura.id_nivel.descripcion_nivel
@@ -324,6 +372,7 @@ class iniciaSeguimiento(UpdateView):
             usuario_evento = self.request.user
             jefatura_dirigida = None
             logEventosCreate(tipo_evento, metodo, usuario_evento, jefatura_dirigida)
+
             request.session['message_class'] = "alert alert-success"
             messages.success(self.request, "El seguimiento fue iniciado correctamente.")
             return HttpResponseRedirect('/seguimiento_formula/listar')
@@ -396,3 +445,76 @@ def logEventosCreate(tipo_evento, metodo ,usuario_evento, jefatura_dirigida):
         jefatura_dirigida=jefatura_dirigida,
     )
     return None
+
+def ActividadesHistoria(id_periodo_seguimiento, id_actividad,fecha_reprogramacion_inicio, fecha_reprogramacion_termino, fecha_real_termino, id_estado_actividad,id_periodo, justificacion, actualiza):
+
+
+    if actualiza == 0:
+        Ges_Actividad_Historia.objects.create(
+            id_periodo_seguimiento=id_periodo_seguimiento,
+            id_actividad=id_actividad,
+            fecha_reprogramacion_inicio=fecha_reprogramacion_inicio,
+            fecha_reprogramacion_termino=fecha_reprogramacion_termino,
+            fecha_real_termino=fecha_real_termino,
+            id_estado_actividad=id_estado_actividad,
+            id_periodo=id_periodo,
+            justificacion=justificacion,
+
+        )
+        return None
+    else:
+        Id = Ges_Actividad_Historia.objects.get(Q(id_actividad=id_actividad) & Q(id_periodo_seguimiento=id_periodo_seguimiento) & Q(id_periodo=id_periodo))
+
+        Ges_Actividad_Historia.objects.filter(id=Id.id).update(
+            fecha_reprogramacion_inicio=fecha_reprogramacion_inicio,
+            fecha_reprogramacion_termino=fecha_reprogramacion_termino,
+            fecha_real_termino=fecha_real_termino,
+            id_estado_actividad=id_estado_actividad,
+            justificacion=justificacion,
+
+
+        )
+        return None
+
+def CopiarActividades_a_Historial(id_periodo_seguimiento, id_controlador, periodo_actual):
+
+    no_vacio_periodo= Ges_Actividad_Historia.objects.filter(Q(id_controlador=id_controlador) & Q(id_periodo_seguimiento=id_periodo_seguimiento) & Q(id_periodo=periodo_actual))
+
+    if no_vacio_periodo:
+
+        Ges_Actividad_Historia.objects.filter(
+            Q(id_controlador=id_controlador) & Q(id_periodo_seguimiento=id_periodo_seguimiento) & Q(
+                id_periodo=periodo_actual)).delete()
+
+        model = Ges_Actividad.objects.filter(Q(id_controlador=id_controlador) & Q(id_periodo=periodo_actual))
+        for actividad in model:
+            Ges_Actividad_Historia.objects.create(
+                id_actividad_id=actividad.id,
+                id_estado_actividad=actividad.id_estado_actividad,
+                id_periodo_seguimiento=id_periodo_seguimiento,
+                id_controlador=actividad.id_controlador,
+                id_periodo=actividad.id_periodo,
+
+            )
+
+    else:
+        model = Ges_Actividad.objects.filter(Q(id_controlador=id_controlador) & Q(id_periodo=periodo_actual))
+        for actividad in model:
+            Ges_Actividad_Historia.objects.create(
+                id_actividad_id=actividad.id,
+                id_estado_actividad=actividad.id_estado_actividad,
+                id_periodo_seguimiento=id_periodo_seguimiento,
+                id_controlador=actividad.id_controlador,
+                id_periodo=actividad.id_periodo,
+
+            )
+
+
+
+
+
+
+
+
+
+

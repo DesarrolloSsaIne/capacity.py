@@ -1,19 +1,26 @@
 from django.shortcuts import render
 
-from apps.actividades.models import Ges_Actividad
+from apps.actividades.models import Ges_Actividad, Ges_Actividad_Historia
 from django.db.models import Q
 from django.views.generic import TemplateView
 from django.http import HttpResponse
 import datetime
 from apps.periodos.models import Glo_Periodos
 from openpyxl import Workbook
-
+from django.http import HttpResponseRedirect
 from django.db.models import Subquery, OuterRef, Count, Sum
 
 
 # Create your views here.
 class GeneraReportCurvaEjecucion(TemplateView):
     template_name = 'reportes/report_seguimiento.html'
+
+
+
+
+
+
+
 
     def get_context_data(self, **kwargs):
         context = super(GeneraReportCurvaEjecucion, self).get_context_data(**kwargs)
@@ -77,7 +84,27 @@ class GeneraReportCurvaEjecucion(TemplateView):
         context['object_list'] = lista_datos
 
 
-        lista_datos_count = Ges_Actividad.objects.filter(Q(id_periodo=3)).values(
+        # lista_datos_count = Ges_Actividad.objects.filter(Q(id_periodo=periodo_actual)).values(
+        #     'id_controlador__nivel_inicial',
+        #     'id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__descripcion_nivel', # N4
+        #     'id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__descripcion_nivel', # N3
+        #     'id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__descripcion_nivel', # N2
+        #     'id_controlador__id_jefatura__id_nivel__descripcion_nivel').annotate(
+        #     CountNoIniciadas=Count('id', filter=Q(id_estado_actividad=4)),
+        #     CountFinalizadas=Count('id', filter=Q(id_estado_actividad=7)),
+        #     CountConRetraso=Count('id', filter=Q(id_estado_actividad=1)),
+        #     CountSinMovimiento=Count('id', filter=Q(id_estado_actividad=6)),
+        #     CountEliminadas=Count('id', filter=Q(id_estado_actividad=9)),
+        #     CountEnCurso=Count('id', filter=Q(id_estado_actividad=8)),
+        #     CountTotal=Count('id', filter=(~Q(id_estado_actividad=2) & ~Q(id_estado_actividad=3) & ~Q(id_estado_actividad=5) & ~Q(id_estado_actividad=10)))
+        #
+        # )
+
+        from django.db.models.functions import Extract
+
+
+        lista_datos_count = Ges_Actividad_Historia.objects.annotate(month=Extract('id_periodo_seguimiento__fecha_termino_corte', 'month')).filter(Q(id_periodo=periodo_actual) ).values(
+            'month',
             'id_controlador__nivel_inicial',
             'id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__descripcion_nivel', # N4
             'id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__descripcion_nivel', # N3
@@ -93,12 +120,22 @@ class GeneraReportCurvaEjecucion(TemplateView):
 
         )
 
-        lista_datos_unidades = Ges_Actividad.objects.filter(Q(id_periodo=3)).values(
+        lista_datos_unidades = Ges_Actividad_Historia.objects.annotate(month=Extract('id_periodo_seguimiento__fecha_termino_corte', 'month')).filter(Q(id_periodo=periodo_actual) & Q(month__lte=7)).values(
             'id_controlador__nivel_inicial',
             'id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__descripcion_nivel', # N4
             'id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__descripcion_nivel', # N3
             'id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__descripcion_nivel' # N2
             ).distinct()
+
+        meses = Ges_Actividad_Historia.objects.annotate(month=Extract('id_periodo_seguimiento__fecha_termino_corte', 'month')).filter(Q(id_periodo=periodo_actual)).values('month').distinct().order_by('-month')
+
+        # lista_datos_unidades = Ges_Actividad.objects.annotate(month=Extract('fecha_termino_actividad', 'month')).filter(Q(id_periodo=periodo_actual) & Q(month__lte=5)).values(
+        #     'id_controlador__nivel_inicial',
+        #     'id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__descripcion_nivel', # N4
+        #     'id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__descripcion_nivel', # N3
+        #     'id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__descripcion_nivel' # N2
+        #     ).distinct()
+
 
 
 
@@ -107,6 +144,9 @@ class GeneraReportCurvaEjecucion(TemplateView):
 
         context['object_count'] = lista_datos_count
         context['object_unidades'] = lista_datos_unidades
+        context['meses_periodo'] = meses
+
+
 
         # count_no_vistos = Ges_Observaciones.objects.values('id_objetivo').filter(
         #     id_objetivo=OuterRef('pk')).annotate(
@@ -133,13 +173,6 @@ class GeneraReportCurvaEjecucion(TemplateView):
         #     count_no_vistos_obj=Subquery(count_no_vistos_obj.values('count_id_actividad')),
         #     count_observaciones=Subquery(count_observaciones.values('count_id_actividad'))).order_by(
         #     '-count_no_vistos', '-count_observaciones')
-
-
-
-
-
-
-
 
 
         return context

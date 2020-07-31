@@ -11,17 +11,47 @@ Reportes
 
 		<script type="text/javascript">
 
+function filterGlobal () {
+    $('#Tabla').DataTable().search(
+        $('#list_estados2').val(),
+        $('#global_regex').prop('checked'),
+        $('#global_smart').prop('checked')
+    ).draw();
+}
+
+function filterColumn ( i ) {
+    $('#Tabla').DataTable().column( i ).search(
+        $('#col0_filter').val(),
+        $('#col'+i+'_regex').prop('checked'),
+        $('#col'+i+'_smart').prop('checked')
+    ).draw();
+}
+
 
 
 $( document ).ready(function() {
 
+$('#Tabla').DataTable();
 
+    $('#list_estados2').on( 'keyup click', function () {
+        filterGlobal();
+        Calcular();
+    } );
 
-$('#Tabla_filter').find("input").css("display", "none");  /// desaparezco el input de busqueda
-$('#Tabla_filter').find("input").val($('').val())
-$('#Tabla_filter').find("input").val($('#list_estados').val()) // asigno al input de busqueda el primer valor del select
-$('#Tabla_filter').find("input").trigger('keyup');
+    $('#col0_filter').on( 'keyup click', function () {
+        filterColumn(0);
+        Calcular();
+    } );
+
+$('#Tabla_filter').find("input").css('display', 'none');  /// desaparezco el input de busqueda
+//$('#Tabla_filter').find("input").val($('').val())
+//$('#Tabla_filter').find("input").val($('#list_estados').val()) // asigno al input de busqueda el primer valor del select
+//$('#Tabla_filter').find("input").trigger('keyup');
 Calcular();
+
+
+
+
 
 /////////////////////////////////////////////////1111////////////////////////////////////////////////////////////////////
 
@@ -181,11 +211,11 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 
 
 
-    $("#list_estados").change(function () {
-    $('#Tabla_filter').find("input").val($(this).val())
-    $('#Tabla_filter').find("input").trigger('keyup');
+    $("#list_estados2").change(function () {
+   //$('#Tabla_filter').find("input").val($(this).val())
+   // $('#Tabla_filter').find("input").trigger('keyup');
     Calcular();
-        });
+       });
 
 	function Calcular() {
 
@@ -243,11 +273,13 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
  	}
 
 
+
   $("#Tabla").dataTable({
         "processing": true,
         "stateSave": true,
 		paging: false,
         destroy: true,
+
 
         "language": {
             "lengthMenu": " _MENU_ registros por página",
@@ -469,40 +501,80 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 											<span style="margin-left:-1px;" class="fa fa-file-excel-o"></span>
 											</button>
 
+
+
 									</div>
 
 
 											<div class="panel-body" style="margin-top:-40px;">
+
 							<div class="form-group">
-							<label>Seleccione Unidad Nivel Superior</label>
-							<select class="form-control" id="list_estados" style="max-width:500px;">
+
+								<div class="col-md-6" >
+															<label style="margin-left:-15px;">Seleccione Unidad Nivel Superior</label>
+
+								<select class="form-control" id="list_estados2" style="max-width:500px; text-align:left; margin-left:-15px;">
+									<option value="">Todos</option>
 
   {% for actividad_count in object_unidades %}
-                             <option value=		{% if actividad_count.id_controlador__nivel_inicial == 4 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__descripcion_nivel }} {% endif %}
-														{% if actividad_count.id_controlador__nivel_inicial == 3 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__descripcion_nivel }} {% endif %}
-														{% if actividad_count.id_controlador__nivel_inicial == 2 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__descripcion_nivel }} {% endif %}>
+                             <option value=		{% if actividad_count.id_controlador__nivel_inicial == 4 %}{{actividad_count.id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__descripcion_nivel}}{% endif %}
+														{% if actividad_count.id_controlador__nivel_inicial == 3 %} {{actividad_count.id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__descripcion_nivel}}{% endif %}
+														{% if actividad_count.id_controlador__nivel_inicial == 2 %} {{actividad_count.id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__descripcion_nivel}}{% endif %}>
 
 
-		{% if actividad_count.id_controlador__nivel_inicial == 4 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__descripcion_nivel }} {% endif %}
+	                                        	{% if actividad_count.id_controlador__nivel_inicial == 4 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__descripcion_nivel }} {% endif %}
 														{% if actividad_count.id_controlador__nivel_inicial == 3 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__descripcion_nivel }} {% endif %}
 														{% if actividad_count.id_controlador__nivel_inicial == 2 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__descripcion_nivel }} {% endif %}
 
 								 {% endfor %}
 							 </option>
-								<option value="">Todos</option>
+
+
+
+                            </select>
+								</div>
+									<div class="col-md-6" >
+
+												<label>Seleccione Mes</label>
+
+								<select class="form-control" id="col0_filter" style="max-width:200px;" data-column="0">
+							  {% for meses in meses_periodo %}
+                             <option value= {{meses.month}}>
+
+
+	                            {% if meses.month == 1 %}Enero{%endif%}
+								 {% if meses.month == 2 %}Febrero{%endif%}
+								 {% if meses.month == 3 %}Marzo{%endif%}
+								 {% if meses.month == 4 %}Abril{%endif%}
+								 {% if meses.month == 5 %}Mayo{%endif%}
+								 {% if meses.month == 6 %}Junio{%endif%}
+								 {% if meses.month == 7 %}Julio{%endif%}
+								 {% if meses.month == 8 %}Agosto{%endif%}
+								 {% if meses.month == 9 %}Septiembre{%endif%}
+								 {% if meses.month == 10 %}Octubre{%endif%}
+								 {% if meses.month == 11 %}Noviembre{%endif%}
+								 {% if meses.month == 12 %}Diciembre{%endif%}
+
+								 {% endfor %}
+							 </option>
+
 
 
                             </select>
 
-						    </div>
 
+
+                            </select>
+										</div>
+
+						    </div>
 
 
 								<table class="table table-bordered table-striped mb-none" id="Tabla"  data-page-length='1000'>
 									<thead>
 										<tr style="font-size:11px;">
 
-											<th colspan="1" style="background-color:#bec1cb; " ></th>
+											<th colspan="2" style="background-color:#bec1cb; " ></th>
 											<th style="text-align:center; background-color:#1e7799; color:#ffffff;" colspan="2">No Iniciadas</th>
 											<th style="text-align:center; background-color:#70ad47; color:#ffffff;" colspan="2">Finalizadas</th>
 											<th style="text-align:center; background-color:#6783b5; color:#ffffff;" colspan="2">En Curso</th>
@@ -514,6 +586,7 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 										</tr>
 
 											<tr style="font-size:11px;">
+												<th class="noExl"  >Mes</th>
 											<th class="noExl" style="display:none;" >Nivel</th>
 											<th class="noExl" style="display:none;">Superior</th>
 											<th>Unidades</th>
@@ -530,8 +603,11 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 									</thead>
 									<tbody >
 
+
                                             {% for actividad_count in object_count %}
                                                 <tr style="font-size:11px;">
+													<td class="noExl"  > {{ actividad_count.month}} </td>
+
 													<td class="noExl"  style="display:none;"> {{ actividad_count.id_controlador__nivel_inicial }} </td>
 													<td class="noExl"  style="display:none;">
 														{% if actividad_count.id_controlador__nivel_inicial == 4 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__descripcion_nivel }} {% endif %}
@@ -539,16 +615,13 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 														{% if actividad_count.id_controlador__nivel_inicial == 2 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__descripcion_nivel }} {% endif %}
 													</td>
 													<td> {{ actividad_count.id_controlador__id_jefatura__id_nivel__descripcion_nivel }} </td>
-													<td><span class="CountNoIniciadas"> {{ actividad_count.CountNoIniciadas }}</span></td><td>{{ actividad_count.CountNoIniciadas|mul:100 |div:actividad_count.CountTotal }}% </td>
-													<td><span class="CountFinalizadas">{{ actividad_count.CountFinalizadas }}</span> </td><td>{{ actividad_count.CountFinalizadas|mul:100 |div:actividad_count.CountTotal }}% </td>
-													<td><span class="CountEnCurso">{{ actividad_count.CountEnCurso }}</span> </td><td>{{ actividad_count.CountEnCurso|mul:100 |div:actividad_count.CountTotal }}% </td>
-													<td><span class="CountConRetraso">{{ actividad_count.CountConRetraso }}</span> </td><td>{{ actividad_count.CountConRetraso|mul:100 |div:actividad_count.CountTotal }}% </td>
-													<td><span class="CountSinMovimiento">{{ actividad_count.CountSinMovimiento }}</span> </td><td>{{ actividad_count.CountSinMovimiento|mul:100 |div:actividad_count.CountTotal }}% </td>
-													<td><span class="CountEliminadas">{{ actividad_count.CountEliminadas }} </span></td><td>{{ actividad_count.CountEliminadas|mul:100 |div:actividad_count.CountTotal }}% </td>
+													<td><span class="CountNoIniciadas"> {{ actividad_count.CountNoIniciadas }}</span></td><td>{{ actividad_count.CountNoIniciadas|mul:100 |div:actividad_count.CountTotal|floatformat:2 }}% </td>
+													<td><span class="CountFinalizadas">{{ actividad_count.CountFinalizadas }}</span> </td><td>{{ actividad_count.CountFinalizadas|mul:100 |div:actividad_count.CountTotal|floatformat:2 }}% </td>
+													<td><span class="CountEnCurso">{{ actividad_count.CountEnCurso }}</span> </td><td>{{ actividad_count.CountEnCurso|mul:100 |div:actividad_count.CountTotal|floatformat:2 }}% </td>
+													<td><span class="CountConRetraso">{{ actividad_count.CountConRetraso }}</span> </td><td>{{ actividad_count.CountConRetraso|mul:100 |div:actividad_count.CountTotal|floatformat:2 }}% </td>
+													<td><span class="CountSinMovimiento">{{ actividad_count.CountSinMovimiento }}</span> </td><td>{{ actividad_count.CountSinMovimiento|mul:100 |div:actividad_count.CountTotal|floatformat:2 }}% </td>
+													<td><span class="CountEliminadas">{{ actividad_count.CountEliminadas }} </span></td><td>{{ actividad_count.CountEliminadas|mul:100 |div:actividad_count.CountTotal|floatformat:2 }}% </td>
 													<td><span class="countTotal">{{ actividad_count.CountTotal }} </span></td>
-
-
-
 
                                                 </tr>
                                             {% endfor %}
@@ -559,6 +632,7 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 
 
                                                 <tr style="font-size:11px;">
+													<td class="noExl"  >  </td>
 													<td class="noExl"  style="display:none;">  </td>
 													<td class="noExl"  style="display:none;">
 
@@ -579,7 +653,6 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 
 
 									</tbody>
-
 
 
 

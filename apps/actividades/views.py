@@ -374,8 +374,6 @@ class ActividadCreate(SuccessMessageMixin, CreateView):
     form_class = ActividadForm
     template_name = 'actividades/actividades_form.html'
 
-
-
     def get_form_kwargs(self, **kwargs):
         kwargs = super(ActividadCreate, self).get_form_kwargs()
         kwargs['transversal'] = self.request.session['tv']
@@ -407,7 +405,6 @@ class ActividadCreate(SuccessMessageMixin, CreateView):
             return JsonResponse(response_data)
 
 
-
         try:
             id_jefatura = Ges_Jefatura.objects.get(Q(id_user=id_usuario_actual) & Q(id_periodo=periodo_actual.id))
         except Ges_Jefatura.DoesNotExist:
@@ -421,7 +418,6 @@ class ActividadCreate(SuccessMessageMixin, CreateView):
         fecha_inicio = request.POST['fecha_inicio_actividad']
         fecha_termino = request.POST['fecha_termino_actividad']
         total_horas_post = request.POST['total_horas']
-
 
 
         fecha_inicio_split = datetime.strptime(fecha_inicio, "%Y-%m-%d")
