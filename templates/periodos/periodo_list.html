@@ -62,7 +62,7 @@
 														 {%endif%} > {{ periodo.id_estado }} </td>
 
 
-    												 <td style="width:80px; text-align:center;">
+    												 <td style="width:120px; text-align:center;">
 <!--														{% if periodo.id_estado.id == 1  %}  <button type="button" title="Actualizar Registro" class="update btn btn-sm btn-primary" data-id="{% url 'periodo_editar' periodo.id %}" >-->
 <!--														<span class="fa fa-pencil"></span></button>{%endif%}-->
 <!--														 <button type="button" title="Eliminar Registro" class="delete btn btn-sm btn-danger" data-id="{% url 'periodo_delete' periodo.id %}">-->
@@ -71,7 +71,8 @@
       													  <span class="fa fa-lock"></span></button>{%endif%}
 														 {% if periodo.id_estado.id == 1  %} <a type="button"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" title="Administrar Periodos de Seguimiento" class="objetivo btn btn-sm btn-success" href="{% url 'seguimiento_listar' periodo.id %}">
       													  <span class="fa fa-flag-checkered"></span></a>{%endif%}
-
+															{% if periodo.id_estado.id == 1  %} <a type="button"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" title="Administrar Periodos de Validación" class="objetivo btn btn-sm btn-success" href="{% url 'validacion_listar' periodo.id %}">
+      													  <span class="fa fa-check-square-o"></span></a>{%endif%}
                                                     </td>
                                                 </tr>
                                             {% endfor %}

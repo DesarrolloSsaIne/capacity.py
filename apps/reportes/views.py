@@ -120,7 +120,7 @@ class GeneraReportCurvaEjecucion(TemplateView):
 
         )
 
-        lista_datos_unidades = Ges_Actividad_Historia.objects.annotate(month=Extract('id_periodo_seguimiento__fecha_termino_corte', 'month')).filter(Q(id_periodo=periodo_actual) & Q(month__lte=7)).values(
+        lista_datos_unidades = Ges_Actividad_Historia.objects.annotate(month=Extract('id_periodo_seguimiento__fecha_termino_corte', 'month')).filter(Q(id_periodo=periodo_actual)).values(
             'id_controlador__nivel_inicial',
             'id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__descripcion_nivel', # N4
             'id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__descripcion_nivel', # N3

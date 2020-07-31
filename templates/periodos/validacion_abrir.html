@@ -1,11 +1,11 @@
 <header class="panel-heading">
 
-        <h2 class="panel-title">Apertura Periodo Seguimiento</h2>
+        <h2 class="panel-title">Apertura Periodo Validación</h2>
 </header>
 
 <form method="post" action="">
     {% csrf_token %}
-{%if estado_seguimiento.estado_seguimiento != 0 or estado_seguimiento.estadoValida != 0  %}
+{%if estado_seguimiento.estadoValida != 0 or estado_seguimiento.estado_seguimiento != 0 %}
 
 
 <div class="panel-body">
@@ -35,32 +35,29 @@
     <div class="modal-wrapper">
 
 		<div class="col-md-12">
-
-            	<div  class="form-group">
+                	<div  class="form-group">
               <label >Descripción Periodo </label>
 
-					{{form.descripcion_seguimiento}}
+					{{form.descripcion_validacion}}
 
-                    </div>
-					<div  class="form-group">
-              <label >Fecha Inicio Corte </label>
-				<div class="input-group">
-				<span class="input-group-addon">
-					<i class="fa fa-calendar"></i>
-				</span>
-					{{form.fecha_inicio_corte}}
-				</div>
                     </div>
 
 
 					<div  class="form-group">
-              <label >Fecha Término Corte </label>
+              <label >Fecha Término </label>
 				<div class="input-group">
 				<span class="input-group-addon">
 					<i class="fa fa-calendar"></i>
 				</span>
-					{{form.fecha_termino_corte}}
+					{{form.fecha_termino}}
 				</div>
+                    </div>
+            	<div  class="form-group">
+              <label >Periodo Seguimiento  </label>
+
+
+					{{form.id_periodo_seguimiento}}
+
                     </div>
 
 <br>
@@ -68,7 +65,7 @@
  <div class="modal-text">
 
                 <h4 style="color:red;">¡Atención!</h4>
-                <p style="color:red;">¿Está seguro que desea abrir un nuevo periodo de seguimiento? </p>
+                <p style="color:red;">¿Está seguro que desea abrir un nuevo periodo de validación? </p>
 
   </div>
     </div>
@@ -82,7 +79,7 @@
             Enviando correos, favor espere...
             </div>
 
-     <button class="btn btn-danger" type="submit" id="confirmar"  >Abrir Periodo Seguimiento</button>
+     <button class="btn btn-danger" type="submit" id="confirmar"  >Abrir Periodo Validación</button>
      <button class="btn btn-default" type="button" id="cancelar"  data-dismiss="modal">Cerrar</button>
   </div>
 
@@ -97,14 +94,14 @@
 <script>
 
  $('#confirmar').click(function() {
-    if (($('#id_fecha_inicio_corte').val() != "")  && ($('#id_fecha_termino_corte').val() != "")){
+    if ($('#id_descripcion_validacion').val() != "" && $('#id_id_periodo_seguimiento').val() != "" && $('#id_fecha_termino').val() != ""){
 
 
                 $( this ).hide();
                 $( '#cancelar' ).hide();
                  $( '#enviar' ).fadeIn();
-                 $('#id_fecha_inicio_corte').prop( "readonly", true );
-                 $('#id_fecha_termino_corte').prop( "readonly", true );
+                 $('#id_fecha_termino').prop( "readonly", true );
+                 $('#id_id_periodo_seguimiento').prop( "readonly", true );
 
             }
  });

@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from apps.periodos.forms import periodosForm, Seguimiento_cierreform, Seguimiento_abrirform
-from apps.periodos.models import Glo_Periodos, Glo_Seguimiento
+from apps.periodos.forms import periodosForm, Seguimiento_cierreform, Seguimiento_abrirform, validacion_abrirform, valida_cierreform
+from apps.periodos.models import Glo_Periodos, Glo_Seguimiento, Glo_validacion
 from apps.controlador.models import Ges_Controlador
 from apps.jefaturas.models import Ges_Jefatura
 from apps.estado_seguimiento.models import Glo_EstadoSeguimiento
@@ -177,7 +177,13 @@ class SeguimientoAbrirPeriodo(SuccessMessageMixin, CreateView):
         except Glo_Seguimiento.DoesNotExist:
              estado = 0
 
-        context["estado_seguimiento"] = estado
+        try:
+             estadoValida= Glo_validacion.objects.get(Q(id_estado_periodo=1) & Q(id_periodo=PeriodoActual()))
+        except Glo_validacion.DoesNotExist:
+             estadoValida = 0
+
+
+        context["estado_seguimiento"] = {'estadoValida': estadoValida, 'estado_seguimiento': estado}
         return context
 
     def post(self, request, *args, **kwargs):
@@ -216,6 +222,130 @@ class SeguimientoAbrirPeriodo(SuccessMessageMixin, CreateView):
             request.session['message_class'] = "alert alert-danger"
             messages.error(self.request, "Error interno: No se ha abierto la etapa de seguimiento. Comuníquese con el administrador.")
             return HttpResponseRedirect('/periodos/listar_seguimiento' + str(id_periodo))
+
+class ValidacionCerrarPeriodo(UpdateView):
+    model = Glo_validacion
+    template_name = 'periodos/validacion_cerrar.html'
+    form_class = valida_cierreform
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object
+        pk = kwargs['pk']
+        instancia = self.model.objects.get(id=pk)
+        form = self.form_class(request.POST, instance=instancia)
+
+        id_nuevo_estado= Glo_EstadoSeguimiento.objects.get(id=2)
+
+        id_periodo=self.request.session['id_periodo']
+
+        if form.is_valid():
+
+            form.instance.id_estado_periodo=id_nuevo_estado
+            #form.instance.fecha_termino= datetime.now(tz=timezone.utc)
+
+            form.save()
+
+            try:
+
+                #EnviarCorreoCierre()
+
+                request.session['message_class'] = "alert alert-success"  # Tipo mensaje
+                messages.success(request, "La etapa de validación fue cerrada y se le ha enviado un correo a las jefaturas que formulan.!")  # mensaje
+                return HttpResponseRedirect('/periodos/listar_validacion/' + str(id_periodo))  # Redirije a la pantalla principal
+
+            except:
+
+                 request.session['message_class'] = "alert alert-warning" #Tipo mensaje
+                 messages.success(request, "La etapa de validación fue cerrada correctamente!, pero el servicio de correo tuvo un inconveniente favor comuníquese con las jefaturas que formulan para informar el cierre de esta etapa.") # mensaje
+                 return HttpResponseRedirect('/periodos/listar_validacion/' + str(id_periodo)) # Redirije a la pantalla principal
+
+        else:
+
+            request.session['message_class'] = "alert alert-danger"
+            messages.error(self.request, "Error interno: No se ha cerrado la etapa de validación. Comuníquese con el administrador.")
+            return HttpResponseRedirect('/periodos/listar_validacion' + str(id_periodo))
+
+
+class ValidacionList(ListView):
+    model = Glo_validacion
+    template_name = 'periodos/validacion_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ValidacionList, self).get_context_data(**kwargs)
+        #id_usuario_actual = self.request.user.id  # obtiene id usuario actual
+        self.request.session['id_periodo']=self.kwargs['pk'] #guarda id  controlador
+
+
+        queryset= Glo_validacion.objects.filter(id_periodo=self.kwargs['pk'])
+
+
+        context['object_list'] = queryset
+        context['periodo'] = PeriodoActual()
+
+
+
+
+        return context
+
+class ValidacionAbrirPeriodo(SuccessMessageMixin, CreateView):
+    model = Glo_validacion
+    template_name = 'periodos/validacion_abrir.html'
+    form_class = validacion_abrirform
+
+
+    def get_context_data(self, **kwargs):
+        context = super(ValidacionAbrirPeriodo, self).get_context_data(**kwargs)
+
+        try:
+             estadoValida= Glo_validacion.objects.get(Q(id_estado_periodo=1) & Q(id_periodo=PeriodoActual()))
+        except Glo_validacion.DoesNotExist:
+             estadoValida = 0
+
+        try:
+            estadoSeguimiento = Glo_Seguimiento.objects.get(Q(id_estado_seguimiento=1) & Q(id_periodo=PeriodoActual()))
+        except Glo_Seguimiento.DoesNotExist:
+            estadoSeguimiento = 0
+
+        context["estado_seguimiento"] = {'estadoValida': estadoValida, 'estado_seguimiento': estadoSeguimiento}
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+
+
+        id_nuevo_estado= Glo_EstadoSeguimiento.objects.get(id=1)
+        periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+
+        id_periodo=self.request.session['id_periodo']
+
+        if form.is_valid():
+            form.instance.id_periodo= periodo_actual
+            form.instance.id_estado_periodo=id_nuevo_estado
+            form.instance.fecha_inicio= datetime.now(tz=timezone.utc)
+
+            form.save()
+
+            try:
+
+                #EnviarCorreoAbrir()
+
+                request.session['message_class'] = "alert alert-success"  # Tipo mensaje
+                messages.success(request, "El periodo de validación fue abierto correctamente! y se ha enviado un correo a las jefaturas que formulan!")  # mensaje
+                return HttpResponseRedirect('/periodos/listar_validacion/' + str(id_periodo))  # Redirije a la pantalla principal
+
+            except:
+
+                 request.session['message_class'] = "alert alert-warning" #Tipo mensaje
+                 messages.success(request, "El periodo de validación fue abierto correctamente!, pero el servicio de correo tuvo un inconveniente favor comuníquese con la jefatura directa para informar de la apertura.") # mensaje
+                 return HttpResponseRedirect('/periodos/listar_validacion/' + str(id_periodo)) # Redirije a la pantalla principal
+
+        else:
+
+            request.session['message_class'] = "alert alert-danger"
+            messages.error(self.request, "Error interno: No se ha abierto la etapa de seguimiento. Comuníquese con el administrador.")
+            return HttpResponseRedirect('/periodos/listar_validacion' + str(id_periodo))
 
 
 def PeriodoActual():

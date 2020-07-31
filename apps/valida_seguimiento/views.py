@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 # Create your views here.
-from apps.actividades.models import Ges_Actividad, Ges_Observaciones_valida, Ges_log_reportes
+from apps.actividades.models import Ges_Actividad, Ges_Observaciones_valida, Ges_log_reportes, Ges_Actividad_Historia
 from apps.controlador.models import Ges_Controlador
 from apps.estructura.models import Ges_Niveles
 from apps.jefaturas.models import Ges_Jefatura
@@ -535,3 +535,36 @@ def Log_valida(id_periodo_valida, id_actividad, fecha_inicio, fecha_termino, fec
     id_estado_actividad_id =id_estado_actividad,
     )
     return None
+
+
+####    LUNES 3 TERMINAR Y PROBAR, CADA VEZ QUE VALIDA DEBE ACTUALIZAR LA TABLA ACTIVIDAD HISTORIA ######
+
+def ActividadesHistoria(id_periodo_seguimiento, id_actividad,fecha_reprogramacion_inicio, fecha_reprogramacion_termino, fecha_real_termino, id_estado_actividad,id_periodo, justificacion, actualiza):
+
+
+    if actualiza == 0:
+        Ges_Actividad_Historia.objects.create(
+            id_periodo_seguimiento=id_periodo_seguimiento,
+            id_actividad=id_actividad,
+            fecha_reprogramacion_inicio=fecha_reprogramacion_inicio,
+            fecha_reprogramacion_termino=fecha_reprogramacion_termino,
+            fecha_real_termino=fecha_real_termino,
+            id_estado_actividad=id_estado_actividad,
+            id_periodo=id_periodo,
+            justificacion=justificacion,
+
+        )
+        return None
+    else:
+        Id = Ges_Actividad_Historia.objects.get(Q(id_actividad=id_actividad) & Q(id_periodo_seguimiento=id_periodo_seguimiento) & Q(id_periodo=id_periodo))
+
+        Ges_Actividad_Historia.objects.filter(id=Id.id).update(
+            fecha_reprogramacion_inicio=fecha_reprogramacion_inicio,
+            fecha_reprogramacion_termino=fecha_reprogramacion_termino,
+            fecha_real_termino=fecha_real_termino,
+            id_estado_actividad=id_estado_actividad,
+            justificacion=justificacion,
+
+
+        )
+        return None

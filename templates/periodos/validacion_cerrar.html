@@ -1,0 +1,49 @@
+<header class="panel-heading">
+	<div class="panel-actions">
+
+	</div>
+        <h2 class="panel-title">Cierre Periodo Validación</h2>
+</header>
+
+<form method="post" action="">
+    {% csrf_token %}
+
+<div class="panel-body">
+    <div class="modal-wrapper">
+        <div class="modal-icon">
+            <i class="fa fa-warning"></i>
+        </div>
+            <div class="modal-text">
+                <h4>Atención</h4>
+                <p>Estimado Usuario: ¿Está seguro que desea cerrar el periodo de validación?</p>
+            </div>
+    </div>
+</div>
+
+  <div class="modal-footer">
+
+
+
+        <div id="enviar" style="display:none; text-align:left; " class="alert alert-info" role="alert">
+            Enviando correos, favor espere...
+        </div>
+
+    <button class="btn btn-danger" type="submit" id="confirmar"  >Cerrar Periodo Validación</button>
+     <button class="btn btn-default" type="button" id="cancelar" data-dismiss="modal">Cerrar</button>
+
+
+  </div>
+
+</form>
+
+<script>
+
+                $('#confirmar').click(function() {
+
+                $( this ).hide();
+                $( '#cancelar' ).hide();
+                 $( '#enviar' ).fadeIn();
+
+            });
+
+</script>

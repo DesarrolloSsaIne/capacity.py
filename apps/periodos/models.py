@@ -28,11 +28,15 @@ class Glo_Seguimiento(models.Model):
     id_periodo= models.ForeignKey(Glo_Periodos, on_delete=models.PROTECT, null=True, blank=True)
     fecha_inicio= models.DateTimeField(blank=True, null=True)
     fecha_termino= models.DateTimeField(blank=True, null=True)
-
+    descripcion_seguimiento = models.CharField(max_length=100, null=True, blank=True)
     fecha_inicio_corte=models.DateField(blank=True, null=True)
     fecha_termino_corte=models.DateField(blank=True, null=True)
 
     id_estado_seguimiento= models.ForeignKey(Glo_EstadoSeguimiento, on_delete=models.PROTECT, null=True, blank=True)
+
+
+    def __str__(self):
+        return '{}'.format(self.descripcion_seguimiento)
 
 class Glo_validacion(models.Model):
     id_periodo= models.ForeignKey(Glo_Periodos, on_delete=models.PROTECT, null=True, blank=True)
@@ -40,4 +44,4 @@ class Glo_validacion(models.Model):
     fecha_inicio= models.DateTimeField(blank=True, null=True)
     fecha_termino= models.DateTimeField(blank=True, null=True)
     id_estado_periodo= models.ForeignKey(Glo_EstadoSeguimiento, on_delete=models.PROTECT, null=True, blank=True)
-
+    descripcion_validacion = models.CharField(max_length=100, null=True, blank=True)

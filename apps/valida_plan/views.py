@@ -16,7 +16,8 @@ from apps.valida_plan2.models import Ges_Observaciones_sr
 from django.db.models import Subquery, OuterRef, Count # import agregados por JR - sprint 8 - ok
 from django.db.models.deletion import ProtectedError
 from apps.periodos.models import Glo_Seguimiento
-
+from decimal import *
+from django.db.models import Sum
 from django.core import mail
 from django.conf import settings
 from django.utils.module_loading import import_string
@@ -30,7 +31,7 @@ from apps.estructura.models import Ges_Niveles, Ges_CuartoNivel, Ges_TercerNivel
 from django.contrib.auth.models import User
 from apps.registration.models import logEventos
 from datetime import datetime
-
+from apps.gestion_horas.models import Ges_Registro_Horas
 from apps.eje.models import Ges_Ejes
 
 def get_connection(backend=None, fail_silently=False, **kwds):
@@ -353,6 +354,42 @@ class Objetivos(ListView): #Modificado por JR- sprint 8 - OK
         except Ges_Controlador.DoesNotExist:
             return None
 
+        try:
+
+            total_dias = list(Ges_Registro_Horas.objects.filter(
+                Q(id_nivel=controlador.id_jefatura.id_nivel_id) & Q(id_periodo=periodo_actual.id)).aggregate(
+                Sum('dias_habiles')).values())[0]
+
+            total_utilizado = list(Ges_Actividad.objects.filter(
+                Q(id_controlador=controlador.id) & Q(id_periodo=periodo_actual.id)).aggregate(
+                Sum('total_horas')).values())[0]
+
+            if total_dias != None:
+                total_horas = total_dias * 8
+            else:
+                total_horas = 0
+
+            if total_utilizado != None:
+                consumidas = total_utilizado
+                total_utilizado = total_horas - total_utilizado
+                try:
+                    avance_porcentaje = (consumidas / total_horas) * 100
+                    avance_porcentaje = Decimal(avance_porcentaje)
+                    avance_porcentaje = avance_porcentaje.quantize(Decimal('0.1'), rounding=ROUND_UP)
+                except ZeroDivisionError:
+                    avance_porcentaje = 0
+
+            else:
+                total_utilizado = total_horas
+                consumidas = 0
+                avance_porcentaje = 0
+            total_utilizado = int(total_utilizado)
+            consumidas = int(consumidas)
+
+        except Ges_Registro_Horas.DoesNotExist:
+            return None
+
+
         id_orden = controlador.nivel_inicial
         self.request.session['id_controlador_real'] = controlador.id
        # vaar= controlador.id_jefatura.id_nivel_id
@@ -457,6 +494,13 @@ class Objetivos(ListView): #Modificado por JR- sprint 8 - OK
             context['orden'] = {'orden_nivel': id_orden}
             context['niveles'] = replies2
             context['objetivo'] = id_nivel
+            context['total_disponible'] = {'total_dias': total_dias, 'total_horas': total_horas,
+                                       'total_utilizado': total_utilizado,
+                                       'consumidas': consumidas,
+                                       'avance_porcentaje': avance_porcentaje
+
+                                       }
+
 
             self.request.session['id_orden'] = id_orden
 

@@ -72,14 +72,19 @@ $(function() {
        $('#siteID').select2({
         dropdownParent: $('#modalCreate')
     });
+  $('#siteID2').select2({
+        dropdownParent: $('#modalCreate')
+    });
 
 });
 
 
 $(function() {
-       $('#siteID2').select2({
+       $('#siteID2edit').select2({
         dropdownParent: $('#modalCreate')
     });
+
+$('#siteID2edit option:not(:selected)').attr('disabled',true);
 
 });
 

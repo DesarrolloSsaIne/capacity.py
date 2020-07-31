@@ -1,5 +1,5 @@
 from django import forms
-from apps.periodos.models import Glo_Periodos, Glo_Seguimiento
+from apps.periodos.models import Glo_Periodos, Glo_Seguimiento, Glo_validacion
 
 class DateInput(forms.DateInput):
     input_type = 'date'
@@ -61,15 +61,44 @@ class Seguimiento_abrirform(forms.ModelForm):
     class Meta:
         model = Glo_Seguimiento
         fields = [
+            'descripcion_seguimiento',
             'fecha_termino',
             'fecha_inicio_corte',
             'fecha_termino_corte',
         ]
 
         widgets = {
-
+            'descripcion_seguimiento': forms.TextInput(attrs={'class': 'form-control'}),
             'fecha_inicio_corte': DateInput(attrs={'class': 'form-control', 'required':'required', 'id':'id_fecha_inicio_corte'}),
             'fecha_termino_corte': DateInput(attrs={'class': 'form-control', 'required':'required', 'id':'id_fecha_termino_corte'}),
 
         }
 
+class validacion_abrirform(forms.ModelForm):
+
+
+    class Meta:
+        model = Glo_validacion
+        fields = [
+            'descripcion_validacion',
+            'fecha_termino',
+            'id_periodo_seguimiento',
+
+        ]
+
+        widgets = {
+            'descripcion_validacion': forms.TextInput(attrs={'class': 'form-control', 'required':'required'}),
+            'fecha_termino': DateInput(
+                attrs={'class': 'form-control', 'required': 'required', 'id': 'id_fecha_termino'}),
+            'id_periodo_seguimiento': forms.Select(attrs={'class': 'form-control', 'required':'required'}),
+
+        }
+class valida_cierreform(forms.ModelForm):
+
+
+    class Meta:
+        model = Glo_validacion
+        fields = [
+            'fecha_termino',
+
+        ]

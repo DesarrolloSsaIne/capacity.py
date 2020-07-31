@@ -1,0 +1,176 @@
+{% extends 'base/base.html' %}
+{% block title %}
+ Periodos Validación
+{% endblock %}
+{% block content %}
+
+{% if messages %}
+		  {% for message in messages %}
+
+			<div style="border-radius:0;" {% if message.tags %} id="danger-alert" class="{{request.session.message_class}} fade show mb-0" role="alert" {% endif %}>
+			  {{ message }}
+			  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			  </button>
+			</div>
+
+		  {% endfor %}
+
+	{% endif %}
+
+	<section class="panel">
+							<header class="panel-heading">
+								<div class="panel-actions">
+
+
+								<button type="button" class="volver btn btn-sm btn-info"  name="button" title="Volver" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" ><span class="fa fa-reply"></span></button>
+								 <button  type="button" class="create btn btn-sm btn-success"  name="button" title="Agregar Periodo Validacion" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >
+      								<span class="fa fa-plus"></span></button>
+
+
+									<!--<a href="#" class="fa fa-times"></a>-->
+								</div>
+
+
+								<h2 class="panel-title"> {{ periodo }} </h2>
+
+							</header>
+							<div class="panel-body">
+								<table class="table table-bordered table-striped mb-none" id="datatable-default">
+									<thead>
+										<tr>
+<!--											<th>N°</th>-->
+
+											<th>Descripción</th>
+											<th>Fecha Inicio</th>
+                                            <th>Fecha Cierre</th>
+                                             <th>Estado</th>
+											  <th>Periodo Seguimiento</th>
+                                            <th>Opciones</th>
+										</tr>
+									</thead>
+									<tbody>
+
+                                            {% for seguimiento in object_list %}
+                                                <tr>
+<!--													<td> {{ forloop.counter }}</td>-->
+													<td> {{ seguimiento.descripcion_validacion }} </td>
+                                                    <td> {{ seguimiento.fecha_inicio }} </td>
+
+													 <td>{% if seguimiento.fecha_termino == None  %} - {%else%}{{ seguimiento.fecha_termino}}</td>{%endif%}
+
+
+
+                                                    <td  {% if seguimiento.id_estado_periodo.id == 1  %}
+														 style="color:#47a447; width:130px; font-weight: bold;"
+														{% elif seguimiento.id_estado_periodo.id == 2  %}
+														 style="color:red; width:130px; font-weight: bold;"
+														 {%endif%} > {{ seguimiento.id_estado_periodo }} </td>
+
+														 <td> {{ seguimiento.id_periodo_seguimiento }} </td>
+    												 <td style="width:50px; text-align:center;">
+
+
+														 {% if seguimiento.id_estado_periodo.id == 1  %}  <button type="button" title="Cerrar Periodo validación" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" class="delete btn btn-sm btn-danger" data-id="{% url 'validacion_cerrar' seguimiento.id %}">
+      													  <span class="fa fa-lock"></span></button>{%endif%}
+
+
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+
+
+									</tbody>
+								</table>
+
+							</div>
+						</section>
+
+
+
+
+<!--Cabecera del modal -->
+<div class="modal fade" data-backdrop="static"
+  data-keyboard="false"   tabindex="-1" role="dialog" id="modalCreate">
+  <div class="modal-dialog modal-xs" role="document">
+	<div class="modal-content">
+
+    </div>
+  </div>
+</div>
+
+	<div class="modal fade" tabindex="-1" role="dialog" id="modalDetalle">
+  <div class="modal-dialog modal-xs" role="document">
+	<div class="modal-content">
+
+    </div>
+  </div>
+
+</div>
+<div class="modal fade" data-backdrop="static"
+  data-keyboard="false"   tabindex="-1" role="dialog" id="modalUpdate">
+  <div class="modal-dialog modal-lg" role="document">
+	<div class="modal-content">
+
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" data-backdrop="static"
+  data-keyboard="false"  tabindex="-1" role="dialog" id="modalDelete">
+  <div class="modal-dialog modal-xs" role="document">
+	<div class="modal-content">
+
+    </div>
+  </div>
+</div>
+<!--Fin cabecera del modal -->
+
+
+
+	{% block extrajs %}
+
+
+
+<script type="text/javascript">
+
+$(".volver").click(function() {
+    window.location.href = '{% url 'periodos_listar'  %}';
+    return false;
+});
+
+	// JS modal crea Registro
+  	 $(".create").modalForm(  {formURL: "{% url 'validacion_abrir' %}", modalID: $("#modalCreate")});
+
+
+   	 // JS modal actualiza Registro
+   $(".update").each(function () {
+   $(this).modalForm({formURL: $(this).data('id'),  modalID: $("#modalUpdate")});
+
+    });
+
+
+    // JS modal elimina Registro
+    $(".delete").each(function () {
+    $(this).modalForm({formURL: $(this).data('id'),  modalID: $("#modalDelete")});
+	});
+
+
+     // Js Muestra/Oculta Mensaje Success
+   	 $(".alert").fadeTo(5000, 500).slideUp( "slow", function() {
+     $(this).remove();
+  });
+
+	$('#datatable-default').DataTable({
+	"order": [[ 4, "asc" ]] //desactiva el ordenamiento de la tabla para que el order_by del queryset funcione. ("order": [[ 3, "desc" ]]) para ordenar desde jquery.
+	});
+
+</script>
+
+
+		{% endblock %}
+
+
+
+{% endblock %}
