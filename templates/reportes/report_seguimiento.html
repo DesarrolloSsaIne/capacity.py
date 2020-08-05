@@ -11,39 +11,22 @@ Reportes
 
 		<script type="text/javascript">
 
-function filterGlobal () {
-    $('#Tabla').DataTable().search(
-        $('#list_estados2').val(),
-        $('#global_regex').prop('checked'),
-        $('#global_smart').prop('checked')
-    ).draw();
-}
-
-function filterColumn ( i ) {
-    $('#Tabla').DataTable().column( i ).search(
-        $('#col0_filter').val(),
-        $('#col'+i+'_regex').prop('checked'),
-        $('#col'+i+'_smart').prop('checked')
-    ).draw();
-}
-
-
 
 $( document ).ready(function() {
 
+
+$('#pestana_1').css('display','block');
+$('#pestana_2').css('display','block');
+$('#pestana_3').css('display','block');
+$('#pestana_4').css('display','block');
+
+
+
 $('#Tabla').DataTable();
 
-    $('#list_estados2').on( 'keyup click', function () {
-        filterGlobal();
-        Calcular();
-    } );
 
-    $('#col0_filter').on( 'keyup click', function () {
-        filterColumn(0);
-        Calcular();
-    } );
 
-$('#Tabla_filter').find("input").css('display', 'none');  /// desaparezco el input de busqueda
+$('#Tabla_filter').find("input").css('display','none');  /// desaparezco el input de busqueda
 //$('#Tabla_filter').find("input").val($('').val())
 //$('#Tabla_filter').find("input").val($('#list_estados').val()) // asigno al input de busqueda el primer valor del select
 //$('#Tabla_filter').find("input").trigger('keyup');
@@ -79,6 +62,7 @@ var myLineChart = new Chart(ctx1, {
 		 borderWidth: 2,
 		 pointBorderWidth:1,
 		 pointRadius: 4
+
 		},{
 
 		 label: "N° de Actividades Ejecutadas (Acumuladas) " ,
@@ -139,9 +123,12 @@ var myLineChart = new Chart(ctx1, {
 			   scales: {
 				yAxes: [{
 					ticks: {
-						//suggestedMin: 0,
-						//suggestedMax: 10,
+
+						// suggestedMin: 10,
+						 //suggestedMax:50,
 						 beginAtZero: true,
+
+
 					}
 				}]
      		   },
@@ -336,15 +323,26 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 
 <div class="tabs tabs-primary">
 								<ul class="nav nav-tabs">
-									<li class="active">
-										<a aria-expanded="false" href="#popular1" data-toggle="tab"> Gráfico C.E.A.P</a>
+
+										<li class="active">
+										<a aria-expanded="false" href="#SeleccionUnidad" data-toggle="tab"> Seleccione Unidad</a>
+									</li>
+
+
+
+									<li >
+										<a aria-expanded="true" id="pestana_1" style="display:none;" href="#popular1" data-toggle="tab"> Gráfico C.E.A.P</a>
 									</li>
 									<li >
-										<a aria-expanded="true" href="#recent1" data-toggle="tab">Datos C.E.A.P</a>
+										<a aria-expanded="true" id="pestana_2"  style="display:none;"   href="#recent1" data-toggle="tab">Datos C.E.A.P</a>
 									</li>
 									<li>
-										<a aria-expanded="true" href="#cumplimiento1" data-toggle="tab">Estado Cumplimiento</a>
+										<a aria-expanded="true" id="pestana_3"  style="display:none;"   href="#cumplimiento1" data-toggle="tab">Estado Cumplimiento</a>
 									</li>
+									<li>
+										<a aria-expanded="true" id="pestana_4"  style="display:none;"   href="#distribucion_cargos" data-toggle="tab">Distribución por Cargos</a>
+									</li>
+
 								</ul>
 
 
@@ -352,22 +350,136 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 								<div class="tab-content">
 
 
+<!--#############################################################################################################3-->
+
+
+									<div class="tab-pane active" id="SeleccionUnidad">
+
+
+									<section class="panel">
+											<div class="form-group">
+
+
+									<form method="post"  action="">
+									<div class="panel-body">
+										{% csrf_token %}
+
+										<div class="col-md-4" style="width:400px;" ><label style="margin-left:-15px;">Seleccione Unidad Nivel Superior</label>
+								<select class="form-control" name="unidad_filtro" id="list_seleccion_unidad" style=" margin-left:-15px; width:400px;">
+
+  							{% for actividad_count in lista_datos_unidades %}
+                           	  <option  value=		{% if actividad_count.id_controlador__nivel_inicial == 4 %}4_{{actividad_count.id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel__id}}{% endif %}
+														{% if actividad_count.id_controlador__nivel_inicial == 3 %} 3_{{actividad_count.id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__id}}{% endif %}
+														{% if actividad_count.id_controlador__nivel_inicial == 2 %} 2_{{actividad_count.id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__id}}{% endif %}>
+
+
+	                                        	{% if actividad_count.id_controlador__nivel_inicial == 4 %}{{ actividad_count.id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel__descripcion_nivel }} {% endif %}
+														{% if actividad_count.id_controlador__nivel_inicial == 3 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__descripcion_nivel }} {% endif %}
+														{% if actividad_count.id_controlador__nivel_inicial == 2 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__descripcion_nivel }} {% endif %}
+
+								 {% endfor %}
+								 </option>
+
+                            	</select>
+</div><div class="col-md-4"  style="width:150px;" >
+
+										<label>Seleccione Mes</label>
+
+								<select class="form-control" id="mes_filtro_id" name="mes_filtro" style="width:150px;"  >
+
+							  {% for meses in meses_periodo %}
+                             <option value= {{meses.month}}>
+
+
+	                            {% if meses.month == 1 %}Enero{%endif%}
+								 {% if meses.month == 2 %}Febrero{%endif%}
+								 {% if meses.month == 3 %}Marzo{%endif%}
+								 {% if meses.month == 4 %}Abril{%endif%}
+								 {% if meses.month == 5 %}Mayo{%endif%}
+								 {% if meses.month == 6 %}Junio{%endif%}
+								 {% if meses.month == 7 %}Julio{%endif%}
+								 {% if meses.month == 8 %}Agosto{%endif%}
+								 {% if meses.month == 9 %}Septiembre{%endif%}
+								 {% if meses.month == 10 %}Octubre{%endif%}
+								 {% if meses.month == 11 %}Noviembre{%endif%}
+								 {% if meses.month == 12 %}Diciembre{%endif%}
+
+								 {% endfor %}
+							 </option>
+
+
+
+                            </select>
+</div><div class="col-md-4" style="text-align:left; margin-left:15px; margin-top:26px; " >
+
+										<button class="btn btn-primary"  type="submit" id="generar_report">Generar Reporte</button></div>
+
+									</div>
+									</form>
+												</div>
+									</section>
+
+								</div>
+
+
+<!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
 
 
 
 
 <!--#############################################################################################################3-->
-									<div class="tab-pane active" id="popular1">
+									<div class="tab-pane"  id="popular1">
 
+										<section class="panel">
 
-									<section class="panel">
-
+						<header class="panel-heading">
+								<div class="panel-actions">
 									<div style="text-align:right;">
 											<a id="download" style="width:30px; height:30px;"  name="download"  download="Curva_de_ejecucion_actividades_programadas.jpg" href="" class="btn btn-sm btn-success" title="Descargar Gráfico" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
 											<span style="margin-left:-2px;" class="fa fa-download"></span>
 											</a>
 									</div>
+
+								</div>
+
+
+							{% if nivel == '2' %}
+
+							{% for unidads in unidad|slice:":1"  %}
+							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_segundo_nivel.primer_nivel}}</b></span>
+							{% endfor %}
+
+							{% endif %}
+							{% if nivel == '3' %}
+
+							{% for unidads in unidad|slice:":1"  %}
+							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_tercer_nivel.segundo_nivel}}</b></span>
+							{% endfor %}
+
+							{% endif %}
+							{% if nivel == '4' %}
+
+							{% for unidads in unidad|slice:":1"  %}
+							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_cuarto_nivel.tercer_nivel.segundo_nivel}}</b> </span>
+							{% endfor %}
+
+							{% endif %}
+
+
+
+						</header>
+
+
+
+
+
+
+
+
 									<div class="panel-body">
+
+
+
 										<canvas id="chart_uno" ></canvas>
 
 									</div>
@@ -386,12 +498,46 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 
 										<section class="panel">
 
-
-
+																	<header class="panel-heading">
+								<div class="panel-actions">
 							<div style="text-align:right;">
 								 <a  type="button" style="width:30px; height:30px; "  class="create btn btn-sm btn-success" href="{% url 'export_xls' %}"  name="button" title="Descargar Tabla en MS Excel" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
 									 <span style="margin-left:-1px; " class="fa fa-file-excel-o"></span></a>
 							</div>
+
+
+								</div>
+
+
+							{% if nivel == '2' %}
+
+							{% for unidads in unidad|slice:":1"  %}
+							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_segundo_nivel.primer_nivel}}</b> | Mes Seleccionado: <b>{{mes_seleccionado}}</b></span>
+							{% endfor %}
+
+							{% endif %}
+							{% if nivel == '3' %}
+
+							{% for unidads in unidad|slice:":1"  %}
+							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_tercer_nivel.segundo_nivel}}</b> | Mes Seleccionado: <b>{{mes_seleccionado}}</b></span>
+							{% endfor %}
+
+							{% endif %}
+							{% if nivel == '4' %}
+
+							{% for unidads in unidad|slice:":1"  %}
+							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_cuarto_nivel.tercer_nivel.segundo_nivel}}</b> | Mes Seleccionado: <b>{{mes_seleccionado}}</b></span>
+							{% endfor %}
+
+
+							{% endif %}
+
+
+
+						</header>
+
+
+
 
 
 									<!--<a href="#" class="fa fa-times"></a>-->
@@ -431,17 +577,17 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
                                             {% for actividad in object_list %}
                                                 <tr style="font-size:11px;">
 													<td> {{ forloop.counter }}</td>
-                                                    <td class="descripcion_actividad"  style="cursor:pointer; max-width: 100px; overflow: hidden;  display: table-cell;  text-overflow: ellipsis;  border: solid 1px #dddddd; white-space: nowrap;"> {{ actividad.descripcion_actividad }} </td>
-													 <td class="descripcion_objetivo"  style="cursor:pointer; max-width: 100px; overflow: hidden;  display: table-cell;  text-overflow: ellipsis;  border: solid 1px #dddddd; white-space: nowrap;"> {% if actividad.id_objetivo_operativo != None %} {{actividad.id_objetivo_operativo}} {% elif actividad.id_objetivo_tactico != None %} {{actividad.id_objetivo_tactico}} {% elif actividad.id_objetivo_tacticotn != None %} {{actividad.id_objetivo_tacticotn}} {% endif %} </td>
-													<td> {{ actividad.id_periodicidad}} </td>
-													<td> {{ actividad.id_producto_estadistico}} </td>
-													<td> {{ actividad.horas_actividad}} </td>
-													<td> {{ actividad.volumen}} </td>
-													<td> {{ actividad.personas_asignadas}} </td>
-													<td> {{ actividad.total_horas}} </td>
-													<td> {{ actividad.id_familia_cargo}} </td>
-													<td> {{ actividad.fecha_inicio_actividad}} </td>
-													<td> {{ actividad.fecha_termino_actividad}} </td>
+                                                    <td class="descripcion_actividad"  style="cursor:pointer; max-width: 100px; overflow: hidden;  display: table-cell;  text-overflow: ellipsis;  border: solid 1px #dddddd; white-space: nowrap;"> {{ actividad.id_actividad.descripcion_actividad }} </td>
+													 <td class="descripcion_objetivo"  style="cursor:pointer; max-width: 100px; overflow: hidden;  display: table-cell;  text-overflow: ellipsis;  border: solid 1px #dddddd; white-space: nowrap;"> {% if actividad.id_actividad.id_objetivo_operativo != None %} {{actividad.id_actividad.id_objetivo_operativo}} {% elif actividad.id_actividad.id_objetivo_tactico != None %} {{actividad.id_actividad.id_objetivo_tactico}} {% elif actividad.id_actividad.id_objetivo_tacticotn != None %} {{actividad.id_actividad.id_objetivo_tacticotn}} {% endif %} </td>
+													<td> {{ actividad.id_actividad.id_periodicidad}} </td>
+													<td> {{ actividad.id_actividad.id_producto_estadistico}} </td>
+													<td> {{ actividad.id_actividad.horas_actividad}} </td>
+													<td> {{ actividad.id_actividad.volumen}} </td>
+													<td> {{ actividad.id_actividad.personas_asignadas}} </td>
+													<td> {{ actividad.id_actividad.total_horas}} </td>
+													<td> {{ actividad.id_actividad.id_familia_cargo}} </td>
+													<td> {{ actividad.id_actividad.fecha_inicio_actividad}} </td>
+													<td> {{ actividad.id_actividad.fecha_termino_actividad}} </td>
 													<td> {{ actividad.id_estado_actividad}} </td>
 													<td> {% if actividad.fecha_real_termino == None %} {% else %} {{ actividad.fecha_real_termino}} {% endif %} </td>
 													<td> {% if actividad.fecha_reprogramacion_inicio == None %} {% else %} {{ actividad.fecha_reprogramacion_inicio}} {% endif %} </td>
@@ -449,14 +595,14 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 													<td class="descripcion_justificacion"  style="cursor:pointer; max-width: 100px; overflow: hidden;  display: table-cell;  text-overflow: ellipsis;  border: solid 1px #dddddd; white-space: nowrap;"> {% if actividad.justificacion == None %} {% else %} {{ actividad.justificacion}} {% endif %}  </td>
 													<td>
 														{% if actividad.id_controlador.nivel_inicial == 4 %} {{actividad.id_controlador.id_jefatura.id_nivel.id_cuarto_nivel.tercer_nivel.segundo_nivel}}
-														{% elif actividad.id_controlador.nivel_inicial == 3 %} {{actividad.id_controlador.id_jefatura.id_nivel.id_tercer_nivel.id_segundo_nivel}}
-														{% elif actividad.id_controlador.nivel_inicial == 2 %} {{actividad.id_controlador.id_jefatura.id_nivel.id_segundo_nivel}}
+														{% elif actividad.id_controlador.nivel_inicial == 3 %} -
+														{% elif actividad.id_controlador.nivel_inicial == 2 %} -
 														{% endif %}
 													</td>
 													<td>
 														{% if actividad.id_controlador.nivel_inicial == 4 %} {{actividad.id_controlador.id_jefatura.id_nivel.id_cuarto_nivel.tercer_nivel}}
-														{% elif actividad.id_controlador.nivel_inicial == 3 %} {{actividad.id_controlador.id_jefatura.id_nivel.id_tercer_nivel}}
-														{% elif actividad.id_controlador.nivel_inicial == 2 %} -
+														{% elif actividad.id_controlador.nivel_inicial == 3 %} -
+														{% elif actividad.id_controlador.nivel_inicial == 2 %} {{actividad.id_controlador.id_jefatura.id_nivel.id_segundo_nivel.primer_nivel}}
 														{% endif %}
 													</td>
 
@@ -464,14 +610,14 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 
 														{% if actividad.id_controlador.nivel_inicial == 4 %} {{actividad.id_controlador.id_jefatura.id_nivel.id_cuarto_nivel}}
 														{% elif actividad.id_controlador.nivel_inicial == 3 %} -
-														{% elif actividad.id_controlador.nivel_inicial == 2 %} -
+														{% elif actividad.id_controlador.nivel_inicial == 2 %} {{actividad.id_controlador.id_jefatura.id_nivel.id_segundo_nivel}}
 														{% endif %}
 													</td>
 
 													<td>
-														{% if actividad.id_objetivo_operativo != None %} {{actividad.id_objetivo_operativo.id_objetivo_tacticotn.id_objetivo_tactico.id_objetivo_estrategico.ges_eje}}
-														{% elif actividad.id_objetivo_tacticotn != None %} {{actividad.id_objetivo_tacticotn.id_objetivo_tactico.id_objetivo_estrategico.ges_eje}}
-														{% elif actividad.id_objetivo_tactico != None %} {{actividad.id_objetivo_tactico.id_objetivo_estrategico.ges_eje}}
+														{% if actividad.id_actividad.id_objetivo_operativo != None %} {{actividad.id_actividad.id_objetivo_operativo.id_objetivo_tacticotn.id_objetivo_tactico.id_objetivo_estrategico.ges_eje}}
+														{% elif actividad.id_actividad.id_objetivo_tacticotn != None %} {{actividad.id_actividad.id_objetivo_tacticotn.id_objetivo_tactico.id_objetivo_estrategico.ges_eje}}
+														{% elif actividad.id_actividad.id_objetivo_tactico != None %} {{actividad.id_actividad.id_objetivo_tactico.id_objetivo_estrategico.ges_eje}}
 														{% endif %}
 													</td>
 
@@ -496,7 +642,9 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 									<div class="tab-pane" id="cumplimiento1">
 										<section class="panel">
 
-											<div style="text-align:right; position:relative; z-index:1;;">
+																										<header class="panel-heading">
+								<div class="panel-actions">
+								<div style="text-align:right; position:relative; z-index:1;;">
 											<button id="downloadTable" style="width:30px; height:30px;"  name="downloadTable" title="Descargar Tabla en MS Excel" class="btn btn-sm btn-success" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
 											<span style="margin-left:-1px;" class="fa fa-file-excel-o"></span>
 											</button>
@@ -506,75 +654,53 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 									</div>
 
 
+								</div>
+
+
+							{% if nivel == '2' %}
+
+							{% for unidads in unidad|slice:":1"  %}
+							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_segundo_nivel.primer_nivel}}</b> | Mes Seleccionado: <b>{{mes_seleccionado}}</b></span>
+							{% endfor %}
+
+							{% endif %}
+							{% if nivel == '3' %}
+
+							{% for unidads in unidad|slice:":1"  %}
+							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_tercer_nivel.segundo_nivel}}</b> | Mes Seleccionado: <b>{{mes_seleccionado}}</b></span>
+							{% endfor %}
+
+							{% endif %}
+							{% if nivel == '4' %}
+
+							{% for unidads in unidad|slice:":1"  %}
+							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_cuarto_nivel.tercer_nivel.segundo_nivel}}</b> | Mes Seleccionado: <b>{{mes_seleccionado}}</b></span>
+							{% endfor %}
+
+							{% endif %}
+
+
+
+						</header>
+
+
+
+
+
 											<div class="panel-body" style="margin-top:-40px;">
 
 							<div class="form-group">
 
-								<div class="col-md-6" >
-															<label style="margin-left:-15px;">Seleccione Unidad Nivel Superior</label>
 
-								<select class="form-control" id="list_estados2" style="max-width:500px; text-align:left; margin-left:-15px;">
-									<option value="">Todos</option>
-
-  {% for actividad_count in object_unidades %}
-                             <option value=		{% if actividad_count.id_controlador__nivel_inicial == 4 %}{{actividad_count.id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__descripcion_nivel}}{% endif %}
-														{% if actividad_count.id_controlador__nivel_inicial == 3 %} {{actividad_count.id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__descripcion_nivel}}{% endif %}
-														{% if actividad_count.id_controlador__nivel_inicial == 2 %} {{actividad_count.id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__descripcion_nivel}}{% endif %}>
-
-
-	                                        	{% if actividad_count.id_controlador__nivel_inicial == 4 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__descripcion_nivel }} {% endif %}
-														{% if actividad_count.id_controlador__nivel_inicial == 3 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__descripcion_nivel }} {% endif %}
-														{% if actividad_count.id_controlador__nivel_inicial == 2 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__descripcion_nivel }} {% endif %}
-
-								 {% endfor %}
-							 </option>
-
-
-
-                            </select>
-								</div>
-									<div class="col-md-6" >
-
-												<label>Seleccione Mes</label>
-
-								<select class="form-control" id="col0_filter" style="max-width:200px;" data-column="0">
-							  {% for meses in meses_periodo %}
-                             <option value= {{meses.month}}>
-
-
-	                            {% if meses.month == 1 %}Enero{%endif%}
-								 {% if meses.month == 2 %}Febrero{%endif%}
-								 {% if meses.month == 3 %}Marzo{%endif%}
-								 {% if meses.month == 4 %}Abril{%endif%}
-								 {% if meses.month == 5 %}Mayo{%endif%}
-								 {% if meses.month == 6 %}Junio{%endif%}
-								 {% if meses.month == 7 %}Julio{%endif%}
-								 {% if meses.month == 8 %}Agosto{%endif%}
-								 {% if meses.month == 9 %}Septiembre{%endif%}
-								 {% if meses.month == 10 %}Octubre{%endif%}
-								 {% if meses.month == 11 %}Noviembre{%endif%}
-								 {% if meses.month == 12 %}Diciembre{%endif%}
-
-								 {% endfor %}
-							 </option>
-
-
-
-                            </select>
-
-
-
-                            </select>
-										</div>
 
 						    </div>
 
 
-								<table class="table table-bordered table-striped mb-none" id="Tabla"  data-page-length='1000'>
+								<table class="table table-bordered table-striped mb-none" id="Tabla"  data-page-length='3000'>
 									<thead>
 										<tr style="font-size:11px;">
 
-											<th colspan="2" style="background-color:#bec1cb; " ></th>
+											<th colspan="1" style="background-color:#bec1cb; " ></th>
 											<th style="text-align:center; background-color:#1e7799; color:#ffffff;" colspan="2">No Iniciadas</th>
 											<th style="text-align:center; background-color:#70ad47; color:#ffffff;" colspan="2">Finalizadas</th>
 											<th style="text-align:center; background-color:#6783b5; color:#ffffff;" colspan="2">En Curso</th>
@@ -586,9 +712,9 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 										</tr>
 
 											<tr style="font-size:11px;">
-												<th class="noExl"  >Mes</th>
+												<th class="noExl" style="display:none;" >Mes</th>
 											<th class="noExl" style="display:none;" >Nivel</th>
-											<th class="noExl" style="display:none;">Superior</th>
+
 											<th>Unidades</th>
 											<th>N° Total Actividades</th><th>% Total Actividades</th>
 											<th>N° Total Actividades</th><th>% Total Actividades</th>
@@ -606,14 +732,10 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 
                                             {% for actividad_count in object_count %}
                                                 <tr style="font-size:11px;">
-													<td class="noExl"  > {{ actividad_count.month}} </td>
+													<td class="noExl"  style="display:none;" > {{ actividad_count.month}} </td>
 
 													<td class="noExl"  style="display:none;"> {{ actividad_count.id_controlador__nivel_inicial }} </td>
-													<td class="noExl"  style="display:none;">
-														{% if actividad_count.id_controlador__nivel_inicial == 4 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__descripcion_nivel }} {% endif %}
-														{% if actividad_count.id_controlador__nivel_inicial == 3 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__descripcion_nivel }} {% endif %}
-														{% if actividad_count.id_controlador__nivel_inicial == 2 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__descripcion_nivel }} {% endif %}
-													</td>
+
 													<td> {{ actividad_count.id_controlador__id_jefatura__id_nivel__descripcion_nivel }} </td>
 													<td><span class="CountNoIniciadas"> {{ actividad_count.CountNoIniciadas }}</span></td><td>{{ actividad_count.CountNoIniciadas|mul:100 |div:actividad_count.CountTotal|floatformat:2 }}% </td>
 													<td><span class="CountFinalizadas">{{ actividad_count.CountFinalizadas }}</span> </td><td>{{ actividad_count.CountFinalizadas|mul:100 |div:actividad_count.CountTotal|floatformat:2 }}% </td>
@@ -632,11 +754,9 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 
 
                                                 <tr style="font-size:11px;">
-													<td class="noExl"  >  </td>
+													<td class="noExl" style="display:none;" >  </td>
 													<td class="noExl"  style="display:none;">  </td>
-													<td class="noExl"  style="display:none;">
 
-													</td>
 													<td style="background-color:#bec1cb; font-weight: bold; color:#4f4f4f; width:150px;"> Total General</td>
 													<td style="background-color:#1e7799; font-weight: bold; color:#ffffff;"><span class="CountNoIniciadasVal"></span> </td><td style="background-color:#1e7799; font-weight: bold; color:#ffffff;"> <span class="CountNoIniciadasValPer"></span>%</td>
 													<td style="background-color:#70ad47; font-weight: bold; color:#ffffff;"><span class="CountFinalizadasVal"></span> </td><td style="background-color:#70ad47; font-weight: bold; color:#ffffff;"> <span class="CountFinalizadasValPer"></span>%</td>
@@ -672,8 +792,102 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 
 
 
+
+
+
+
+<!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
+
+						<div class="tab-pane" id="distribucion_cargos">
+
+
+
+										<section class="panel">
+
+								<header class="panel-heading">
+								<div class="panel-actions">
+
+
 								</div>
-								</div>
+
+
+							{% if nivel == '2' %}
+
+							{% for unidads in unidad|slice:":1"  %}
+							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_segundo_nivel.primer_nivel}}</b> | Mes Seleccionado: <b>{{mes_seleccionado}}</b></span>
+							{% endfor %}
+
+							{% endif %}
+							{% if nivel == '3' %}
+
+							{% for unidads in unidad|slice:":1"  %}
+							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_tercer_nivel.segundo_nivel}}</b> | Mes Seleccionado: <b>{{mes_seleccionado}}</b></span>
+							{% endfor %}
+
+							{% endif %}
+							{% if nivel == '4' %}
+
+							{% for unidads in unidad|slice:":1"  %}
+							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_cuarto_nivel.tercer_nivel.segundo_nivel}}</b> | Mes Seleccionado: <b>{{mes_seleccionado}}</b></span>
+							{% endfor %}
+
+							{% endif %}
+
+
+
+						</header>
+
+
+
+									<!--<a href="#" class="fa fa-times"></a>-->
+
+							<div class="panel-body" style="text-align:center;">
+
+
+<div class="row show-grid">
+										<div class="col-md-1" style="background:#1e7799; width:130px; color:white; height:101px; margin-right:2px;"><h6 style="line-height : 15px; ">Porcentaje de carga ejecutada durante el período (HH)
+</h6><h4 style="margin-top:-5px;">56%</h4></div>
+
+
+										<div class="col-md-10" style="background:#ed7d31; color:white; height:20px; margin-bottom:1px; width:84.2%;" ><span class="show-grid-block">Distribución por Cargos</span></div>
+
+										<div class="col-md-1" style="background:#dddddd; margin-right:1px; height:44px; " ><h6>Jefe Dpto.</h6></div>
+										<div class="col-md-1" style="background:#dddddd; margin-right:1px; height:44px; " ><h6>Jefe SubDpto.</h6></div>
+										<div class="col-md-1" style="background:#dddddd; margin-right:1px; height:44px; " ><h6 style="margin-left:-11px; font-size:10px; margin-top:20px;">Coordinadores</h6></div>
+										<div class="col-md-1" style="background:#dddddd; margin-right:1px; height:44px; "><h6 style="margin-left:-8px; font-size:11px; margin-top:20px;" >Supervisores</h6></div>
+										<div class="col-md-1" style="background:#dddddd; margin-right:1px; height:44px; "><h6  style="margin-left:-8px; font-size:11px;">Analistas Especialistas</h6></div>
+										<div class="col-md-1" style="background:#dddddd; margin-right:1px; height:44px;"><h6 style="margin-left:-6px; font-size:12px; margin-top:18px;" >Analistas</h6></div>
+										<div class="col-md-1" style="background:#dddddd; margin-right:1px; height:44px;"><h6 style="font-size:11px; margin-left:-9px; text-align:center; ">Supervisores</h6><h6 style=" font-size:11px; margin-left:-5px;   margin-top:-8px;">Operativos</h6></div>
+										<div class="col-md-1" style="background:#dddddd; margin-right:1px; height:44px;"><h6 style="margin-left:-6px; font-size:12px; margin-top:18px;">Operativos</h6></div>
+										<div class="col-md-1" style="background:#dddddd; margin-right:1px; height:44px;"><h6 style="margin-left:-6px; font-size:12px; margin-top:18px;">Asistentes</h6></div>
+										<div class="col-md-1" style="background:#dddddd; margin-right:1px; height:44px;"><h6 style="margin-left:-6px; font-size:12px; margin-top:18px;">Auxiliares</h6></div>
+
+
+										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><h6 style="margin-top:10px;" >25%</h6></div>
+										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><span class="show-grid-block">B</span></div>
+										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><span class="show-grid-block">B</span></div>
+										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><span class="show-grid-block">B</span></div>
+										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><span class="show-grid-block">B</span></div>
+										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><h6 style="margin-top:10px;" >{{porcentaje_analista}}%</h6></div>
+										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><span class="show-grid-block">B</span></div>
+										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><span class="show-grid-block">B</span></div>
+										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><span class="show-grid-block">B</span></div>
+										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><span class="show-grid-block">B</span></div>
+
+
+
+
+
+									</div>
+
+
+
+							</div>
+						</section>
+									</div>
+</div>
+	</div>
+
 
 
 

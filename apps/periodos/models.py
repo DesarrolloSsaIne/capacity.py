@@ -18,10 +18,8 @@ class Glo_Periodos(models.Model):
     fecha_termino=models.DateField(blank=True, null=True)
     id_estado = models.ForeignKey(Glo_EstadoPeriodo, on_delete=models.PROTECT, null=True)
 
-
     def __str__(self):
         return '{}'.format(self.descripcion_periodo)
-
 
 
 class Glo_Seguimiento(models.Model):

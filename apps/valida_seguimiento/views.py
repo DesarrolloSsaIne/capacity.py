@@ -3,6 +3,7 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 # Create your views here.
 from apps.actividades.models import Ges_Actividad, Ges_Observaciones_valida, Ges_log_reportes, Ges_Actividad_Historia
 from apps.controlador.models import Ges_Controlador
+from apps.estado_actividad.models import Glo_EstadoActividad
 from apps.estructura.models import Ges_Niveles
 from apps.jefaturas.models import Ges_Jefatura
 from apps.objetivos.models import Ges_Objetivo_TacticoTN, Ges_Objetivo_Tactico, Ges_Objetivo_Operativo
@@ -138,7 +139,7 @@ class Objetivos(ListView): #Modificado por JR- sprint 8 - OK
 
                 count_actividades = Ges_Actividad.objects.values('id_objetivo_tacticotn').filter(
                     id_objetivo_tacticotn=OuterRef('pk')).annotate(
-                    count_id_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id)))
+                    count_id_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id)& Q(id_estado_actividad__in=[2,3,5,10])))
 
                 count_no_vistos_obj = Ges_Observaciones_sr.objects.values('id_objetivo_tacticotn').filter(
                     id_objetivo_tacticotn=OuterRef('pk')).annotate(
@@ -166,7 +167,7 @@ class Objetivos(ListView): #Modificado por JR- sprint 8 - OK
 
                 count_actividades = Ges_Actividad.objects.values('id_objetivo_tactico').filter(
                     id_objetivo_tactico=OuterRef('pk')).annotate(
-                    count_id_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id)))
+                    count_id_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id)& Q(id_estado_actividad__in=[2,3,5,10])))
 
                 count_no_vistos_obj = Ges_Observaciones_sr.objects.values('id_objetivo_tactico').filter(
                     id_objetivo_tactico=OuterRef('pk')).annotate(
@@ -195,7 +196,7 @@ class Objetivos(ListView): #Modificado por JR- sprint 8 - OK
 
                 count_actividades = Ges_Actividad.objects.values('id_objetivo_operativo').filter(
                     id_objetivo_operativo=OuterRef('pk')).annotate(
-                    count_id_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id)))
+                    count_id_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id)& Q(id_estado_actividad__in=[2,3,5,10])))
 
                 count_no_vistos_obj = Ges_Observaciones_sr.objects.values('id_objetivo_operativo').filter(
                     id_objetivo_operativo=OuterRef('pk')).annotate(
@@ -452,6 +453,16 @@ def update_actividad(request):
         except Glo_Periodos.DoesNotExist:
             return None
         try:
+            id_periodo_seguimiento = Glo_Seguimiento.objects.get(id_estado_seguimiento=1)
+        except Glo_Seguimiento.DoesNotExist:
+            return None
+
+        try:
+            id_estado_final_instancia = Glo_EstadoActividad.objects.get(id=int(estado_final))
+        except id_estado_final_instancia.DoesNotExist:
+            return None
+
+        try:
             periodo_valida = Glo_validacion.objects.get(
                 Q(id_estado_periodo=1) & Q(id_periodo=periodo_actual.id))
         except:
@@ -459,6 +470,9 @@ def update_actividad(request):
             pass
         agregarObservacion(observacion, int(id_actividad), int(periodo_valida.id) )
         Log_valida(int(periodo_valida.id),  int(id_actividad),  fecha_inicio, fecha_termino, None, int(estado_final))
+
+        ActividadesHistoria(id_periodo_seguimiento, id_actividad, id_estado_final_instancia, periodo_actual)
+
         return JsonResponse(response_data)
 
     return render(request, 'valida_seguimiento/listarActividades/' + str(id_actividad), {'success': 'true'})
@@ -492,6 +506,17 @@ def update_actividad_rechaza(request):
             periodo_actual = Glo_Periodos.objects.get(id_estado=1)
         except Glo_Periodos.DoesNotExist:
             return None
+
+        try:
+            id_periodo_seguimiento = Glo_Seguimiento.objects.get(id_estado_seguimiento=1)
+        except Glo_Seguimiento.DoesNotExist:
+            return None
+
+        try:
+            id_estado_final_instancia = Glo_EstadoActividad.objects.get(id=int(estado_final))
+        except id_estado_final_instancia.DoesNotExist:
+            return None
+
         try:
             periodo_valida = Glo_validacion.objects.get(
                 Q(id_estado_periodo=1) & Q(id_periodo=periodo_actual.id))
@@ -501,6 +526,10 @@ def update_actividad_rechaza(request):
 
         agregarObservacion(observacion, int(id_actividad), int(periodo_valida.id))
         Log_valida(int(periodo_valida.id), int(id_actividad),  None, None, None, int(estado_final))
+
+        ActividadesHistoria(id_periodo_seguimiento, id_actividad, id_estado_final_instancia, periodo_actual)
+
+
         return JsonResponse(response_data)
 
     return render(request, 'valida_seguimiento/listarActividades/' + str(id_actividad), {'success': 'true'})
@@ -537,34 +566,12 @@ def Log_valida(id_periodo_valida, id_actividad, fecha_inicio, fecha_termino, fec
     return None
 
 
-####    LUNES 3 TERMINAR Y PROBAR, CADA VEZ QUE VALIDA DEBE ACTUALIZAR LA TABLA ACTIVIDAD HISTORIA ######
+def ActividadesHistoria(id_periodo_seguimiento, id_actividad,id_estado_actividad,id_periodo):
 
-def ActividadesHistoria(id_periodo_seguimiento, id_actividad,fecha_reprogramacion_inicio, fecha_reprogramacion_termino, fecha_real_termino, id_estado_actividad,id_periodo, justificacion, actualiza):
+    Id = Ges_Actividad_Historia.objects.get(Q(id_actividad=id_actividad) & Q(id_periodo_seguimiento=id_periodo_seguimiento) & Q(id_periodo=id_periodo))
 
+    Ges_Actividad_Historia.objects.filter(id=Id.id).update(
 
-    if actualiza == 0:
-        Ges_Actividad_Historia.objects.create(
-            id_periodo_seguimiento=id_periodo_seguimiento,
-            id_actividad=id_actividad,
-            fecha_reprogramacion_inicio=fecha_reprogramacion_inicio,
-            fecha_reprogramacion_termino=fecha_reprogramacion_termino,
-            fecha_real_termino=fecha_real_termino,
-            id_estado_actividad=id_estado_actividad,
-            id_periodo=id_periodo,
-            justificacion=justificacion,
-
-        )
-        return None
-    else:
-        Id = Ges_Actividad_Historia.objects.get(Q(id_actividad=id_actividad) & Q(id_periodo_seguimiento=id_periodo_seguimiento) & Q(id_periodo=id_periodo))
-
-        Ges_Actividad_Historia.objects.filter(id=Id.id).update(
-            fecha_reprogramacion_inicio=fecha_reprogramacion_inicio,
-            fecha_reprogramacion_termino=fecha_reprogramacion_termino,
-            fecha_real_termino=fecha_real_termino,
-            id_estado_actividad=id_estado_actividad,
-            justificacion=justificacion,
-
-
-        )
-        return None
+        id_estado_actividad=id_estado_actividad,
+    )
+    return None
