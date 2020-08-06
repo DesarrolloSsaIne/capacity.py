@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from apps.actividades.models import Ges_Actividad, Ges_Actividad_Historia
 from django.db.models import Q
@@ -10,11 +10,51 @@ from openpyxl import Workbook
 from django.http import HttpResponseRedirect
 from django.db.models import Subquery, OuterRef, Count, Sum
 from django.db.models.functions import Extract
+from django.http import HttpResponse
 
-
+from django.shortcuts import render_to_response
 #
 # def GenerarReporte( request):
 #     template_name = 'reportes/report_seguimiento.html'
+#
+#     try:
+#         periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+#     except Glo_Periodos.DoesNotExist:
+#         return None
+#
+#     lista_datos_unidades_select = Ges_Actividad_Historia.objects.annotate(
+#         month=Extract('id_periodo_seguimiento__fecha_termino_corte', 'month')).filter(
+#         Q(id_periodo=periodo_actual)).values(
+#         'id_controlador__nivel_inicial',
+#         'id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel__descripcion_nivel',
+#         # N4
+#         'id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__descripcion_nivel',  # N3
+#         'id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__descripcion_nivel',  # N2
+#
+#         'id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel__id',  # N4_id
+#         'id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__id',  # N3_id
+#         'id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__id',  # N2_id
+#     ).distinct()
+#
+#     # context['lista_datos_unidades'] = lista_datos_unidades_select
+#
+#     meses = Ges_Actividad_Historia.objects.annotate(
+#         month=Extract('id_periodo_seguimiento__fecha_termino_corte', 'month')).filter(
+#         Q(id_periodo=periodo_actual)).values('month').distinct().order_by('-month')
+#
+#
+#
+#     porcentaje_analista = ''
+#     if request.method=='POST':
+#
+#         unidad_filtro = request.POST['unidad_filtro']
+#         mes_filtro = request.POST['mes_filtro']
+#
+#         nivel = str(unidad_filtro[0:1])
+#         id_nivel = str(unidad_filtro[2:5])
+#
+#     return render(request, template_name, {'meses_periodo': meses,
+#                    'lista_datos_unidades': lista_datos_unidades_select,'porcentaje_analista': porcentaje_analista, } )
 #
 #
 #     try:
@@ -210,9 +250,64 @@ class GeneraReportCurvaEjecucion(TemplateView):
         # # # # # # # # # # # # # # # # # # # # # #  INICIO DISTRIBUCION POR CARGO  # # # # # # # # # # # # # # # # # # # #
 
 
-        porcentaje_analista=''
+        porcentaje_jefe_departamento = ''
+        porcentaje_jefe_subdepartamento = ''
+        porcentaje_analista = ''
 
-        if nivel=='4':
+        if nivel == '4':
+
+            suma_horas_jefe_departamento = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=1) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            suma_horas_jefe_departamento_finalizadas = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=1) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_estado_actividad_id=7)).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            if suma_horas_jefe_departamento_finalizadas == None:
+                suma_horas_jefe_departamento_finalizadas = 0
+
+            if suma_horas_jefe_departamento != None:
+                porcentaje_jefe_departamento = "{0:.1f}".format((suma_horas_jefe_departamento_finalizadas * 100) / suma_horas_jefe_departamento)
+            else:
+                porcentaje_jefe_departamento = 0
+
+
+           ########################################################################################
+
+
+
+            suma_horas_jefe_subdepartamento = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=2) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            suma_horas_jefe_subdepartamento_finalizadas = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=2) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_estado_actividad_id=7)).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            if suma_horas_jefe_subdepartamento_finalizadas == None:
+                suma_horas_jefe_subdepartamento_finalizadas = 0
+
+            if suma_horas_jefe_subdepartamento != None:
+                porcentaje_jefe_subdepartamento = "{0:.1f}".format(
+                    (suma_horas_jefe_subdepartamento_finalizadas * 100) / suma_horas_jefe_subdepartamento)
+            else:
+                porcentaje_jefe_subdepartamento = 0
+
+         ########################################################################################
+
             suma_horas_analistas= list(Ges_Actividad_Historia.objects.filter(Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel=id_nivel) & Q(id_actividad__id_familia_cargo_id=6) & Q(id_periodo=periodo_actual) &
                                                                     Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).aggregate(
                     Sum('id_actividad__total_horas')).values())[
@@ -234,6 +329,11 @@ class GeneraReportCurvaEjecucion(TemplateView):
                 porcentaje_analista = 0
 
 
+             ################################################################
+
+
+
+
 
         # # # # # # # # # # # # # # # # # # # # # #  FIN DISTRIBUCION POR CARGO  # # # # # # # # # # # # # # # # # # # # # #
 
@@ -244,7 +344,9 @@ class GeneraReportCurvaEjecucion(TemplateView):
                    "lista_datos_unidades": lista_datos_unidades_select,
                    'unidad':unidad_seleccionada,
                    'nivel':nivel, 'mes_seleccionado':mes_seleccionado,
-                   'porcentaje_analista': porcentaje_analista
+                   'porcentaje_analista': porcentaje_analista,
+                   'porcentaje_jefe_departamento':porcentaje_jefe_departamento,
+                   'porcentaje_jefe_subdepartamento':porcentaje_jefe_subdepartamento, 'unidad_filtro':unidad_filtro, 'mes_filtro':mes_filtro,
                    }
         # # # # # # # # # # # # # # # # # # # # # # FIN  CONTEXT COMPARTIDO # # # # # # # # # # # # # # # # # # # # # #
 

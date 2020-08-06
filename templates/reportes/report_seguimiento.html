@@ -12,19 +12,40 @@ Reportes
 		<script type="text/javascript">
 
 
+
+
+
+
+
+
+
 $( document ).ready(function() {
+unidad_filtro=$('#unidad_filtro').val();
+mes_filtro=$('#mes_filtro').val();
 
 
+$('#list_seleccion_unidad').val(unidad_filtro);
+$('#list_seleccion_unidad').change();
+
+$('#mes_filtro_id').val(mes_filtro);
+$('#mes_filtro_id').change();
+
+//alert('document ready');
 $('#pestana_1').css('display','block');
 $('#pestana_2').css('display','block');
 $('#pestana_3').css('display','block');
 $('#pestana_4').css('display','block');
 
+$('#mensaje').css('display','block');
+
+
+
+
+
+
 
 
 $('#Tabla').DataTable();
-
-
 
 $('#Tabla_filter').find("input").css('display','none');  /// desaparezco el input de busqueda
 //$('#Tabla_filter').find("input").val($('').val())
@@ -139,6 +160,8 @@ var myLineChart = new Chart(ctx1, {
 
 
 });
+
+
 
 
 $("#download").click(function(){
@@ -292,14 +315,39 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 
 
 
-
 		</script>
 
-      <script>
-
-      </script>
+<script type="text/javascript">
 
 
+//$(document).on('submit','#formulario', function(e){
+//e.preventDefault();
+
+
+//		$.ajax({
+//		cache: false,
+//		type:'POST',
+
+//		url:'{% url "ReportCurvaEjecucion"  %}',
+//		data:{
+//		unidad_filtro:$('#list_seleccion_unidad').val(),
+//		mes_filtro:$('#mes_filtro_id').val(),
+//		csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+
+
+	//	},
+	//	success:function(){
+//alert('ok');
+//$('#list_seleccion_unidad').val(unidad_filtro);
+//$('#list_seleccion_unidad').change();
+
+	//	}
+
+	//	});
+
+
+//});
+		</script>
 	{% endblock %}
 
 
@@ -360,7 +408,8 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 											<div class="form-group">
 
 
-									<form method="post"  action="">
+									<form id="formulario"  method="post" >
+
 									<div class="panel-body">
 										{% csrf_token %}
 
@@ -412,11 +461,46 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
                             </select>
 </div><div class="col-md-4" style="text-align:left; margin-left:15px; margin-top:26px; " >
 
-										<button class="btn btn-primary"  type="submit" id="generar_report">Generar Reporte</button></div>
+										<button class="btn btn-primary" type="submit" id="generar_report">Generar Reporte</button></div>
+
+										<input style="display:none;" id="unidad_filtro" type="text" value="{{unidad_filtro}}">
+										<input style="display:none;"  id="mes_filtro" type="text" value="{{mes_filtro}}">
+
+
+
 
 									</div>
 									</form>
 												</div>
+<div  id="mensaje" style="margin-left:15px; color:green; display:none;">Reporte Generado Correctamente para:
+
+
+			{% if nivel == '2' %}
+
+							{% for unidads in unidad|slice:":1"  %}
+							 <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_segundo_nivel.primer_nivel}}</b> | Mes: <b>{{mes_seleccionado}}</b>
+							{% endfor %}
+
+							{% endif %}
+							{% if nivel == '3' %}
+
+							{% for unidads in unidad|slice:":1"  %}
+							<b>{{unidads.id_controlador.id_jefatura.id_nivel.id_tercer_nivel.segundo_nivel}}</b> | Mes: <b>{{mes_seleccionado}}</b>
+							{% endfor %}
+
+							{% endif %}
+							{% if nivel == '4' %}
+
+							{% for unidads in unidad|slice:":1"  %}
+							<b>{{unidads.id_controlador.id_jefatura.id_nivel.id_cuarto_nivel.tercer_nivel.segundo_nivel}}</b> | Mes: <b>{{mes_seleccionado}}</b>
+							{% endfor %}
+
+
+							{% endif %}
+
+
+
+</div>
 									</section>
 
 								</div>
@@ -863,8 +947,8 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 										<div class="col-md-1" style="background:#dddddd; margin-right:1px; height:44px;"><h6 style="margin-left:-6px; font-size:12px; margin-top:18px;">Auxiliares</h6></div>
 
 
-										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><h6 style="margin-top:10px;" >25%</h6></div>
-										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><span class="show-grid-block">B</span></div>
+										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><h6 style="margin-top:10px;" >{{porcentaje_jefe_departamento}}%</h6></div>
+										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><span class="show-grid-block">{{porcentaje_jefe_subdepartamento}}%</span></div>
 										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><span class="show-grid-block">B</span></div>
 										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><span class="show-grid-block">B</span></div>
 										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><span class="show-grid-block">B</span></div>
