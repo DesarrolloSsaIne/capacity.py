@@ -11,14 +11,6 @@ Reportes
 
 		<script type="text/javascript">
 
-
-
-
-
-
-
-
-
 $( document ).ready(function() {
 unidad_filtro=$('#unidad_filtro').val();
 mes_filtro=$('#mes_filtro').val();
@@ -104,13 +96,25 @@ var myLineChart = new Chart(ctx1, {
 
 		},{
 
- 		label: "Desviación: {{ ValDesviacion }}% " ,
+         label: "Desviación Mes Anteior: {{ ValDesviacion_mes_anterior }}% " ,
 
          data: [],
-          borderColor: ['rgba(128, 128, 128, 1)'],
-          backgroundColor: ['rgba(128, 128, 128, 1)'],
+          borderColor: ['rgba(112, 173, 71, 1)'],
+          backgroundColor: ['rgba(112, 173, 71, 1)'],
           fontStyle:'bold',
 
+
+
+        },{
+
+
+
+           label: "Desviación: {{ ValDesviacion }}% " ,
+
+         data: [],
+          borderColor: ['rgba(237, 125, 49, 1)'],
+          backgroundColor: ['rgba(237, 125, 49, 1)'],
+          fontStyle:'bold',
 
 
         }]
@@ -162,8 +166,6 @@ var myLineChart = new Chart(ctx1, {
 });
 
 
-
-
 $("#download").click(function(){
   /*Get image of canvas element*/
   var url_base64jp = document.getElementById("chart_uno").toDataURL("image/jpg");
@@ -172,8 +174,6 @@ $("#download").click(function(){
   /*insert chart image url to download button (tag: <a></a>) */
   a.href = url_base64jp;
 });
-
-
 
 
 	$("#downloadTable").click(function(){
@@ -282,8 +282,6 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 
  	}
 
-
-
   $("#Tabla").dataTable({
         "processing": true,
         "stateSave": true,
@@ -306,12 +304,7 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
         },
 
 
-
-
-
-
     });
-
 
 
 
@@ -552,11 +545,6 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 
 
 						</header>
-
-
-
-
-
 
 
 
@@ -873,13 +861,6 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 									</div>
 
 
-
-
-
-
-
-
-
 <!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
 
 						<div class="tab-pane" id="distribucion_cargos">
@@ -930,7 +911,7 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 
 <div class="row show-grid">
 										<div class="col-md-1" style="background:#1e7799; width:130px; color:white; height:101px; margin-right:2px;"><h6 style="line-height : 15px; ">Porcentaje de carga ejecutada durante el período (HH)
-</h6><h4 style="margin-top:-5px;">56%</h4></div>
+										</h6><h4 style="margin-top:-5px;">{% if porcentaje_total_unidad == 0 or porcentaje_total_unidad == '0.0' %}-{% else %} {{porcentaje_total_unidad}}% {% endif %}</h4></div>
 
 
 										<div class="col-md-10" style="background:#ed7d31; color:white; height:20px; margin-bottom:1px; width:84.2%;" ><span class="show-grid-block">Distribución por Cargos</span></div>
@@ -947,16 +928,16 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 										<div class="col-md-1" style="background:#dddddd; margin-right:1px; height:44px;"><h6 style="margin-left:-6px; font-size:12px; margin-top:18px;">Auxiliares</h6></div>
 
 
-										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><h6 style="margin-top:10px;" >{{porcentaje_jefe_departamento}}%</h6></div>
-										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><span class="show-grid-block">{{porcentaje_jefe_subdepartamento}}%</span></div>
-										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><span class="show-grid-block">B</span></div>
-										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><span class="show-grid-block">B</span></div>
-										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><span class="show-grid-block">B</span></div>
-										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><h6 style="margin-top:10px;" >{{porcentaje_analista}}%</h6></div>
-										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><span class="show-grid-block">B</span></div>
-										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><span class="show-grid-block">B</span></div>
-										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><span class="show-grid-block">B</span></div>
-										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><span class="show-grid-block">B</span></div>
+										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><h6 style="margin-top:10px;" >{% if porcentaje_jefe_departamento == 0 or porcentaje_jefe_departamento == '0.0' %}-{% else %} {{porcentaje_jefe_departamento}}% {% endif %}</h6></div>
+										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><h6 style="margin-top:10px;">{% if porcentaje_jefe_subdepartamento == 0 or porcentaje_jefe_subdepartamento == '0.0' %}-{% else %}{{porcentaje_jefe_subdepartamento}}% {% endif %}</h6></div>
+										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><h6 style="margin-top:10px;">{% if porcentaje_coordinadores == 0 or porcentaje_coordinadores == '0.0' %}-{% else %}{{porcentaje_coordinadores}}% {% endif %}</h6></div>
+										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><h6 style="margin-top:10px;">{% if porcentaje_supervisores == 0 or porcentaje_supervisores == '0.0' %}-{% else %}{{porcentaje_supervisores}}% {% endif %}</h6></div>
+										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><h6 style="margin-top:10px;">{% if porcentaje_analistas_especialistas == 0 or porcentaje_analistas_especialistas == '0.0' %}-{% else %}{{porcentaje_analistas_especialistas}}% {% endif %}</h6></div>
+										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><h6 style="margin-top:10px;" >{% if porcentaje_analista == 0 or porcentaje_analista == '0.0' %}-{% else %}{{porcentaje_analista}}% {% endif %}</h6></div>
+										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><h6 style="margin-top:10px;">{% if porcentaje_supervisores_operativos == 0 or porcentaje_supervisores_operativos == '0.0' %}-{% else %}{{porcentaje_supervisores_operativos}}% {% endif %}</h6></div>
+										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><h6 style="margin-top:10px;">{% if porcentaje_operativos == 0 or porcentaje_operativos == '0.0' %}-{% else %}{{porcentaje_operativos}}% {% endif %}</h6></div>
+										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><h6 style="margin-top:10px;">{% if porcentaje_asistentes == 0 or porcentaje_asistentes == '0.0' %}-{% else %}{{porcentaje_asistentes}}% {% endif %}</h6></div>
+										<div class="col-md-1" style="background:#70ad47; color:white; margin-right:1px; height:36px;" ><h6 style="margin-top:10px;">{% if porcentaje_auxiliares == 0 or porcentaje_auxiliares == '0.0' %}-{% else %}{{porcentaje_auxiliares}}% {% endif %}</h6></div>
 
 
 
