@@ -1257,7 +1257,6 @@ class GeneraReportCurvaEjecucion(TemplateView):
         except Glo_Periodos.DoesNotExist:
             return None
 
-
         lista_datos_unidades_select = Ges_Actividad_Historia.objects.annotate(
             month=Extract('id_periodo_seguimiento__fecha_termino_corte', 'month')).filter(
             Q(id_periodo=periodo_actual)).values(
@@ -1273,12 +1272,15 @@ class GeneraReportCurvaEjecucion(TemplateView):
         ).distinct()
 
 
+
         context['lista_datos_unidades'] = lista_datos_unidades_select
 
 
         meses = Ges_Actividad_Historia.objects.annotate(month=Extract('id_periodo_seguimiento__fecha_termino_corte', 'month')).filter(Q(id_periodo=periodo_actual)).values('month').distinct().order_by('-month')
 
         context['meses_periodo'] = meses
+
+
 
         return context
 

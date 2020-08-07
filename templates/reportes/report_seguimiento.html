@@ -189,6 +189,10 @@ $("#download").click(function(){
 });
 
 
+       // Js Muestra/Oculta Mensaje Success
+   	 $(".alert, #success-alert-warning").fadeTo(100000, 700).slideUp( "slow", function() {
+     $(this).remove();
+  });
 
    	 // JS modal actualiza Registro
    $(".update").each(function () {
@@ -397,6 +401,10 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 									<div class="tab-pane active" id="SeleccionUnidad">
 
 
+{% if lista_datos_unidades %}
+
+
+
 									<section class="panel">
 											<div class="form-group">
 
@@ -418,6 +426,9 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 	                                        	{% if actividad_count.id_controlador__nivel_inicial == 4 %}{{ actividad_count.id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel__descripcion_nivel }} {% endif %}
 														{% if actividad_count.id_controlador__nivel_inicial == 3 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__descripcion_nivel }} {% endif %}
 														{% if actividad_count.id_controlador__nivel_inicial == 2 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__descripcion_nivel }} {% endif %}
+
+
+
 
 								 {% endfor %}
 								 </option>
@@ -445,6 +456,9 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 								 {% if meses.month == 10 %}Octubre{%endif%}
 								 {% if meses.month == 11 %}Noviembre{%endif%}
 								 {% if meses.month == 12 %}Diciembre{%endif%}
+
+
+
 
 								 {% endfor %}
 							 </option>
@@ -494,9 +508,22 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 
 
 </div>
+
+
+
 									</section>
 
-								</div>
+
+{% else %}
+
+<div class="alert alert-warning" id="success-warning" role="alert">
+    <b>Estimado Usuario:</b> No se ha detectado periodo de seguimiento cerrado para desplegar su información.
+</div>
+
+{% endif %}
+
+
+			</div>
 
 
 <!--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-->
