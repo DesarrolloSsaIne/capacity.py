@@ -87,6 +87,8 @@ LOGGING = {
 
 INSTALLED_APPS = [
 
+
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -100,9 +102,12 @@ INSTALLED_APPS = [
     'mathfilters',
 
 
+
     'apps.eje',
     'apps.registration',
+
     'apps.periodos',
+
     'apps.estructura',
     'apps.objetivos',
     'apps.jefaturas',
@@ -118,13 +123,16 @@ INSTALLED_APPS = [
     'apps.valida_plan',
     'apps.valida_plan2',
     'apps.perfiles',
-    'apps.planificacion_admin',
+
     'apps.estado_actividad',
     'apps.estado_plan',
     'apps.estado_seguimiento',
     'apps.revision_planificacion',
     'apps.seguimiento_formula',
     'apps.reportes',
+    'apps.planificacion_admin',
+
+
 
 
 
@@ -189,7 +197,7 @@ WSGI_APPLICATION = 'proyecto_django.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'mysql_cymysql',
-        'NAME': 'django_local_uno',
+        'NAME': 'django_local_uno_desa',
         'USER': 'root',
         'PASSWORD': 'admin',
         'HOST': 'localhost',

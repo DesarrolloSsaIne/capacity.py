@@ -22,7 +22,7 @@
                         </div>
                     <div class="modal-text">
                         <strong><h4>Atención</h4></strong>
-                        <p><strong>¿Está seguro que desea aceptar el plan?</strong>. <br>El plan se enviará a revisión del <strong>SubDpto. de Planificación Institucional</strong>.</p>
+                        <p>¿Está seguro que desea <strong>aceptar</strong> el plan?. <br>El plan se enviará a revisión del <strong>SubDpto. de Planificación Institucional</strong>.</p>
                     </div>
                 </div>
 
@@ -37,10 +37,13 @@
         </div>
 
     </div>
+    			<div id="enviar" style="display:none; text-align:left; " class="alert alert-info" role="alert">
+            Enviando correos, favor espere...
+       		 </div>
 
     <div class="modal-footer">
         <button class="estado btn btn-danger" type="submit" id="confirmar">Confirmar</button>
-        <button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
+        <button class="btn btn-default" type="button" id="cancelar"  data-dismiss="modal">Cancelar</button>
     </div>
 
     <div class="alert alert-danger" style="display:none;" id="mjeError">
@@ -59,7 +62,16 @@ valor = 0
         }
     })
 
+  $('#confirmar').click(function() {
 
+     $( this ).hide();
+     $( '#cancelar' ).hide();
+     $( '#confirmar' ).hide();
+
+      $( '#enviar' ).fadeIn();
+
+
+});
 
     </script>
 {% endblock %}

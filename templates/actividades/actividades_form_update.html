@@ -79,7 +79,7 @@
 
 					 {{ form.horas_actividad }}
 				</div>
-
+				<input style="display:none;"  id="total_feriados_update" type="text">
 
                   <div class="form-group">
 					<label >Personas Asignadas</label>
@@ -126,6 +126,45 @@
 			</form>
 <script>
 
+$("#fecha_termino_actividad, #fecha_inicio_actividad").change(function(){
+
+fecha_inicio = $("#fecha_inicio_actividad").val();
+fecha_termino = $("#fecha_termino_actividad").val();
+
+//////////////////////////////////////////////////ajax feriados/////////////////////////////////////////
+
+    $.ajax({
+        dataType : 'json',
+        cache: false,
+        type:'POST',
+        url:'{% url "calculaferiados"  %}',
+
+        data:{
+            csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+            fecha_inicio_actividad: fecha_inicio,
+            fecha_termino_actividad: fecha_termino,
+
+            action: 'post'
+
+        },
+        success:function(json){
+          //alert(json.feriados);
+
+          $("#total_feriados_update").val(json.feriados);
+		        },
+
+        error : function(xhr,errmsg,err) {
+       // console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+    },
+
+
+    });
+
+
+
+/////////////////////////////////////////////////// fin ajax feriados//////////////////////////////////////////////
+});
+
 $("#confirmar").click(function(){
 
 var horas_actividad;
@@ -145,7 +184,7 @@ if (horas_actividad>horas_disponibles){
 return false
 }
 
-if (horas_actividad==0){
+if (horas_actividad<1){
 	$("#mjeError").css("display","block");
 	$("#textError").text("Error : El total de horas no puede ser igual a 0.");
 return false
@@ -184,6 +223,38 @@ if (moment(fecha_inicio).isBefore(fecha_termino) || moment(fecha_inicio).isSameO
 return false
 }
 
+var personas_asignadas = $("#personas_asignadas_id").val();
+var total_feriados = $("#total_feriados_update").val();
+var total_horas =$('#total_horas_id').val();
+var dias_habiles_brutos = calcBusinessDays(fecha_inicio,fecha_termino);
+dias_habiles_brutos_feriados = (+dias_habiles_brutos) - (+total_feriados);
+dias_habiles_brutos_feriados = dias_habiles_brutos_feriados * personas_asignadas;
+horas_dias_habiles_brutos_feriados= (+dias_habiles_brutos_feriados) * (8);
+
+
+
+//$("#total_feriados2").val(horas_dias_habiles_brutos_feriados);
+//alert(total_feriados);
+
+
+if (total_horas > horas_dias_habiles_brutos_feriados){
+	$("#mjeError").css("display","block");
+	$("#textError").text("Error : El total de horas de la actividad supera el total de horas entre la fecha de inicio y término.");
+return false
+}
+
+////////////////////////////CALCULA DÍAS LABORALES////////////////////////////////////////////////////////
+    function calcBusinessDays(startDate, endDate) {
+      var day = moment(startDate);
+      var businessDays = 0;
+
+      while (day.isSameOrBefore(endDate,'day')) {
+        if (day.day()!=0 && day.day()!=6) businessDays++;
+        day.add(1,'d');
+      }
+      return businessDays;
+    }
+//////////////////////////// fin CALCULA DÍAS LABORALES////////////////////////////////////////////////////////
 
 });
 

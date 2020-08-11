@@ -20,13 +20,15 @@ Dashboard
 
 {% if GrupoDashboard == 'GrupoFormula' %}
 
+
+
 <div class="col-md-4" >
 <section class="panel">
 
-<div class="panel-body" style="background-color: #0088cc; color: white;">
+<div class="panel-body" style="background-color: #0088cc; color: white; height:60px;">
 
 
-<h5>Estado del Flujo:</h5> <div style=" text-align:right; margin-top:-25px;"><h5 ><b>{{ estado_flujo.estado}}</b></h5></div>
+<h5 style=" text-align:left; margin-top:-5px;">Estado del Flujo:</h5> <br> <div style=" text-align:left; margin-top:-30px;"><h5><b>{{ estado_flujo.estado}}</b></h5></div>
 
 </div>
 </section>
@@ -35,9 +37,9 @@ Dashboard
 <div class="col-md-4">
 <section class="panel">
 
-<div class="panel-body" style="background-color: #0088cc; color: white;">
+<div class="panel-body" style="background-color: #0088cc; color: white; height:60px;">
 
-<h5>Estado del Plan:</h5> <div style=" text-align:right; margin-top:-25px;"><h5 ><b>{{estado_plan.estado}}</b></h5></div>
+<h5 style=" text-align:left; margin-top:-5px;">Estado del Plan:</h5> <br> <div style=" text-align:left; margin-top:-30px;"><h5 ><b>{{estado_plan.estado}}</b></h5></div>
 
 
 </div>
@@ -46,9 +48,9 @@ Dashboard
 <div class="col-md-4">
 <section class="panel">
 
-<div class="panel-body" style="background-color: #0088cc; color: white;">
+<div class="panel-body" style="background-color: #0088cc; color: white; height:60px;">
 
-<h5>Etapa Seguimiento:</h5> <div style=" text-align:right; margin-top:-25px;"><h5 ><b>{{estado_seguimiento.estado}}</b></h5></div>
+<h5 style=" text-align:left; margin-top:-5px;">Etapa Seguimiento:</h5> <br> <div style=" text-align:left; margin-top:-30px;"><h5 ><b>{{estado_seguimiento.estado}}</b></h5></div>
 
 
 </div>

@@ -204,7 +204,7 @@ class SeguimientoAbrirPeriodo(SuccessMessageMixin, CreateView):
             form.save()
 
             try:
-
+                Ges_Controlador.objects.filter(id_periodo=PeriodoActual()).update(id_estado_plan=1)
                 EnviarCorreoAbrir()
 
                 request.session['message_class'] = "alert alert-success"  # Tipo mensaje

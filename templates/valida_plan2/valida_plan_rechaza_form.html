@@ -27,8 +27,8 @@
                     </div>
                 </div>
                            <br>
-					<div class="alert alert-warning" role="alert">
-                      Al presionar "confirmar" el plan de trabajo será enviado a la jefatura quien lo formulo.
+					<div id="display_confirmar"  class="alert alert-warning" role="alert">
+                      Al presionar "confirmar" el plan de trabajo será enviado a la jefatura quien lo formuló.
                     </div>
             <div class="form-group" style="display:none;">
                 <label>Estado</label>
@@ -38,10 +38,12 @@
         </div>
 
     </div>
-
+		<div id="enviar" style="display:none; text-align:left; " class="alert alert-info" role="alert">
+            Enviando correos, favor espere...
+       		 </div>
     <div class="modal-footer">
         <button class="estado btn btn-danger" type="submit" id="confirmar">Confirmar</button>
-        <button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
+        <button class="btn btn-default" type="button" id="cancelar"  data-dismiss="modal">Cancelar</button>
     </div>
 
     <div class="alert alert-danger" style="display:none;" id="mjeError">
@@ -57,5 +59,15 @@
         $(".estado").click(function () {
             $('#id_estado_flujo').val('8');
         });
+
+       $('#confirmar').click(function() {
+
+     $( this ).hide();
+     $( '#cancelar' ).hide();
+     $( '#confirmar' ).hide();
+     $( '#display_confirmar' ).hide();
+      $( '#enviar' ).fadeIn();
+        });
+
     </script>
 {% endblock %}

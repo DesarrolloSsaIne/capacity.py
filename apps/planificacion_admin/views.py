@@ -1,9 +1,10 @@
 from django.shortcuts import render
+
 from apps.controlador.models import Ges_Controlador
 from apps.estado_flujo.models import Glo_EstadoFlujo
 from apps.planificacion_admin.forms import Planificacion_adminForm
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-from apps.periodos.models import Glo_Periodos
+
 from apps.registration.models import logEventos
 from django.http import HttpResponseRedirect
 from django.contrib import messages
@@ -12,14 +13,8 @@ from apps.estructura.models import Ges_Niveles, Ges_CuartoNivel, Ges_TercerNivel
 from apps.jefaturas.models import Ges_Jefatura
 from apps.periodos.models import Glo_Seguimiento
 from django.core.mail import EmailMessage
+from apps.periodos.models import Glo_Periodos
 
-# Generic Functions of projects.
-def PeriodoActual():
-    try:
-        periodo_actual = Glo_Periodos.objects.get(id_estado=1)
-    except Glo_Periodos.DoesNotExist:
-        return None
-    return periodo_actual
 
 def usuarioActual(request):
 
@@ -27,13 +22,25 @@ def usuarioActual(request):
     return id_usuario_actual
 
 
-
 class PlanificacionAdminList(ListView):
     model = Ges_Controlador
     template_name = 'planificacion_admin/planificacion_admin_list.html'
-    context_object_name = 'object_list'
-    queryset = Ges_Controlador.objects.filter((Q(estado_flujo_id=10) | Q(estado_flujo_id=11) | Q(estado_flujo_id=6)) & Q(id_periodo=PeriodoActual()))
 
+    def get_context_data(self, **kwargs):
+        context = super(PlanificacionAdminList, self).get_context_data(**kwargs)
+
+        try:
+            periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+        except Glo_Periodos.DoesNotExist:
+            return None
+
+
+
+        queryset = Ges_Controlador.objects.filter((Q(estado_flujo_id=10) | Q(estado_flujo_id=11) | Q(estado_flujo_id=6)) & Q(id_periodo=periodo_actual))
+
+        context['object_list'] = queryset
+
+        return context
 
 class AsignaAnalista(UpdateView):
     model = Ges_Controlador
@@ -46,6 +53,11 @@ class AsignaAnalista(UpdateView):
         instancia = self.model.objects.get(id=pk)
         form = self.form_class(request.POST, instance=instancia)
 
+        try:
+            periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+        except Glo_Periodos.DoesNotExist:
+            return None
+
         id_nuevo_estado= Glo_EstadoFlujo.objects.get(id=6)
 
         if form.is_valid():
@@ -56,7 +68,7 @@ class AsignaAnalista(UpdateView):
 
             try:
 
-                controladorPlan = Ges_Controlador.objects.get(Q(id=pk) & Q(id_periodo=PeriodoActual()))
+                controladorPlan = Ges_Controlador.objects.get(Q(id=pk) & Q(id_periodo=periodo_actual))
                 usuario=  str(controladorPlan.analista_asignado)
                 unidad_plan=str(controladorPlan.id_jefatura.id_nivel)
                 jefe_elabora= str(controladorPlan.id_jefatura.id_user)
@@ -102,12 +114,17 @@ class PlanificacionAdminUnidadesList(ListView): #Modificado por JR- sprint 10
         except Glo_Periodos.DoesNotExist:
             return None
 
+        # try:
+        #     periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+        # except Glo_Periodos.DoesNotExist:
+        #     return None
+
         # id_jefatura = Ges_Jefatura.objects.get(id_user=id_usuario_actual)
 
-        id_controlador = Ges_Controlador.objects.filter(id_periodo=periodo_actual.id)
+        id_controlador = Ges_Controlador.objects.filter(id_periodo=periodo_actual)
 
         try:
-             estado= Glo_Seguimiento.objects.get(Q(id_estado_seguimiento=1) & Q(id_periodo=PeriodoActual()))
+             estado= Glo_Seguimiento.objects.get(Q(id_estado_seguimiento=1) & Q(id_periodo=periodo_actual))
         except Glo_Seguimiento.DoesNotExist:
              estado = 0
 

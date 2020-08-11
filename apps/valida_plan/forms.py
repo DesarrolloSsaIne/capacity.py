@@ -2,7 +2,7 @@ from django import forms
 from apps.valida_plan.models import Ges_Observaciones, Ges_Controlador, Ges_Jefatura
 from apps.actividades.models import Ges_Actividad
 from django.contrib.auth.models import User
-from apps.jefaturas.models import Ges_Jefatura as Gj
+from apps.jefaturas.models import Ges_Jefatura
 
 
 
@@ -69,24 +69,34 @@ class ObservacionForm(forms.ModelForm): #Class agregada por JR - OK
 
 class ValidaPlanUpdateForm(forms.ModelForm):
 
-    def __init__(self,nivel_jefatura ,*args, **kwargs):
+    def __init__(self,nivel_jefatura, *args, **kwargs):
         self.request = kwargs.pop('request', None)
         super(ValidaPlanUpdateForm, self).__init__(*args, **kwargs)
-        self.fields['jefatura_segundarevision'].queryset = Gj.objects.filter(id_nivel_id=nivel_jefatura)
+
+        self.fields['jefatura_segundarevision'].queryset = Ges_Jefatura.objects.filter(id_nivel_id=nivel_jefatura)
+
+
+
+
 
     class Meta:
         model = Ges_Controlador
         fields = [
+
             'estado_flujo',
             'id_jefatura',
-            'jefatura_segundarevision'
+            'jefatura_segundarevision',
+            'nivel_inicial'
 
         ]
 
         widgets = {
+
             'estado_flujo': forms.Select(attrs={'class': 'form-control', 'readonly':'readonly'}),
             'jefatura_segundarevision': forms.Select(attrs={'class': 'form-control'}),
-            'id_jefatura': forms.Select(attrs={'class': 'form-control', 'readonly':'readonly'}),
+
+            'id_jefatura': forms.Select( attrs={'class': 'form-control', 'readonly':'readonly'}),
+
         }
 
 

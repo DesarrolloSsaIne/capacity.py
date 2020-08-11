@@ -23,13 +23,13 @@
                         </div>
                     <div class="modal-text">
                         <h4>Atención</h4>
-                        <p>¿Está seguro de rechazar el plan?.</p>
+                        <p>¿Está seguro de <strong>rechazar</strong> el plan?.</p>
                     </div>
                 </div>
 
             <br><br>
-            <div class="alert alert-warning" role="alert">
-                Al confirmar el rechazo del plan, este saldrá de su bandeja de entrada y pasará a <strong>Formulación en Observación</strong>
+            <div id="display_confirmar"  class="alert alert-warning" role="alert">
+                Al rechazar el plan, este saldrá de su bandeja de entrada y volverá a la jefatura que formula para su corrección.
             </div>
 
             <div class="form-group" style="display:none;">
@@ -40,10 +40,13 @@
         </div>
 
     </div>
+       			<div id="enviar" style="display:none; text-align:left; " class="alert alert-info" role="alert">
+            Enviando correos, favor espere...
+       		 </div>
 
     <div class="modal-footer">
         <button class="estado btn btn-danger" type="submit" id="confirmar">Confirmar</button>
-        <button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
+        <button class="btn btn-default" type="button" id="cancelar"  data-dismiss="modal">Cancelar</button>
     </div>
 
     <div class="alert alert-danger" style="display:none;" id="mjeError">
@@ -59,5 +62,16 @@
         $(".estado").click(function () {
             $('#id_estado_flujo').val('8');
         });
+
+            $('#confirmar').click(function() {
+
+     $( this ).hide();
+     $( '#cancelar' ).hide();
+     $( '#confirmar' ).hide();
+     $( '#display_confirmar' ).hide();
+      $( '#enviar' ).fadeIn();
+
+
+});
     </script>
 {% endblock %}

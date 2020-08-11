@@ -28,11 +28,23 @@
 					{{ form.estado_flujo}}
 				</div>
 
-                  <div class="form-group">
+                  <div id="select_jefatura" class="form-group">
 					<label >Jefatura segunda revisión</label>
 					{{ form.jefatura_segundarevision}}
 
+
 				</div>
+           <div style="display:none;" id="display_error" class="alert alert-danger" role="alert">
+            No ha sido cargada su jefatura superior, contáctese con el área de Planificación.
+        </div>
+
+
+
+<label id="nivel_inicial" style="display:none;" >{{form.nivel_inicial}}</label>
+
+
+
+
 
                    </span>
 
@@ -40,15 +52,21 @@
 
         </div>
         <BR>
-        <div class="alert alert-warning" role="alert">
+        <div id="display_confirmar" class="alert alert-warning" role="alert">
             Al presionar "confirmar" su plan de trabajo será enviado a la jefatura seleccionada.
         </div>
 
+
     </div>
     </div>
+
+    			<div id="enviar" style="display:none; text-align:left; " class="alert alert-info" role="alert">
+            Enviando correos, favor espere...
+       		 </div>
+
     <div class="modal-footer">
         <button class="btn btn-danger" type="submit" id="confirmar">Confirmar</button>
-        <button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
+        <button class="btn btn-default" type="button" id="cancelar"  data-dismiss="modal">Cancelar</button>
     </div>
 
     <div class="alert alert-danger" style="display:none;" id="mjeError">
@@ -64,13 +82,43 @@
         $('#id_estado_flujo option:not(:selected)').attr('disabled', true);
         //id_jefatura_primerarevision
 
-        let $option = $('<option />', {
+    var nivel_inicial = $('#nivel_inicial').val();
+    var select_segunda = $("#id_jefatura_segundarevision option:last").val();
+
+
+    //alert(select_segunda2);
+
+    if ((select_segunda == '') && (nivel_inicial != 2))   {
+
+    $('#display_error').css('display','block');
+    $('#select_jefatura').css('display','none');
+    $('#display_confirmar').css('display','none');
+    $('#confirmar').css('display','none');
+
+        }else{
+
+            let $option = $('<option />', {
             text: 'No requiere segunda revisión | Enviar directo a Planificación',
-            value: 1,
+            value: 0,
         });
+
         $('#id_jefatura_segundarevision').append($option);
 
+        }
+
     });
+
+    $('#confirmar').click(function() {
+
+     $( this ).hide();
+     $( '#cancelar' ).hide();
+     $( '#confirmar' ).hide();
+     $( '#display_confirmar' ).hide();
+      $( '#enviar' ).fadeIn();
+
+
+});
+
 </script>
 
 

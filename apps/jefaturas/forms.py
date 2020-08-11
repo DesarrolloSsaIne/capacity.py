@@ -2,7 +2,7 @@ from django import forms
 from apps.jefaturas.models import Ges_Jefatura
 from apps.estructura.models import Ges_Niveles
 from django.contrib.auth.models import User, Group
-
+from django.db.models import Q
 class JefaturasForm(forms.ModelForm):
 
 
@@ -12,7 +12,10 @@ class JefaturasForm(forms.ModelForm):
         super(JefaturasForm, self).__init__(*args, **kwargs)
 
         jefes_list=list(Ges_Jefatura.objects.values_list('id_user_id', flat=True))
-        self.fields['id_user'].queryset = User.objects.all().exclude(id__in=jefes_list)
+        analistas=list(User.objects.values_list('id', flat=True).filter(groups__in=Group.objects.filter(id='6')))
+
+
+        self.fields['id_user'].queryset = User.objects.all().exclude(Q(id__in=analistas) | Q(id__in=jefes_list))
 
         nivel_list=list(Ges_Jefatura.objects.values_list('id_nivel_id', flat=True))
         self.fields['id_nivel'].queryset = Ges_Niveles.objects.all().exclude(id__in=nivel_list)
@@ -45,8 +48,10 @@ class JefaturasFormUpdate(forms.ModelForm):
     def __init__(self,*args, **kwargs):
         self.request = kwargs.pop('request', None)
         super(JefaturasFormUpdate, self).__init__(*args, **kwargs)
+
+        analistas = list(User.objects.values_list('id', flat=True).filter(groups__in=Group.objects.filter(id='6')))
         jefes_list=list(Ges_Jefatura.objects.values_list('id_user_id', flat=True))
-        self.fields['id_user'].queryset = User.objects.all().exclude(id__in=jefes_list)
+        self.fields['id_user'].queryset = User.objects.all().exclude(Q(id__in=analistas) | Q(id__in=jefes_list))
 
 
     class Meta:
@@ -67,5 +72,5 @@ class JefaturasFormUpdate(forms.ModelForm):
 
             'id_user': forms.Select(attrs={'class': 'form-control', 'id': 'siteID', 'style':'width:550px;'}),
 
-            'id_nivel': forms.Select(attrs={'class': 'form-control', 'id': 'siteID2', 'style':'width:550px;', 'disabled':'true' }),
+            'id_nivel': forms.Select(attrs={'class': 'form-control', 'id': 'siteID2edit', 'style':'width:550px;' }),
         }

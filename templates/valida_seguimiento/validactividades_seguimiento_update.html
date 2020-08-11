@@ -316,6 +316,68 @@ $('#modalUpdate').on("click", ".rechazar", function(event){
     $('#confirm-plan-rechaza').show();
 });
 
+ $('#modalUpdate').on('shown.bs.modal', function () {
+estado = $('#id_id_estado_actividad').val();
+
+
+
+
+	if(estado == 2){ // Con Retraso - Validar
+	$(".hide-justificacion").css("display", "block");
+   $(".hide-real_termino").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "block");
+    $(".hide-reprogramacion_inicio").css("display", "block");
+     $("#confirmar").css("display", "initial");
+
+	}
+
+
+	if(estado == 3){ // en curso - validar
+	//	$(".hide-justificacion").css("display", "none");
+    $(".hide-real_termino").css("display", "none");
+  //  $(".hide-reprogramacion_termino").css("display", "none");
+    $(".hide-reprogramacion_inicio").css("display", "none");
+    $('#id_justificacion').prop('required',true);
+         $("#confirmar").css("display", "initial");
+
+	}
+
+	if(estado == 10){ // Eliminada - Validar
+
+		$(".hide-justificacion").css("display", "block");
+    $(".hide-real_termino").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "none");
+    $(".hide-reprogramacion_inicio").css("display", "none");
+     $("#confirmar").css("display", "initial");
+	}
+
+
+if(estado == 0 || estado == ''){
+
+	$(".hide-justificacion").css("display", "none");
+    $(".hide-real_termino").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "none");
+    $(".hide-reprogramacion_inicio").css("display", "none");
+     $("#confirmar").css("display", "none");
+
+
+	}
+
+	if (estado == 5){ // sin movimiento
+
+
+
+
+  	$(".hide-justificacion").css("display", "block");
+    $(".hide-real_termino").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "block");
+    $(".hide-reprogramacion_inicio").css("display", "block");
+     $("#confirmar").css("display", "initial");
+
+       }
+
+});
+
 
 $(function() {
 
@@ -337,7 +399,7 @@ $(function() {
 
 
 	//atraso
-	estado_final_post = 4;
+	estado_final_post = 4;//no iniciado
 		if (fecha_reprograma_inicio != "" && fecha_reprograma_termino != "" )
 
 		{
@@ -359,6 +421,7 @@ $(function() {
 		{
 			fecha_inicio_post = $('#fecha_inicio_actividad').val()
 			fecha_final_post = $('#fecha_reprogramacion_termino').val()
+			estado_final_post = 8;// en curso
 
 		}
 
@@ -562,6 +625,7 @@ $(function() {
     $(".hide-reprogramacion_termino").css("display", "none");
     $(".hide-reprogramacion_inicio").css("display", "none");
      $("#confirmar").css("display", "initial");
+
 	}
 
 
@@ -573,17 +637,13 @@ if(estado == 0 || estado == ''){
     $(".hide-reprogramacion_inicio").css("display", "none");
      $("#confirmar").css("display", "none");
 
-	$('#fecha_real_termino').removeAttr('required');
-    $('#fecha_reprogramacion_inicio').removeAttr('required');
-    $('#fecha_reprogramacion_termino').removeAttr('required');
-    $('#id_justificacion').removeAttr('required');
-    $("#id_id_estado_actividad").prop('required',true);
+	
 	}
 
 	if (estado == 5){ // sin movimiento
-		periodicidad = $('#id_id_periodicidad').val();
+	
 
-	if (periodicidad != 9  && periodicidad != 10 ){
+
 
   	$(".hide-justificacion").css("display", "block");
     $(".hide-real_termino").css("display", "none");
@@ -591,28 +651,11 @@ if(estado == 0 || estado == ''){
     $(".hide-reprogramacion_inicio").css("display", "block");
      $("#confirmar").css("display", "initial");
 
-    $('#fecha_real_termino').removeAttr('required').val('');
-    $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
-    $('#fecha_reprogramacion_termino').removeAttr('required').val('');
-    $('#id_justificacion').prop('required',true).val('');
+   
 
 
 
-	}else{
-
-	  	$(".hide-justificacion").css("display", "block");
-    $(".hide-real_termino").css("display", "none");
-    $(".hide-reprogramacion_termino").css("display", "none");
-    $(".hide-reprogramacion_inicio").css("display", "none");
-     $("#confirmar").css("display", "initial");
-
-    $('#fecha_real_termino').removeAttr('required').val('');
-    $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
-    $('#fecha_reprogramacion_termino').removeAttr('required').val('');
-    $('#id_justificacion').prop('required',true).val('');
-
-
-	}
+	
 
 
        }
@@ -625,135 +668,8 @@ if(estado == 0 || estado == ''){
 });
 
 
-$( "#id_id_estado_actividad" ).change(function() {
 
-  estado = $( this ).val();
-  fecha_inicio = $("#fecha_inicio_actividad").val();
-  fecha_termino = $("#fecha_termino_actividad").val();
-  var fecha_inicio_corte_str = $('#fecha_inicio_corte').val();
-  var fecha_termino_corte_str = $('#fecha_termino_corte').val();
-  var fecha_inicio_corte = moment(fecha_inicio_corte_str).format('YYYY-MM-DD');
-  var fecha_termino_corte = moment(fecha_termino_corte_str).format('YYYY-MM-DD');
-
-  if (estado==2 || estado==3 || estado==4 || estado==5 || estado==7  || estado==10){
-  $("#mjeError").css("display","none");
-  }
-
-         if (estado == 4) // No Iniciada
-  {
-  	$(".hide-justificacion").css("display", "none");
-    $(".hide-real_termino").css("display", "none");
-    $(".hide-reprogramacion_termino").css("display", "none");
-    $(".hide-reprogramacion_inicio").css("display", "none");
-      $("#confirmar").css("display", "none");
-    }
-
-
-  if (estado == 2) //habilita con restraso - Validar
- {
-
-
-  	$(".hide-justificacion").css("display", "block");
-    $(".hide-real_termino").css("display", "none");
-    $(".hide-reprogramacion_termino").css("display", "block");
-    $(".hide-reprogramacion_inicio").css("display", "block");
-        $("#confirmar").css("display", "initial");
-
-    $('#fecha_real_termino').removeAttr('required').val('');
-    $('#fecha_reprogramacion_inicio').prop('required',false);
-    $('#fecha_reprogramacion_termino').prop('required',false);
-    $('#id_justificacion').prop('required',true);
-
-
-       }
-
-
-       if (estado == 3) //habilita en curso
-  {
-  	$(".hide-justificacion").css("display", "block");
-    $(".hide-real_termino").css("display", "none");
-    $(".hide-reprogramacion_termino").css("display", "block");
-    $(".hide-reprogramacion_inicio").css("display", "none");
-     $("#confirmar").css("display", "initial");
-
-    $('#fecha_real_termino').removeAttr('required').val('');
-    $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
-    $('#fecha_reprogramacion_termino').removeAttr('required').val('');
-    $('#id_justificacion').prop('required',true);
-   // $('#id_justificacion').removeAttr('required').val('');
-
-       }
-   if (estado == 7) //habilita finalizada - Validar
-  {
-  	$(".hide-justificacion").css("display", "block");
-    //$(".hide-real_termino").css("display", "block");
-    $(".hide-reprogramacion_termino").css("display", "none");
-    $(".hide-reprogramacion_inicio").css("display", "none");
-     $("#confirmar").css("display", "initial");
-
-     $('#fecha_real_termino').prop('required',true);
-    $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
-    $('#fecha_reprogramacion_termino').removeAttr('required').val('');
-    $('#id_justificacion').removeAttr('required').val('');
-       }
-
-        if (estado == 10) //habilita eliminada - validar
-  {
-  	$(".hide-justificacion").css("display", "block");
-    $(".hide-real_termino").css("display", "none");
-    $(".hide-reprogramacion_termino").css("display", "none");
-    $(".hide-reprogramacion_inicio").css("display", "none");
-    $("#confirmar").css("display", "initial");
-
-
-     $('#fecha_real_termino').removeAttr('required').val('');
-    $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
-    $('#fecha_reprogramacion_termino').removeAttr('required').val('');
-    $('#id_justificacion').prop('required',true);
-       }
-
-
-
-
-        if (estado == 5){ //habilita sin movimiento
-		periodicidad = $('#id_id_periodicidad').val();
-
-	if (periodicidad != 9  && periodicidad != 10 ){
-
-  	$(".hide-justificacion").css("display", "block");
-    $(".hide-real_termino").css("display", "none");
-    $(".hide-reprogramacion_termino").css("display", "block");
-    $(".hide-reprogramacion_inicio").css("display", "block");
-     $("#confirmar").css("display", "initial");
-
-    $('#fecha_real_termino').removeAttr('required').val('');
-    $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
-    $('#fecha_reprogramacion_termino').removeAttr('required').val('');
-    $('#id_justificacion').prop('required',true).val('');
-
-
-
-	}else{
-
-	  	$(".hide-justificacion").css("display", "block");
-    $(".hide-real_termino").css("display", "none");
-    $(".hide-reprogramacion_termino").css("display", "none");
-    $(".hide-reprogramacion_inicio").css("display", "none");
-     $("#confirmar").css("display", "initial");
-
-    $('#fecha_real_termino').removeAttr('required').val('');
-    $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
-    $('#fecha_reprogramacion_termino').removeAttr('required').val('');
-    $('#id_justificacion').prop('required',true).val('');
-
-
-	}
-
-
-       }
-
-
-});
+ 
 
 $("#confirmar").click(function(){
 

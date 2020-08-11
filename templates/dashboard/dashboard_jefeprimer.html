@@ -50,6 +50,7 @@ var myChart4 = new Chart(ctx4, {
 						beginAtZero:true,
 						// max:plugin.settings.maxDataValue,
 						//maxTicksLimit: 5
+						stepSize: 5,
 						suggestedMin:0
 					  }
 					}]
@@ -159,6 +160,7 @@ var myChart6 = new Chart(ctx6, {
 						beginAtZero:true,
 						// max:plugin.settings.maxDataValue,
 						//maxTicksLimit: 5
+						stepSize: 5,
 						suggestedMin:0,
 					  }
 					}]
@@ -233,6 +235,8 @@ $("#download_por_actividad_detalle").click(function(){
 
 {% if GrupoDashboard == 'GrupoJefeDirecto' %}
 
+{% if PlanesPorArea %}
+
 <div class="col-md-6" >
 <section class="panel" >
 	<div class="panel-body"  >
@@ -245,6 +249,7 @@ $("#download_por_actividad_detalle").click(function(){
 	</div>
 </section>
 </div>
+
 
 <div class="col-md-6">
 <section class="panel" >
@@ -267,7 +272,7 @@ $("#download_por_actividad_detalle").click(function(){
 		<div><b>Estado Flujo</b></div>
 		<div style="border-bottom: 1px solid #e70f28; margin-bottom:7px; opacity: 0.6"></div>
 		{% for items in PlanesPorArea %}
-			{{items.id_controlador__id_jefatura__id_nivel__descripcion_nivel}}<div  style="text-align:right; margin-top:-22px; font-weight:bold;">{{items.id_controlador__estado_flujo__descripcion_estado}}</div>
+			<div style="font-size:12px;">{{items.id_controlador__id_jefatura__id_nivel__descripcion_nivel}}</div><div  style="text-align:right; margin-top:-22px; font-size:12px;">{{items.id_controlador__estado_flujo__descripcion_estado}}</div>
 
 			<div style="border-bottom: 1px solid #81a9da; margin-bottom:7px; opacity: 0.6"></div>
 		{% endfor %}
@@ -292,7 +297,9 @@ $("#download_por_actividad_detalle").click(function(){
 </section>
 </div>
 
+{% else %}
 
+{% endif %}
 
 {% endif %}
 

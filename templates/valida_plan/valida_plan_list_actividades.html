@@ -71,9 +71,9 @@ Actividades Asociadas al Objetivo
 
 						 <td style="width:40px; text-align:center;">
 
-							 <button type="button"  title="Observaciones Asociadas a la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" id="notification"  class="update btn btn-sm btn-primary"  data-id="{% url 'gestionobservacionactividadesvp' objetivo.id %}"  >
+							 <button type="button"  title="Observaciones Asociadas a la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" id="notification"  class="update btn btn-sm btn-primary"  data-id="{% url 'gestionobservacionactividadesvp' objetivo.id %}"  >
 							<span class="fa fa-comments" ></span>
-							{% if objetivo.count_no_vistos != 0 and objetivo.count_no_vistos != none %} <span class="badge" title="Nuevas Observaciones a la actividad" >{{ objetivo.count_no_vistos }}</span> {% endif %}
+							{% if objetivo.count_no_vistos != 0 and objetivo.count_no_vistos != none %} <span class="badge" title="Nuevas Observaciones"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">{{ objetivo.count_no_vistos }}</span> {% endif %}
 							</button>
                          </td>
 
@@ -82,6 +82,8 @@ Actividades Asociadas al Objetivo
 					{% endfor %}
 				</tbody>
 			</table>
+
+
 		</div>
 	</section>
 

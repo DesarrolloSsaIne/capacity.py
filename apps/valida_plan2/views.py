@@ -25,42 +25,117 @@ from django.core.mail import EmailMultiAlternatives
 from django.db.models.deletion import ProtectedError
 from apps.eje.models import Ges_Ejes
 from datetime import datetime
+from django.contrib import messages
+from django.core.mail import EmailMessage,send_mass_mail
+
+
+def EnviarCorreoRechazo_formulador(email_jefatura):
+    # try:
+    #     periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+    # except Glo_Periodos.DoesNotExist:
+    #     return None
+
+    #controladorPlan = Ges_Jefatura.objects.values_list('id_user__email' , flat=True).filter(Q(id_periodo=periodo_actual) & Q(id=id_jefatura))
+    idcorreoJefatura=[str(email_jefatura)]
+
+    subject = 'Rechazo Plan de Gestión '
+    messageHtml = 'Estimada(o) Usuaria(o),<br> El plan de gestión enviado a revisión fue rechazado por su jefatura, para mayor información ingrese al sitio Capacity Institucional y revise las observaciones realizadas. <br> Atte. <br>Subdpto. de Planificación Institucional.<br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
+
+    email = EmailMessage(subject, messageHtml ,to=idcorreoJefatura)
+
+    email.content_subtype='html'
+    email.send()
 
 
 
-def get_connection(backend=None, fail_silently=False, **kwds):
-    klass = import_string(backend or settings.EMAIL_BACKEND)
-    return klass(fail_silently=fail_silently, **kwds)
+def EnviarCorreoRechazo_jefaturas(emails_jefaturas, area_plan):
+    # try:
+    #     periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+    # except Glo_Periodos.DoesNotExist:
+    #     return None
 
-def send_correo(email, subject, message, messageHtml):
-    # email = email
-    # subject = subject
-    from_email = settings.EMAIL_HOST_USER
-    # send_mail(subject, message, from_email , [email],fail_silently=False)
-    email_messages = []
-    subject, from_email, to = subject, from_email, email
-    text_content = message
-    html_content = messageHtml
-    fail_silently = False
-    auth_user = None
-    auth_password = None
-    connection = None
+    ahora = datetime.now()
+    fecha = ahora.strftime("%d" + "/" + "%m" + "/" + "%Y" + " a las " + "%H:%M")
 
-    connection = connection or get_connection(
-        username=auth_user,
-        password=auth_password,
-        fail_silently=fail_silently,
-    )
-    msg = EmailMultiAlternatives(subject, text_content, from_email, to)
-    msg.attach_alternative(html_content, "text/html")
-    email_messages.append(msg)
-    conn = mail.get_connection()
-    conn.open()
-    conn.send_messages(email_messages)
-    conn.close()
-    # msg.send()
+    #controladorPlan = Ges_Jefatura.objects.values_list('id_user__email' , flat=True).filter(Q(id_periodo=periodo_actual) & Q(id=id_jefatura))
+    idcorreoJefatura=emails_jefaturas
+    area_plan=str(area_plan)
 
-    return None
+    subject = 'Rechazo Plan de Gestión '
+    messageHtml = 'Estimada(o) Usuaria(o),<br> Se informa que con fecha <b>'+ fecha +'</b> se ha rechazado el plan de gestión para correpondiente a <b>' + area_plan + '</b> . <br> Atte. <br>Subdpto. de Planificación Institucional.<br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
+
+    email = EmailMessage(subject, messageHtml ,to=idcorreoJefatura)
+
+    email.content_subtype='html'
+    email.send()
+
+
+
+
+def EnviarCorreoAcepta_formulador(email_jefatura):
+    # try:
+    #     periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+    # except Glo_Periodos.DoesNotExist:
+    #     return None
+
+    #controladorPlan = Ges_Jefatura.objects.values_list('id_user__email' , flat=True).filter(Q(id_periodo=periodo_actual) & Q(id=id_jefatura))
+
+    ahora = datetime.now()
+    fecha = ahora.strftime("%d" + "/" + "%m" + "/" + "%Y" + " a las " + "%H:%M")
+
+    idcorreoJefatura=[str(email_jefatura)]
+
+    subject = 'Aprobación Plan de Gestión '
+    messageHtml = 'Estimada(o) Usuaria(o),<br> Se informa que con fecha <b>'+ fecha +'</b> el plan de gestión fue aprobado y enviado al área de Planificación para su revisión final. <br> Atte. <br>Subdpto. de Planificación Institucional.<br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
+
+    email = EmailMessage(subject, messageHtml ,to=idcorreoJefatura)
+
+    email.content_subtype='html'
+    email.send()
+
+
+
+def EnviarCorreoAcepta_jefaturas(emails_jefaturas, area_plan):
+    # try:
+    #     periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+    # except Glo_Periodos.DoesNotExist:
+    #     return None
+
+    ahora = datetime.now()
+    fecha = ahora.strftime("%d" + "/" + "%m" + "/" + "%Y" + " a las " + "%H:%M")
+
+    #controladorPlan = Ges_Jefatura.objects.values_list('id_user__email' , flat=True).filter(Q(id_periodo=periodo_actual) & Q(id=id_jefatura))
+    idcorreoJefatura=emails_jefaturas
+    area_plan=str(area_plan)
+
+    subject = 'Aprobación Plan de Gestión '
+    messageHtml = 'Estimada(o) Usuaria(o),<br> Se informa que con fecha <b>'+ fecha +'</b> el plan de gestión correspondiente a <b>' + area_plan + '</b> fue aprobado y enviado al área de Planificación para su revisión final . <br> Atte. <br>Subdpto. de Planificación Institucional.<br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
+
+    email = EmailMessage(subject, messageHtml ,to=idcorreoJefatura)
+
+    email.content_subtype='html'
+    email.send()
+
+def EnviarCorreoAcepta_Planificacion(email_planificacion, area_plan):
+    # try:
+    #     periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+    # except Glo_Periodos.DoesNotExist:
+    #     return None
+
+    ahora = datetime.now()
+    fecha = ahora.strftime("%d" + "/" + "%m" + "/" + "%Y" + " a las " + "%H:%M")
+
+    #controladorPlan = Ges_Jefatura.objects.values_list('id_user__email' , flat=True).filter(Q(id_periodo=periodo_actual) & Q(id=id_jefatura))
+    idcorreoJefatura=[str(email_planificacion)]
+    area_plan=str(area_plan)
+
+    subject = 'Aprobación Plan de Gestión '
+    messageHtml = 'Estimada(o) Usuaria(o),<br> Se informa que con fecha <b>'+ fecha +'</b> el plan de gestión correspondiente a <b>' + area_plan + '</b> fue aprobado y enviado a su bandeja para ser derivado a un Analista. <br> Atte. <br>Subdpto. de Planificación Institucional.<br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
+
+    email = EmailMessage(subject, messageHtml ,to=idcorreoJefatura)
+
+    email.content_subtype='html'
+    email.send()
 
 
 
@@ -82,29 +157,40 @@ class RechazaPlan(UpdateView):
         except Glo_Periodos.DoesNotExist:
             return None
 
-        controladorPlan = self.model.objects.get(id=id_controlador)
+        controladorPlan = self.model.objects.get(Q(id=id_controlador) & Q(id_periodo=periodo_actual.id))
         email_jefatura = controladorPlan.id_jefatura.id_user.email    #correo de rechazo
+        email_primera_jefatura= controladorPlan.jefatura_primerarevision.id_user.email
+        email_segunda_jefatura= self.request.user.email
+
+        area_plan = controladorPlan.id_jefatura.id_nivel
+        emails_jefaturas=[email_primera_jefatura,email_segunda_jefatura]
 
         lista_observaciones = Ges_Observaciones_sr.objects.filter(Q(id_controlador=id_controlador) & Q(id_periodo=periodo_actual.id)
                                                          & Q(observado=1) & Q(user_observa=id_usuario_actual)).count()
 
-
-        #instancia_nivel = self.model.objects.get(id=id_controlador)
-        #form = self.form_class(request.POST, instance=instancia_nivel)
         estado = 9 # estado rechazo segundo nivel
         controladorPlan.estado_flujo_id = int(estado)
         if int(lista_observaciones) > 0:
             try:
                 controladorPlan.save()
-                idcorreoJefatura = [email_jefatura]
-                subject = 'Plan Rechazado'
-                message = 'Estimada(o) Usuaria(o), Su plan fue rechazado con observaciones.  Atte. Subdpto. de Planificación Institucional.>Correo generado automaticamente no responder.'
-                messageHtml = 'Estimada(o) Usuaria(o),<br> Su plan fue rechazado con observaciones. <br> Atte. <br>Subdpto. de Planificación Institucional.<br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
-               # send_correo(idcorreoJefatura, subject, message, messageHtml)
+                try:
 
-                request.session['message_class'] = "alert alert-success"
-                messages.success(self.request, "El plan fue rechazado correctamente y enviado a la jefatura que lo formuló para su corrección.")
-                return HttpResponseRedirect('/valida_plan2/listarUnidades2')
+                    EnviarCorreoRechazo_formulador(email_jefatura)
+                    EnviarCorreoRechazo_jefaturas(emails_jefaturas,area_plan )
+
+                    request.session['message_class'] = "alert alert-success"  # Tipo mensaje
+                    messages.success(request,
+                                     "El Plan fue rechazado correctamente y el correo de notificación fue enviado a quien formuló el plan!.")  # mensaje
+                    return HttpResponseRedirect('/valida_plan2/listarUnidades2')  # Redirije a la pantalla principal
+
+                except:
+
+                    request.session['message_class'] = "alert alert-warning"  # Tipo mensaje
+                    messages.success(request,
+                                     "El Plan fue rechazado correctamente!, pero el servicio de correo tuvo un inconveniente favor comuníquese con su la jefatura que redactó el plan para informarle del rechazo.")  # mensaje
+                    return HttpResponseRedirect('/valida_plan2/listarUnidades2')  # Redirije a la pantalla principal
+
+
             except:
                 request.session['message_class'] = "alert alert-danger"
                 messages.error(self.request,
@@ -131,12 +217,13 @@ class AceptaPlan(UpdateView):
             return None
 
         controladorPlan = self.model.objects.get(Q(id=id_controlador) & Q(id_periodo=periodo_actual.id))
-        #Se debe cambiar por email Analistas
-        #email_jefatura_ingresaAct = controladorPlan.id_jefatura.id_user.email
 
-
-        #instancia_nivel = self.model.objects.get(id=id_controlador)
-        #form = self.form_class(request.POST, instance=controladorPlan)
+        email_jefatura = controladorPlan.id_jefatura.id_user.email    #correo de rechazo
+        email_primera_jefatura= controladorPlan.jefatura_primerarevision.id_user.email
+        email_segunda_jefatura= self.request.user.email
+        email_admin_planificacion = settings.EMAIL_HOST_USER
+        area_plan = controladorPlan.id_jefatura.id_nivel
+        emails_jefaturas=[email_primera_jefatura,email_segunda_jefatura]
 
         existeAnalista = controladorPlan.analista_asignado
         estado = 0
@@ -148,21 +235,40 @@ class AceptaPlan(UpdateView):
         controladorPlan.estado_flujo_id = int(estado)
         try:
             controladorPlan.save()
-            request.session['message_class'] = "alert alert-success"
-            messages.success(self.request, "El plan fue aceptado correctamente y enviado al área de Planificación para su revisión.")
-            #idcorreoJefatura = [email_jefatura_ingresaAct]
-            subject = 'Plan Aceptado'
-            message = 'Estimada(o) Usuaria(o), Su plan enviado para revisión fue aceptado.  Atte. Subdpto. de Planificación Institucional.>Correo generado automaticamente no responder.'
-            messageHtml = 'Estimada(o) Usuaria(o),<br> Su plan enviado para revisión fue aceptado. <br> Atte. <br>Subdpto. de Planificación Institucional.<br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
-            # send_correo(idcorreoJefatura, subject, message, messageHtml)
-            # este correo se le debe enviar al analista
-            #email_jefatura_2revision = email_jefatura_2revision
-            #idcorreoJefatura = [email_jefatura_2revision]
-            subject = 'Revisión de Plan'
-            message = 'Estimada(o) Usuaria(o), Se ha cargado un nuevo plan  para su revisión.  Atte. Subdpto. de Planificación Institucional.>Correo generado automaticamente no responder.'
-            messageHtml = 'Estimada(o) Usuaria(o),<br> Se ha cargado un nuevo plan  para su revisión. <br> Atte. <br>Subdpto. de Planificación Institucional.<br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
-            # send_correo(idcorreoJefatura, subject, message, messageHtml)
-            return HttpResponseRedirect('/valida_plan2/listarUnidades2')
+
+            try:
+
+                EnviarCorreoAcepta_formulador(email_jefatura)
+                EnviarCorreoAcepta_jefaturas(emails_jefaturas, area_plan)
+                EnviarCorreoAcepta_Planificacion(email_admin_planificacion,area_plan )
+
+                request.session['message_class'] = "alert alert-success"  # Tipo mensaje
+                messages.success(request,
+                                 "El Plan fue aceptado correctamente y el correo de notificación fue enviado al área de Planificación!.")  # mensaje
+                return HttpResponseRedirect('/valida_plan2/listarUnidades2')  # Redirije a la pantalla principal
+
+            except:
+
+                request.session['message_class'] = "alert alert-warning"  # Tipo mensaje
+                messages.success(request,
+                                 "El Plan fue aceptado correctamente!, pero el servicio de correo tuvo un inconveniente favor comuníquese con el área de Planificación informando el envío del plan de gestión.")  # mensaje
+                return HttpResponseRedirect('/valida_plan2/listarUnidades2')  # Redirije a la pantalla principal
+
+            # request.session['message_class'] = "alert alert-success"
+            # messages.success(self.request, "El plan fue aceptado correctamente y enviado al área de Planificación para su revisión.")
+            # #idcorreoJefatura = [email_jefatura_ingresaAct]
+            # subject = 'Plan Aceptado'
+            # message = 'Estimada(o) Usuaria(o), Su plan enviado para revisión fue aceptado.  Atte. Subdpto. de Planificación Institucional.>Correo generado automaticamente no responder.'
+            # messageHtml = 'Estimada(o) Usuaria(o),<br> Su plan enviado para revisión fue aceptado. <br> Atte. <br>Subdpto. de Planificación Institucional.<br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
+            # # send_correo(idcorreoJefatura, subject, message, messageHtml)
+            # # este correo se le debe enviar al analista
+            # #email_jefatura_2revision = email_jefatura_2revision
+            # #idcorreoJefatura = [email_jefatura_2revision]
+            # subject = 'Revisión de Plan'
+            # message = 'Estimada(o) Usuaria(o), Se ha cargado un nuevo plan  para su revisión.  Atte. Subdpto. de Planificación Institucional.>Correo generado automaticamente no responder.'
+            # messageHtml = 'Estimada(o) Usuaria(o),<br> Se ha cargado un nuevo plan  para su revisión. <br> Atte. <br>Subdpto. de Planificación Institucional.<br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
+            # # send_correo(idcorreoJefatura, subject, message, messageHtml)
+            # return HttpResponseRedirect('/valida_plan2/listarUnidades2')
         except:
             request.session['message_class'] = "alert alert-danger"
             messages.error(self.request,

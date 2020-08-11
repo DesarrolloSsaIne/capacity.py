@@ -70,7 +70,9 @@ def PerfilAsigna(request):
     template_name = 'perfiles/perfil_form.html'
 
     jefes_list = list(Ges_Jefatura.objects.values_list('id_user_id', flat=True))
-    qs = User.objects.filter(id__in=jefes_list).exclude(Q(groups__in=Group.objects.all())) #Usuarios que están en la lista de jefaturas pero no han sido asignados a un perfil
+    qs = User.objects.filter(id__in=jefes_list).exclude(Q(groups__in=Group.objects.all())) #Envío los usuario que no pertenezcan a algún grupo.
+
+
 
     context = {"qs": qs} # aquí le envío lo que quiero al modal para que lo muestre, incluso una lista.
 

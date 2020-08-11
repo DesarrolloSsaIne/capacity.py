@@ -51,7 +51,8 @@ var myChart1 = new Chart(ctx1, {
 						beginAtZero:true,
 						// max:plugin.settings.maxDataValue,
 						//maxTicksLimit: 5
-						suggestedMin:0
+						suggestedMin:0,
+						stepSize: 5
 					  }
 					}]
 				},
@@ -217,6 +218,7 @@ var myChart3 = new Chart(ctx3, {
 						beginAtZero:false,
 						// max:plugin.settings.maxDataValue,
 						//maxTicksLimit: 5
+						stepSize: 5
 
 
 
@@ -317,6 +319,8 @@ $("#download_por_unidad").click(function(){
 
 {% if GrupoDashboard == 'GrupoAdmin' %}
 
+
+
 <div class="col-md-3" >
 <section class="panel" >
 
@@ -362,7 +366,7 @@ $("#download_por_unidad").click(function(){
 </div>
 </section>
 </div>
-
+{% if UnidadesAsociadas %}
 <div class="col-md-6" >
 <section class="panel" >
 
@@ -424,7 +428,9 @@ $("#download_por_unidad").click(function(){
 </section>
 </div>
 
+{% else %}
 
+{% endif %}
 
 
 {% endif %}

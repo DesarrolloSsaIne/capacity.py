@@ -189,11 +189,11 @@ if (horas_actividad>horas_disponibles){
 return false
 }
 
-/*if (horas_actividad==0){
+if (horas_actividad<1){
 	$("#mjeError").css("display","block");
 	$("#textError").text("Error : El total de horas no puede ser igual a 0.");
 return false
-}*/
+}
 
 
 var anio_actual= moment().year();
@@ -227,11 +227,12 @@ return false
 }
 
 
-
+var personas_asignadas = $("#personas_asignadas_id").val();
 var total_feriados = $("#total_feriados").val();
 var total_horas =$('#total_horas_id').val();
 var dias_habiles_brutos = calcBusinessDays(fecha_inicio,fecha_termino);
 dias_habiles_brutos_feriados = (+dias_habiles_brutos) - (+total_feriados);
+dias_habiles_brutos_feriados = dias_habiles_brutos_feriados * personas_asignadas;
 horas_dias_habiles_brutos_feriados= (+dias_habiles_brutos_feriados) * (8);
 
 
@@ -239,7 +240,7 @@ horas_dias_habiles_brutos_feriados= (+dias_habiles_brutos_feriados) * (8);
 //alert(total_feriados);
 
 
-if (dias_habiles_brutos_feriados != horas_dias_habiles_brutos_feriados){
+if (total_horas > horas_dias_habiles_brutos_feriados){
 	$("#mjeError").css("display","block");
 	$("#textError").text("Error : El total de horas de la actividad supera el total de horas entre la fecha de inicio y término.");
 return false

@@ -211,7 +211,7 @@
 								</table>
 
 															<div align="right" style="margin-right:100px;" >
-							<h5 style="color:#1e7799;">Total Horas Programadas:	<b>{{total_disponible.total_horas}}</b> | Total Horas Disponibles:  <b>{{total_disponible.total_utilizado}}</b> | Porcentaje de Carga Planificada: <b>{{total_disponible.consumidas}}(<label>{{total_disponible.avance_porcentaje}}%</label>)</b> </h5>
+							<h5 style="color:#1e7799;">Total Horas Programadas:	<b>{{total_disponible.total_horas}}</b> | Total Horas Disponibles:  <b>{{total_disponible.total_utilizado}}</b> | Porcentaje de Carga Planificada: <b>{{total_disponible.consumidas}} (<label>{{total_disponible.avance_porcentaje}}%</label>)</b> </h5>
 							</div>
 
 							</div>
@@ -293,8 +293,10 @@
         </div>
     </div>
   <div class="modal-footer">
-    <button class="btn btn-danger" type="submit" >Confirmar</button>
-     <button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
+
+
+    <button class="btn btn-danger" type="submit" id="confirmar" >Confirmar</button>
+     <button class="btn btn-default" type="button" id="cancelar" data-dismiss="modal">Cancelar</button>
   </div>
 
 </form>
@@ -310,6 +312,8 @@
 
 
 <script type="text/javascript">
+
+
 
 
 

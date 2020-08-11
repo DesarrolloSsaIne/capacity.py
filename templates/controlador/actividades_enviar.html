@@ -48,13 +48,21 @@
 </div>
 			</div>
 			<div class="modal-footer">
+
+
+
+			<div id="enviar" style="display:none; text-align:left; " class="alert alert-info" role="alert">
+            Enviando correos, favor espere...
+       		 </div>
+
+
+
 				<button class="btn btn-danger" type="submit" id="confirmar" >Confirmar</button>
-				<button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
+				<button class="btn btn-default" type="button"  id="cancelar" data-dismiss="modal">Cancelar</button>
 			</div>
 
 								<div class="alert alert-danger" style="display:none;" id="mjeError">
-
-										<p id="textError"></p>
+									<p id="textError"></p>
 								</div>
 			</form>
 
@@ -65,6 +73,15 @@
         $('#id_estado_flujo option:not(:selected)').attr('disabled',true);
 
     });
+
+
+$('#confirmar').click(function() {
+
+     $( this ).hide();
+     $( '#cancelar' ).hide();
+      $( '#enviar' ).fadeIn();
+
+});
 
 
 			</script>

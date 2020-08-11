@@ -9,6 +9,7 @@ from django.db.models.deletion import ProtectedError
 from django.db.models import Q
 from django.utils.module_loading import import_string
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from apps.actividades.models import Ges_Actividad
 from apps.controlador.models import Ges_Controlador
 from apps.periodos.models import Glo_Periodos
 from apps.controlador.forms import controladorFlujoForm, GestionControladorUpdateForm
@@ -17,6 +18,8 @@ from apps.estructura.models import Ges_Niveles, Ges_CuartoNivel, Ges_TercerNivel
 from apps.estado_flujo.models import Glo_EstadoFlujo
 from datetime import date
 from django.db.models import Case, CharField, Value, When
+from django.contrib import messages
+from django.core.mail import EmailMessage,send_mass_mail
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import get_template
 from django.template import Context
@@ -133,12 +136,6 @@ class ControladorDelete(SuccessMessageMixin, DeleteView ):
 ########################################################################################################################
 
 
-
-
-
-
-
-
 class ControladorUpdate(UpdateView):
     model = Ges_Controlador
     form_class = GestionControladorUpdateForm
@@ -186,10 +183,21 @@ class ControladorUpdate(UpdateView):
         if id_orden == 4:
             id_nivel_jefsuperior = Ges_Niveles.objects.get(id_tercer_nivel=id_tercerNivel.tercer_nivel_id)
 
-        id_jef_final = Ges_Jefatura.objects.get(id_nivel=id_nivel_jefsuperior.id) # SI NO ENCUENTRA UN JEFE SE CAE, VALIDAR
-        id_jef_final = int(id_jef_final.id_nivel_id)
-        kwargs['nivel_jefatura'] = id_jef_final
-        return kwargs
+        try:
+            id_jef_final = Ges_Jefatura.objects.get(
+                id_nivel=id_nivel_jefsuperior.id)  # SI NO ENCUENTRA UN JEFE SE CAE, VALIDAR
+        except Ges_Jefatura.DoesNotExist:
+            id_jef_final = 0
+            pass
+
+        if id_jef_final != 0:
+            id_jef_final = int(id_jef_final.id_nivel_id)
+            kwargs['nivel_jefatura'] = id_jef_final
+            return kwargs
+        else:
+
+            kwargs['nivel_jefatura'] = id_jef_final
+            return kwargs
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object
@@ -207,124 +215,72 @@ class ControladorUpdate(UpdateView):
             periodo_actual = Glo_Periodos.objects.get(id_estado=1)
         except Glo_Periodos.DoesNotExist:
             return None
-        idcorreoJefaturaOb =   Ges_Jefatura.objects.get(id=id_jefatura)
-        idcorreoJefatura=  idcorreoJefaturaOb
-        idcorreoJefatura = idcorreoJefatura.id_user_id
-        idcorreoJefatura = User.objects.get(id=idcorreoJefatura)
+
         nivel_usuario = Ges_Jefatura.objects.get(Q(id_user=id_usuario_actual) & Q(id_periodo=periodo_actual.id))
-        idcorreoJefatura = [idcorreoJefatura.email]
-        subject = 'Revisión Plan ' + str(nivel_usuario.id_nivel.descripcion_nivel)
-        message= 'Estimada(o) Usuaria(o), Se ha asignado a usted una tarea de revisión de plan de trabajo.  Atte. Subdpto. de Planificación Institucional.>Correo generado automaticamente no responder.'
-        messageHtml = 'Estimada(o) Usuaria(o),<br> Se ha asignado a usted una tarea de revisión plan de trabajo<br> Atte. <br>Subdpto. de Planificación Institucional.<br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
+        idcorreoJefaturaOb =   Ges_Jefatura.objects.get(id=id_jefatura)
+        Actividades = Ges_Actividad.objects.filter(Q(id_periodo=periodo_actual.id) & Q(
+            id_controlador=instancia_nivel.id)).count()
+
+        if Actividades != 0:
+
+            if form.is_valid():
+                form.save()
+
+                update_state(id_jefatura_solicita,id_jefatura,  4)
+                tipo_evento = "Envío Plan a primera revisión"
+                metodo = "Controlador - ControladorUpdate"
+                usuario_evento = nivel_usuario.id_user
+                jefatura_dirigida = idcorreoJefaturaOb.id_user
+                logEventosCreate(tipo_evento, metodo, usuario_evento, jefatura_dirigida)
+
+                try:
+
+                    EnviarCorreoCierre(id_jefatura, nivel_usuario.id_nivel.descripcion_nivel)
+                    request.session['message_class'] = "alert alert-success"  # Tipo mensaje
+                    messages.success(request,
+                                     "El plan fue enviado para su revisión y el correo de notificación fue enviado a su jefatura directa.!")  # mensaje
+                    return HttpResponseRedirect('/actividades/listar')  # Redirije a la pantalla principal
+
+                except:
+
+                    request.session['message_class'] = "alert alert-warning"  # Tipo mensaje
+                    messages.success(request,
+                                     "El plan fue enviado para su revisión! , pero el servicio de correo tuvo un inconveniente favor comuníquese con su jefatura directa para informarle el envío del plan para revisión.")  # mensaje
+                    return HttpResponseRedirect('/actividades/listar')  # Redirije a la pantalla principal
+
+            else:
+
+                request.session['message_class'] = "alert alert-danger"
+                messages.error(self.request,
+                               "Error interno: No se ha enviado el plan para revisión. Comuníquese con el administrador.")
+                return HttpResponseRedirect('/actividades/listar')
 
 
 
-        if form.is_valid():
-            form.save()
-            #send_correo(idcorreoJefatura, subject, message, messageHtml)
-            #send_correo(idcorreoJefatura, subject, message, messageHtml)
-
-            update_state(id_jefatura_solicita,id_jefatura,  4)
-            tipo_evento = "Envío Plan a primera revisión"
-            metodo = "Controlador - ControladorUpdate"
-            usuario_evento = nivel_usuario.id_user
-            jefatura_dirigida = idcorreoJefaturaOb.id_user
-            logEventosCreate(tipo_evento, metodo, usuario_evento, jefatura_dirigida)
-            request.session['message_class'] = "alert alert-success"
-            messages.success(self.request, "El plan fue enviado para su revisión.")
-            return HttpResponseRedirect('/actividades/listar')
-        else:
-            request.session['message_class'] = "alert alert-danger"
-            messages.error(self.request, "Error interno: No se ha actualizado el registro. Comuníquese con el administrador.")
-            return HttpResponseRedirect('/actividades/listar')
-
-#def send_correo(email, subject, message, messageHtml):
-
-       #email = email
-       #subject = subject
-        #       from_email = settings.EMAIL_HOST_USER
-      # send_mail(subject, message, from_email , [email],fail_silently=False)
-
-       #subject, from_email, to = subject, from_email, email
-       #text_content = message
-       #html_content = messageHtml
-       #msg = EmailMultiAlternatives(subject, text_content, from_email, to)
-       #msg.attach_alternative(html_content, "text/html")
-       #msg.send()
 
 
-       #return None
 
 
-#def send_correo():
-    #    From = 'benjamin.vasquez@ine.cl'
-    #Recipient = 'benjamin.vasquez@ine.cl'
 
-    #Messege = 'Hola'
-
-    # Credentials
-    #username = 'bvasquez'
-    #password = '(ine2022)'
-
-    # mail is being sent :
-    #server = smtplib.SMTP('192.168.1.235:25')
-    #server.starttls()
-    #server.login(username, password)
-    #server.sendmail(From, Recipient, Messege)
-    #server.quit()
-
-    #return None
-
-
-def get_connection(backend=None, fail_silently=False, **kwds):
-    klass = import_string(backend or settings.EMAIL_BACKEND)
-    return klass(fail_silently=fail_silently, **kwds)
-
-def send_correo(email, subject, message, messageHtml):
-    # email = email
-    # subject = subject
-    from_email = settings.EMAIL_HOST_USER
-    # send_mail(subject, message, from_email , [email],fail_silently=False)
-    email_messages = []
-    subject, from_email, to = subject, from_email, email
-    text_content = message
-    html_content = messageHtml
-    fail_silently = False
-    auth_user = None
-    auth_password = None
-    connection = None
-
-    connection = connection or get_connection(
-       username=auth_user,
-       password=auth_password,
-       fail_silently=fail_silently,
-    )
-    msg = EmailMultiAlternatives(subject, text_content, from_email, to)
-    msg.attach_alternative(html_content, "text/html")
-    email_messages.append(msg)
-    conn = mail.get_connection()
-    conn.open()
-    conn.send_messages(email_messages)
-    conn.close()
-    #msg.send()
-
-    return None
-
-def checkmailserver():
-    from django.core.mail import get_connection
-    errors = []
-    connection = get_connection(username=None,
-       password=None,
-       fail_silently=False)
+def EnviarCorreoCierre(id_jefatura, descripcion_nivel):
     try:
-        connection.open()
-    except Exception:
-       errors='error'
-    else:
-        connection.close()
+        periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+    except Glo_Periodos.DoesNotExist:
+        return None
+
+    controladorPlan = Ges_Jefatura.objects.values_list('id_user__email' , flat=True).filter(Q(id_periodo=periodo_actual) & Q(id=id_jefatura))
+    idcorreoJefatura=list(controladorPlan)
+
+    subject = 'Revisión Plan ' + str(descripcion_nivel)
+    messageHtml = 'Estimada(o) Usuaria(o),<br> Se informa que se le ha asignado un plan de gestión para su revisión, ingrese al sitio de capacity institucional y revise su banjeda.<br> Atte. <br>Subdpto. de Planificación Institucional.<br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
+
+    email = EmailMessage(subject, messageHtml ,to=idcorreoJefatura)
+
+    email.content_subtype='html'
+    email.send()
 
 
-    return errors
+
 
 
 def update_state(id_jefatura,id_revisa, estado):

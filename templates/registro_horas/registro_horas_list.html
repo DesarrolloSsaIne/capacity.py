@@ -40,7 +40,7 @@ Registro de Horas
 
 
 
-								<button  type="button" class="create btn btn-sm btn-success" data-toggle="tooltip" data-original-title="Tooltip on bottom"   name="button" title="Agregar Funcionario" {% if  calculo.usuario_controlador.estado_flujo_id > 3 and calculo.usuario_controlador.estado_flujo_id <= 7 or calculo.usuario_controlador.estado_flujo_id == 2 %} disabled   {% endif %}  >
+								<button  type="button" class="create btn btn-sm btn-success" data-toggle="tooltip" data-original-title="Tooltip on bottom"   name="button" title="Agregar Funcionario" {% if  calculo.usuario_controlador.estado_flujo_id > 3 and calculo.usuario_controlador.estado_flujo_id <= 7 or calculo.usuario_controlador.estado_flujo_id == 10 %} disabled   {% endif %}  >
       								<span class="fa fa-plus"></span></button>
 
 
@@ -94,9 +94,9 @@ Registro de Horas
 													{%endif%}
 
     												 <td style="width:40px;">
-														 <button type="button" data-toggle="tooltip" data-original-title="Tooltip on bottom"  title="Actualizar Registro" class="update btn btn-sm btn-primary" {% if  calculo.usuario_controlador.estado_flujo_id > 3 and calculo.usuario_controlador.estado_flujo_id <= 7 or calculo.usuario_controlador.estado_flujo_id == 2 %} disabled tabindex="-1"  {% endif %} data-id="{% url 'RegistroHorasEditar' horas.id %}" >
+														 <button type="button" data-toggle="tooltip" data-original-title="Tooltip on bottom"  title="Actualizar Registro" class="update btn btn-sm btn-primary" {% if  calculo.usuario_controlador.estado_flujo_id > 3 and calculo.usuario_controlador.estado_flujo_id <= 7 or calculo.usuario_controlador.estado_flujo_id == 10 %} disabled tabindex="-1"  {% endif %} data-id="{% url 'RegistroHorasEditar' horas.id %}" >
 														<span class="fa fa-pencil"></span></button>
-														<button type="button" data-toggle="tooltip" data-original-title="Tooltip on bottom"  title="Eliminar Registro" class="delete btn btn-sm btn-danger" {%  if  calculo.usuario_controlador.estado_flujo_id > 3 and calculo.usuario_controlador.estado_flujo_id <= 7 or calculo.usuario_controlador.estado_flujo_id == 2 %} disabled tabindex="-1"  {% endif %} data-id="{% url 'RegistroHorasEliminar' horas.id %}">      													  <span class="fa fa-trash-o"></span></button>
+														<button type="button" data-toggle="tooltip" data-original-title="Tooltip on bottom"  title="Eliminar Registro" class="delete btn btn-sm btn-danger" {%  if  calculo.usuario_controlador.estado_flujo_id > 3 and calculo.usuario_controlador.estado_flujo_id <= 7 or calculo.usuario_controlador.estado_flujo_id == 10 %} disabled tabindex="-1"  {% endif %} data-id="{% url 'RegistroHorasEliminar' horas.id %}">      													  <span class="fa fa-trash-o"></span></button>
                                                     </td>
                                                 </tr>
                                             {% endfor %}
@@ -105,7 +105,7 @@ Registro de Horas
 									</tbody>
 								</table>
 							<div align="right" style="margin-right:100px;" >
-							<h5 style="color:#1e7799;">Total Días Hábiles: <b>{{calculo.dias_totales}}</b>  |
+							<h5 style="color:#1e7799;">Total Días Hábiles:{% if calculo.dias_totales == None %}0{% else %} <b>{{calculo.dias_totales}}</b>{%endif%}  |
 							Total Horas Hábiles:	<b>{{calculo.horas_totales}}</b></h5>
 							</div>
 							</div>

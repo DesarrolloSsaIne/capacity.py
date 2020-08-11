@@ -33,42 +33,95 @@ from apps.registration.models import logEventos
 from datetime import datetime
 from apps.gestion_horas.models import Ges_Registro_Horas
 from apps.eje.models import Ges_Ejes
-
-def get_connection(backend=None, fail_silently=False, **kwds):
-    klass = import_string(backend or settings.EMAIL_BACKEND)
-    return klass(fail_silently=fail_silently, **kwds)
-
-def send_correo(email, subject, message, messageHtml):
-    # email = email
-    # subject = subject
-    from_email = settings.EMAIL_HOST_USER
-    # send_mail(subject, message, from_email , [email],fail_silently=False)
-    email_messages = []
-    subject, from_email, to = subject, from_email, email
-    text_content = message
-    html_content = messageHtml
-    fail_silently = False
-    auth_user = None
-    auth_password = None
-    connection = None
-
-    connection = connection or get_connection(
-        username=auth_user,
-        password=auth_password,
-        fail_silently=fail_silently,
-    )
-    msg = EmailMultiAlternatives(subject, text_content, from_email, to)
-    msg.attach_alternative(html_content, "text/html")
-    email_messages.append(msg)
-    conn = mail.get_connection()
-    conn.open()
-    conn.send_messages(email_messages)
-    conn.close()
-    # msg.send()
-
-    return None
+from django.contrib import messages
+from django.core.mail import EmailMessage,send_mass_mail
 
 
+
+def EnviarCorreoRechazo_formulador(email_jefatura):
+    # try:
+    #     periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+    # except Glo_Periodos.DoesNotExist:
+    #     return None
+
+    #controladorPlan = Ges_Jefatura.objects.values_list('id_user__email' , flat=True).filter(Q(id_periodo=periodo_actual) & Q(id=id_jefatura))
+    idcorreoJefatura=[str(email_jefatura)]
+
+    subject = 'Rechazo Plan de Gestión '
+    messageHtml = 'Estimada(o) Usuaria(o),<br> El plan de gestión enviado a revisión fue rechazado por su jefatura, para mayor información ingrese al sitio Capacity Institucional y revise las observaciones realizadas. <br> Atte. <br>Subdpto. de Planificación Institucional.<br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
+
+    email = EmailMessage(subject, messageHtml ,to=idcorreoJefatura)
+
+    email.content_subtype='html'
+    email.send()
+
+
+
+def EnviarCorreoRechazo_primera_jefatura(email_jefatura, area_plan):
+    # try:
+    #     periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+    # except Glo_Periodos.DoesNotExist:
+    #     return None
+
+    ahora = datetime.now()
+    fecha = ahora.strftime("%d" + "/" + "%m" + "/" + "%Y" + " a las " + "%H:%M")
+
+    #controladorPlan = Ges_Jefatura.objects.values_list('id_user__email' , flat=True).filter(Q(id_periodo=periodo_actual) & Q(id=id_jefatura))
+    idcorreoJefatura=[str(email_jefatura)]
+    area_plan=str(area_plan)
+
+    subject = 'Rechazo Plan de Gestión '
+    messageHtml = 'Estimada(o) Usuaria(o),<br> Se informa que con fecha <b>'+ fecha +'</b> se ha rechazado el plan de gestión para correpondiente a <b>' + area_plan + '</b> . <br> Atte. <br>Subdpto. de Planificación Institucional.<br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
+
+    email = EmailMessage(subject, messageHtml ,to=idcorreoJefatura)
+
+    email.content_subtype='html'
+    email.send()
+
+
+def EnviarCorreoAcepta_formulador(email_jefatura):
+    # try:
+    #     periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+    # except Glo_Periodos.DoesNotExist:
+    #     return None
+
+    #controladorPlan = Ges_Jefatura.objects.values_list('id_user__email' , flat=True).filter(Q(id_periodo=periodo_actual) & Q(id=id_jefatura))
+
+    ahora = datetime.now()
+    fecha = ahora.strftime("%d" + "/" + "%m" + "/" + "%Y" + " a las " + "%H:%M")
+
+    idcorreoJefatura=[str(email_jefatura)]
+
+    subject = 'Aprobación Plan de Gestión '
+    messageHtml = 'Estimada(o) Usuaria(o),<br> Se informa que con fecha <b>'+ fecha +'</b> el plan de gestión fue aprobado por su jefatura y enviado a revisión. <br> Atte. <br>Subdpto. de Planificación Institucional.<br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
+
+    email = EmailMessage(subject, messageHtml ,to=idcorreoJefatura)
+
+    email.content_subtype='html'
+    email.send()
+
+
+
+def EnviarCorreoAcepta_primera_jefatura(email_jefatura, area_plan):
+    # try:
+    #     periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+    # except Glo_Periodos.DoesNotExist:
+    #     return None
+
+    ahora = datetime.now()
+    fecha = ahora.strftime("%d" + "/" + "%m" + "/" + "%Y" + " a las " + "%H:%M")
+
+    #controladorPlan = Ges_Jefatura.objects.values_list('id_user__email' , flat=True).filter(Q(id_periodo=periodo_actual) & Q(id=id_jefatura))
+    idcorreoJefatura=[str(email_jefatura)]
+    area_plan=str(area_plan)
+
+    subject = 'Aprobación Plan de Gestión '
+    messageHtml = 'Estimada(o) Usuaria(o),<br> Se informa que con fecha <b>'+ fecha +'</b> ha aprobado y enviado a revisión el plan de gestión correpondiente a <b>' + area_plan + '</b>. <br> Atte. <br>Subdpto. de Planificación Institucional.<br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
+
+    email = EmailMessage(subject, messageHtml ,to=idcorreoJefatura)
+
+    email.content_subtype='html'
+    email.send()
 
 class RechazaPlan(UpdateView):
     model = Ges_Controlador
@@ -78,7 +131,9 @@ class RechazaPlan(UpdateView):
     def post(self, request, *args, **kwargs):
         self.object = self.get_object
         id_controlador = kwargs['pk']
-        id_usuario_actual = self.request.user.id  # obtiene id usuario actual
+        email_primera_jefatura = self.request.user.email  # obtiene id usuario actual
+        area_plan= Ges_Controlador.objects.get(id=id_controlador)
+        area_plan= area_plan.id_jefatura.id_nivel
 
         try:
             periodo_actual = Glo_Periodos.objects.get(id_estado=1)
@@ -99,21 +154,30 @@ class RechazaPlan(UpdateView):
                 totalObservacion = totalObservacion + 1
         lista_actividades
 
-        instancia_nivel = self.model.objects.get(id=id_controlador)
+        instancia_nivel = self.model.objects.get(Q(id=id_controlador) & Q(id_periodo=periodo_actual.id))
         form = self.form_class(request.POST, instance=instancia_nivel)
 
         if totalObservacion > 0:
             if form.is_valid():
                 form.save()
-                idcorreoJefatura = [email_jefatura]
-                subject = 'Rechazo de Plan'
-                message = 'Estimada(o) Usuaria(o), Se ha realizado un rechazo al plan que ha ingresado.  Atte. Subdpto. de Planificación Institucional.>Correo generado automaticamente no responder.'
-                messageHtml = 'Estimada(o) Usuaria(o),<br> El plan que ha Ud ha enviado ha sido rechazado. <br> Atte. <br>Subdpto. de Planificación Institucional.<br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
-                #send_correo(idcorreoJefatura, subject, message, messageHtml)
 
-                request.session['message_class'] = "alert alert-success"
-                messages.success(self.request, "El Plan fue rechazado correctamente y enviado al usuario que lo formuló.")
-                return HttpResponseRedirect('/valida_plan/listarUnidades')
+                try:
+
+                    EnviarCorreoRechazo_formulador(email_jefatura)
+                    EnviarCorreoRechazo_primera_jefatura(email_primera_jefatura,area_plan )
+                    request.session['message_class'] = "alert alert-success"  # Tipo mensaje
+                    messages.success(request,
+                                     "El Plan fue rechazado correctamente y el correo de notificación fue enviado a quien formuló el plan!.")  # mensaje
+                    return HttpResponseRedirect('/valida_plan/listarUnidades')  # Redirije a la pantalla principal
+
+                except:
+
+                    request.session['message_class'] = "alert alert-warning"  # Tipo mensaje
+                    messages.success(request,
+                                     "El Plan fue rechazado correctamente!, pero el servicio de correo tuvo un inconveniente favor comuníquese con su la jefatura que redactó el plan para informarle del rechazo.")  # mensaje
+                    return HttpResponseRedirect('/valida_plan/listarUnidades')  # Redirije a la pantalla principal
+
+
             else:
                 request.session['message_class'] = "alert alert-danger"
                 messages.error(self.request, "Error interno: El plan no ha podido ser rechazado. Comuníquese con el administrador.")
@@ -128,6 +192,8 @@ class AceptaPlan(UpdateView):
     model = Ges_Controlador
     form_class = ValidaPlanUpdateForm
     template_name = 'valida_plan/valida_plan_acepta_form.html'
+
+
 
     def get_form_kwargs(self, **kwargs):
         kwargs = super(AceptaPlan, self).get_form_kwargs()
@@ -180,14 +246,15 @@ class AceptaPlan(UpdateView):
             id_jef_final = Ges_Jefatura.objects.get(id_nivel=id_nivel_jefsuperior.id)
             id_jef_final = int(id_jef_final.id_nivel_id)
         except Ges_Jefatura.DoesNotExist:
-                pass
+                id_jef_final=0
 
         kwargs['nivel_jefatura'] = id_jef_final
+
         return kwargs
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object
-        id_nivel = kwargs['pk']
+        id_nivel = kwargs['pk'] #id del controlador
         id_nivel = int(id_nivel)
         instancia_nivel = self.model.objects.get(id=id_nivel)
         id_jefatura = request.POST['jefatura_segundarevision']
@@ -199,66 +266,111 @@ class AceptaPlan(UpdateView):
         except Glo_Periodos.DoesNotExist:
             return None
 
-        if int(id_jefatura) != 0:
 
-            id_nivel_post = Ges_Jefatura.objects.get(id=id_jefatura)
-            id_nivel_post = id_nivel_post.id_nivel_id
+        email_primera_jefatura = self.request.user.email  # obtiene id usuario actual
+        area_plan= Ges_Controlador.objects.get(Q(id=id_nivel) & Q(id_periodo=periodo_actual.id))
+        email_jefatura = area_plan.id_jefatura.id_user.email
 
-            form = self.form_class(id_nivel_post, request.POST, instance=instancia_nivel)
+        area_plan= area_plan.id_jefatura.id_nivel
 
-            idcorreoJefaturaOb = Ges_Jefatura.objects.get(id=id_jefatura)
-            idcorreoJefatura = idcorreoJefaturaOb
-            idcorreoJefatura = idcorreoJefatura.id_user_id
-            idcorreoJefatura = User.objects.get(id=idcorreoJefatura)
-            nivel_usuario = Ges_Jefatura.objects.get(Q(id_user=id_usuario_actual) & Q(id_periodo=periodo_actual.id))
-            idcorreoJefatura = [idcorreoJefatura.email]
-            subject = 'Revisión Plan ' + str(nivel_usuario.id_nivel.descripcion_nivel)
-            message= 'Estimada(o) Usuaria(o), Se ha asignado a usted una tarea de revisión de plan de trabajo.  Atte. Subdpto. de Planificación Institucional.>Correo generado automaticamente no responder.'
-            messageHtml = 'Estimada(o) Usuaria(o),<br> Se ha asignado a usted una tarea de revisión plan de trabajo<br> Atte. <br>Subdpto. de Planificación Institucional.<br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
 
-            if form.is_valid():
-                form.save()
-                #send_correo(idcorreoJefatura, subject, message, messageHtml)
-                #send_correo(idcorreoJefatura, subject, message, messageHtml)
+        try:
+            periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+        except Glo_Periodos.DoesNotExist:
+            return None
 
+        count_obs_no_vistas= Ges_Observaciones.objects.filter(Q(id_controlador=id_nivel ) & Q(observado=1) & ~Q(user_observa_id = id_usuario_actual)).count()
+
+
+        if count_obs_no_vistas == 0:
+            if int(id_jefatura) != 0:
+
+                id_nivel_post = Ges_Jefatura.objects.get(id=id_jefatura)
+                id_nivel_post = id_nivel_post.id_nivel_id
+
+                form = self.form_class(id_nivel_post, request.POST, instance=instancia_nivel)
+
+                idcorreoJefaturaOb = Ges_Jefatura.objects.get(id=id_jefatura)
+
+                nivel_usuario = Ges_Jefatura.objects.get(Q(id_user=id_usuario_actual) & Q(id_periodo=periodo_actual.id))
+
+                if form.is_valid():
+                    form.save()
+                    d_jefatura = Ges_Jefatura.objects.get(id_user=id_usuario_actual)
+                    update_state(id_jefatura_solicita, id_jefatura, 5, d_jefatura.id)
+                    tipo_evento = "Envío Plan a segunda revisión."
+                    metodo = "Controlador - AceptaPlan"
+                    usuario_evento = nivel_usuario.id_user
+                    jefatura_dirigida = idcorreoJefaturaOb.id_user
+                    logEventosCreate(tipo_evento, metodo, usuario_evento, jefatura_dirigida)
+
+                    try:
+
+                        EnviarCorreoAcepta_formulador(email_jefatura)
+                        EnviarCorreoAcepta_primera_jefatura(email_primera_jefatura, area_plan)
+
+                        request.session['message_class'] = "alert alert-success"  # Tipo mensaje
+                        messages.success(request,
+                                         "El Plan ha sido aceptado correctamente y el correo de notificación fue enviado a quien formuló el plan!.")  # mensaje
+                        return HttpResponseRedirect('/valida_plan/listarUnidades')  # Redirije a la pantalla principal
+
+                    except:
+
+                        request.session['message_class'] = "alert alert-warning"  # Tipo mensaje
+                        messages.success(request,
+                                         "El Plan fue aceptado correctamente!, pero el servicio de correo tuvo un inconveniente favor comuníquese con su la jefatura que redactó el plan para informarle del rechazo.")  # mensaje
+                        return HttpResponseRedirect('/valida_plan/listarUnidades')  # Redirije a la pantalla principal
+
+
+                else:
+                    request.session['message_class'] = "alert alert-danger"
+                    messages.error(self.request, "Error interno: No se ha actualizado el registro. Comuníquese con el administrador.")
+                    return HttpResponseRedirect('/valida_plan/listarUnidades')
+            else:
                 d_jefatura = Ges_Jefatura.objects.get(id_user=id_usuario_actual)
-                update_state(id_jefatura_solicita, id_jefatura, 5, d_jefatura.id)
+                controlador = Ges_Controlador.objects.get(Q(id= id_nivel) & Q(id_periodo=periodo_actual.id))
+                existeAnalista = controlador.analista_asignado
+                estado = 0
+                if existeAnalista:
+                    estado = 6
+                else:
+                    estado = 10
+                estado = int(estado)
+                update_state(id_jefatura_solicita, '', estado, d_jefatura.id)
+                nivel_usuario = Ges_Jefatura.objects.get(Q(id_user=id_usuario_actual) & Q(id_periodo=periodo_actual.id))
 
-                tipo_evento = "Envío Plan a segunda revisión."
+                tipo_evento = "Envío Plan a planifificaión"
                 metodo = "Controlador - AceptaPlan"
                 usuario_evento = nivel_usuario.id_user
-                jefatura_dirigida = idcorreoJefaturaOb.id_user
+                jefatura_dirigida = nivel_usuario.id_user
                 logEventosCreate(tipo_evento, metodo, usuario_evento, jefatura_dirigida)
 
-                request.session['message_class'] = "alert alert-success"
-                messages.success(self.request, "El plan fue enviado para su revisión.")
-                return HttpResponseRedirect('/valida_plan/listarUnidades')
-            else:
-                request.session['message_class'] = "alert alert-danger"
-                messages.error(self.request, "Error interno: No se ha actualizado el registro. Comuníquese con el administrador.")
-                return HttpResponseRedirect('/valida_plan/listarUnidades')
+                try:
+
+                    EnviarCorreoAcepta_formulador(email_jefatura)
+                    EnviarCorreoAcepta_primera_jefatura(email_primera_jefatura, area_plan)
+
+                    request.session['message_class'] = "alert alert-success"  # Tipo mensaje
+                    messages.success(request,
+                                     "El Plan ha sido aceptado y enviado a validación de planificación!, el correo de notificación fue enviado a quien formuló el plan!.")  # mensaje
+                    return HttpResponseRedirect('/valida_plan/listarUnidades')  # Redirije a la pantalla principal
+
+                except:
+
+                    request.session['message_class'] = "alert alert-warning"  # Tipo mensaje
+                    messages.success(request,
+                                     "El Plan ha sido aceptado y enviado a validación de planificación!, pero el servicio de correo tuvo un inconveniente favor comuníquese con su la jefatura que redactó el plan para informarle del rechazo.")  # mensaje
+                    return HttpResponseRedirect('/valida_plan/listarUnidades')  # Redirije a la pantalla principal
+
+                # request.session['message_class'] = "alert alert-success"
+                # messages.success(self.request, "Estimado Usuario:: El plan ha sido enviado correctamente a planificación para su revisión.")
+                # return HttpResponseRedirect('/valida_plan/listarUnidades')
         else:
-            d_jefatura = Ges_Jefatura.objects.get(id_user=id_usuario_actual)
-            controlador = Ges_Controlador.objects.get(Q(id= id_nivel) & Q(id_periodo=periodo_actual.id))
-            existeAnalista = controlador.analista_asignado
-            estado = 0
-            if existeAnalista:
-                estado = 6
-            else:
-                estado = 10
-            estado = int(estado)
-            update_state(id_jefatura_solicita, '', estado, d_jefatura.id)
-            nivel_usuario = Ges_Jefatura.objects.get(Q(id_user=id_usuario_actual) & Q(id_periodo=periodo_actual.id))
-
-            tipo_evento = "Envío Plan a planifificaión"
-            metodo = "Controlador - AceptaPlan"
-            usuario_evento = nivel_usuario.id_user
-            jefatura_dirigida = nivel_usuario.id_user
-            logEventosCreate(tipo_evento, metodo, usuario_evento, jefatura_dirigida)
-
-            request.session['message_class'] = "alert alert-success"
-            messages.success(self.request, "El plan fue enviado para su revisión.")
+            request.session['message_class'] = "alert alert-danger"
+            messages.error(self.request,
+                           "Estimado usuario, para enviar el plan debe leer todas las observaciones relacionadas.")
             return HttpResponseRedirect('/valida_plan/listarUnidades')
+
 
 
 def update_state(id_jefatura,id_revisa, estado, id_primerrevisor):
@@ -795,15 +907,6 @@ def ActividadDetalle(request, id):
 
 
     return render(request, template_name, context)
-
-
-
-
-
-
-
-
-
 
 
 

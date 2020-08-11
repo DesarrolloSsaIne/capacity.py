@@ -38,7 +38,6 @@ Listado de Planes
                     <th title="Observaciones Totales Asociadas al Plan" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Obs. Total</th>
                     <th >Objetivos</th>
                     <th >Opciones</th>
-
                 </tr>
             </thead>
             <tbody>
@@ -56,7 +55,7 @@ Listado de Planes
 
                              		<a type="button" title="Objetivos Asociados al Plan" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom"  id="notification" class="objetivos btn btn-sm btn-success"  href="{% url 'ActividadesDetalles'  planes.id %} ">
 			<span class="fa fa-bars" ></span>
-			{% if planes.count_no_vistos != 0 and planes.count_no_vistos != none %} <span class="badge" title="Nuevas Observaciones" >{{ planes.count_no_vistos }}</span> {% endif %}
+			{% if planes.count_no_vistos != 0 and planes.count_no_vistos != none %} <span class="badge" title="Nuevas Observaciones"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">{{ planes.count_no_vistos }}</span> {% endif %}
 			</a>
 
                     </td>
@@ -69,14 +68,11 @@ Listado de Planes
                             <span class="fa fa-exclamation-triangle"></span></button>
 
                     </td>
-
-
-
-
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+
 
     </div>
 
@@ -155,14 +151,8 @@ Listado de Planes
 
 
     // Js Muestra/Oculta Mensaje Success
-    $(".alert").fadeTo(2000, 500).slideUp("slow", function() {
+    $(".alert").fadeTo(8000, 500).slideUp("slow", function() {
         $(this).remove();
-    });
-
-       	 // JS modal actualiza Registro
-   $(".update").each(function () {
-   $(this).modalForm({formURL: $(this).data('id'),  modalID: $("#modalUpdate")});
-
     });
 
     $('#datatable-default').DataTable({

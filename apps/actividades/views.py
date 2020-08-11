@@ -374,6 +374,8 @@ class ActividadCreate(SuccessMessageMixin, CreateView):
     form_class = ActividadForm
     template_name = 'actividades/actividades_form.html'
 
+
+
     def get_form_kwargs(self, **kwargs):
         kwargs = super(ActividadCreate, self).get_form_kwargs()
         kwargs['transversal'] = self.request.session['tv']
@@ -405,6 +407,7 @@ class ActividadCreate(SuccessMessageMixin, CreateView):
             return JsonResponse(response_data)
 
 
+
         try:
             id_jefatura = Ges_Jefatura.objects.get(Q(id_user=id_usuario_actual) & Q(id_periodo=periodo_actual.id))
         except Ges_Jefatura.DoesNotExist:
@@ -418,6 +421,7 @@ class ActividadCreate(SuccessMessageMixin, CreateView):
         fecha_inicio = request.POST['fecha_inicio_actividad']
         fecha_termino = request.POST['fecha_termino_actividad']
         total_horas_post = request.POST['total_horas']
+
 
 
         fecha_inicio_split = datetime.strptime(fecha_inicio, "%Y-%m-%d")
@@ -504,6 +508,9 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
             usuario_controlador = Ges_Controlador.objects.get(id_jefatura=id_jefatura.id)
         except Ges_Controlador.DoesNotExist:
             return None
+
+
+
         fecha_inicio = request.POST['fecha_inicio_actividad']
         fecha_termino = request.POST['fecha_termino_actividad']
         total_horas_post = request.POST['total_horas']
@@ -529,40 +536,40 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
         dias_habiles_brutos_feriados = dias_habiles_brutos_feriados * 8
         dias_habiles_brutos_feriados = int(dias_habiles_brutos_feriados)
         total_horas_post = int(total_horas_post)
-        if dias_habiles_brutos_feriados == total_horas_post:
-            if form.is_valid():
-                # form.instance.total_horas= 1
-                # form.instance.id_estado_actividad_id = 4
-                form.instance.flag_reporta=0
-                form.instance.estado = 1
-                form.instance.id_controlador = usuario_controlador
-                form.instance.id_periodo = periodo_actual
-                if self.request.session['id_orden'] == 2:
-                    id_objetivo = Ges_Objetivo_Tactico.objects.get(id=self.request.session['id_objetivo'])
-                    form.instance.id_objetivo_tactico = id_objetivo
+        #if dias_habiles_brutos_feriados == total_horas_post: #PASO A AJAX CONTROL TOLKIT
+        if form.is_valid():
+            # form.instance.total_horas= 1
+            # form.instance.id_estado_actividad_id = 4
+            form.instance.flag_reporta=0
+            form.instance.estado = 1
+            form.instance.id_controlador = usuario_controlador
+            form.instance.id_periodo = periodo_actual
+            if self.request.session['id_orden'] == 2:
+                id_objetivo = Ges_Objetivo_Tactico.objects.get(id=self.request.session['id_objetivo'])
+                form.instance.id_objetivo_tactico = id_objetivo
 
-                if self.request.session['id_orden'] == 3:
-                    id_objetivo = Ges_Objetivo_TacticoTN.objects.get(id=self.request.session['id_objetivo'])
-                    form.instance.id_objetivo_tacticotn = id_objetivo
+            if self.request.session['id_orden'] == 3:
+                id_objetivo = Ges_Objetivo_TacticoTN.objects.get(id=self.request.session['id_objetivo'])
+                form.instance.id_objetivo_tacticotn = id_objetivo
 
-                if self.request.session['id_orden'] == 4:
-                    id_objetivo = Ges_Objetivo_Operativo.objects.get(id=self.request.session['id_objetivo'])
-                    form.instance.id_objetivo_operativo = id_objetivo
+            if self.request.session['id_orden'] == 4:
+                id_objetivo = Ges_Objetivo_Operativo.objects.get(id=self.request.session['id_objetivo'])
+                form.instance.id_objetivo_operativo = id_objetivo
 
-                form.save()
-                request.session['message_class'] = "alert alert-success"
-                messages.success(self.request, "Los datos fueron actualizados correctamente!")
-                return HttpResponseRedirect('/actividades/detalle/' + str(self.request.session['id_objetivo']))
-            else:
-                request.session['message_class'] = "alert alert-danger"
-                messages.error(self.request,
-                               "Error interno: No se ha creado el registro. Comuníquese con el administrador.")
-                return HttpResponseRedirect('/actividades/detalle/' + str(self.request.session['id_objetivo']))
-        else:
-            request.session['message_class'] = "alert alert-warning"
-            messages.error(self.request,
-                           "Aviso :  El total de horas de la actividad supera el total de horas entre la fecha de inicio y término.")
+            form.save()
+            request.session['message_class'] = "alert alert-success"
+            messages.success(self.request, "Los datos fueron actualizados correctamente!")
             return HttpResponseRedirect('/actividades/detalle/' + str(self.request.session['id_objetivo']))
+        else:
+            request.session['message_class'] = "alert alert-danger"
+            messages.error(self.request,
+                           "Error interno: No se ha creado el registro. Comuníquese con el administrador.")
+            return HttpResponseRedirect('/actividades/detalle/' + str(self.request.session['id_objetivo']))
+        #else:
+         #   request.session['message_class'] = "alert alert-warning"
+          #  messages.error(self.request,
+           #                "Aviso :  El total de horas de la actividad supera el total de horas entre la fecha de inicio y término.")
+            #return HttpResponseRedirect('/actividades/detalle/' + str(self.request.session['id_objetivo']))
 
 
 
@@ -807,6 +814,27 @@ def logEventosCreate(tipo_evento, metodo ,usuario_evento, jefatura_dirigida):
         jefatura_dirigida=jefatura_dirigida,
     )
     return None
+
+def calculaferiados(request):
+    response_data = {}
+    if request.POST.get('action') == 'post':  # Ajax para enviar el calulo de feriados
+        try:
+            periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+        except Glo_Periodos.DoesNotExist:
+            return None
+        fecha_inicio_actividad = request.POST.get('fecha_inicio_actividad')
+        fecha_termino_actividad = request.POST.get('fecha_termino_actividad')
+
+        feriados = Ges_Feriados.objects.filter(Q(id_periodo=periodo_actual.id) & Q(fecha_feriado__range=(
+            fecha_inicio_actividad, fecha_termino_actividad))).count()
+
+        response_data['feriados'] = feriados
+
+        return JsonResponse(response_data)
+
+    return render(request, '/actividades/listar/', {'messages':'success'})
+
+
 
 
 

@@ -1,6 +1,6 @@
 from django.conf.urls import url, include
 from apps.actividades.views import ActividadesObjetivosList,ActividadesDetail,ActividadCreate, ActividadesDelete,\
-    ActividadEdit,update_estate, GestionObservacionesObjetivos,GestionObservacionesActividades
+    ActividadEdit,update_estate, GestionObservacionesObjetivos,GestionObservacionesActividades, calculaferiados
 from django.contrib.auth.decorators import login_required
 from django.urls import path
 
@@ -15,6 +15,7 @@ urlpatterns = [
     url('eliminar/(?P<pk>\d+)/$', login_required(ActividadesDelete.as_view()), name='RegistroActividadesEliminar'),
 
     url(r'^updateEstate/', update_estate, name='updateEstate'),
+    url(r'^calculaferiados/', calculaferiados, name='calculaferiados'),
 
     path('gestionObservacionObjetivos/<int:id>', GestionObservacionesObjetivos, name="gestionobservacionobjetivos"),
     path('gestionObservacionActividades/<int:id>', GestionObservacionesActividades, name="gestionobservacionactividades"),
