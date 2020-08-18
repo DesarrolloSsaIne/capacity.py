@@ -13,12 +13,14 @@ from apps.objetivos.models import Ges_Objetivo_Operativo, Ges_Objetivo_TacticoTN
 from apps.periodos.models import Glo_Periodos, Glo_Seguimiento
 from django.contrib.messages.views import SuccessMessageMixin
 from apps.estado_actividad.models import Glo_EstadoActividad
-
+from apps.estado_plan.models import Glo_EstadoPlan
 from apps.registration.models import logEventos
-from apps.seguimiento_formula.forms import  GestionActividadesUpdateForm, PlanUpdateForm
+from apps.seguimiento_formula.forms import  GestionActividadesUpdateForm, PlanUpdateForm,PlanUpdateFormAcepta
 from django.contrib import messages
+from django.core.mail import EmailMessage,send_mass_mail
+from django.contrib.auth.models import User, Group
 from datetime import datetime
-import datetime
+
 
 class ActividadesObjetivosList(ListView): #clase modificada por JR- sprint 8 - Ok
     model= Ges_Actividad
@@ -304,9 +306,6 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
             ActividadesHistoria(id_periodo_seguimiento, id_actividad_instancia, fecha_inicio_reprogramacion ,fecha_termino_reprogramacion, fecha_real_termino,
                                   id_estado_actividad_instancia, periodo_actual, justificacion, actualiza)
 
-
-
-
             form.save()
             request.session['message_class'] = "alert alert-success"
             messages.success(self.request, "Los datos fueron actualizados correctamente!")
@@ -320,7 +319,7 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
 
 class iniciaSeguimiento(UpdateView):
     model = Ges_Controlador
-    form_class = PlanUpdateForm
+    form_class = PlanUpdateFormAcepta
     template_name = 'seguimiento_formula/seguimiento_formula_inicia_form.html'
 
     def post(self, request, *args, **kwargs):
@@ -339,49 +338,52 @@ class iniciaSeguimiento(UpdateView):
             return None
 
         controladorPlan = self.model.objects.get(Q(id=id_controlador) & Q(id_periodo=periodo_actual.id))
-        #Se debe cambiar por email Analistas
-        email_jefatura = controladorPlan.id_jefatura.id_user.email  # correo de rechazo
+
         email_jefatura_primera = controladorPlan.jefatura_primerarevision.id_user.email  # correo de rechazo 1era revision
 
-        try:
-            email_jefatura_segunda = controladorPlan.jefatura_segundarevision.id_user.email  # correo de rechazo 2da revision
-        except:
-            email_jefatura_segunda = None
-            pass
+        analistas = list(User.objects.values_list('email', flat=True).filter(groups__in=Group.objects.filter(id='6')))
+        email_jefatura= email_jefatura_primera
+        emails_destino_analistas=analistas
 
-        #instancia_nivel = self.model.objects.get(id=id_controlador)
-        #form = self.form_class(request.POST, instance=controladorPlan)
+
         estado = 2
         controladorPlan.id_estado_plan_id = int(estado)
-
 
         try:
 
             controladorPlan.save()
-            CopiarActividades_a_Historial(id_periodo_seguimiento, id_controlador, periodo_actual)
 
-
-            idcorreoJefatura = [email_jefatura, email_jefatura_primera, email_jefatura_segunda]
-            subject = 'Plan Aceptado ' + controladorPlan.id_jefatura.id_nivel.descripcion_nivel
-            message = 'Estimada(o) Usuaria(o), Su plan enviado para revisión fue aceptado por el Subdpto de Planificación Institucional.  Atte. Subdpto. de Planificación Institucional.>Correo generado automaticamente no responder.'
-            messageHtml = 'Estimada(o) Usuaria(o),<br> Su plan enviado para revisión fue aceptado por el Subdpto de Planificación Institucional. <br> Atte. <br>Subdpto. de Planificación Institucional.<br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
-            # send_correo(idcorreoJefatura, subject, message, messageHtml)
+            UpdateFlag(id_controlador, periodo_actual.id)
 
             tipo_evento = "Inicia seguimiento Plan"
             metodo = "Seguimiento - Formula"
             usuario_evento = self.request.user
             jefatura_dirigida = None
             logEventosCreate(tipo_evento, metodo, usuario_evento, jefatura_dirigida)
+            CopiarActividades_a_Historial(id_periodo_seguimiento, id_controlador, periodo_actual)
 
-            request.session['message_class'] = "alert alert-success"
-            messages.success(self.request, "El seguimiento fue iniciado correctamente.")
-            return HttpResponseRedirect('/seguimiento_formula/listar')
         except:
+
             request.session['message_class'] = "alert alert-danger"
             messages.error(self.request,
                            "Error interno: El seguimiento no ha podido ser iniciado. Comuníquese con el administrador.")
             return HttpResponseRedirect('/seguimiento_formula/listar')
 
+
+        try:
+            EnviarCorreoInicioSeguimiento(emails_destino_analistas, email_jefatura)
+
+            request.session['message_class'] = "alert alert-success"  # Tipo mensaje
+            messages.success(request,
+                             "El periodo de seguimiento fue abierto correctamente! y se ha enviado un correo a su jefatura directa y a los analistas de gestión!")  # mensaje
+            return HttpResponseRedirect('/seguimiento_formula/listar')  # Redirije a la pantalla principal
+
+        except:
+
+            request.session['message_class'] = "alert alert-warning"  # Tipo mensaje
+            messages.success(request,
+                             "El periodo de seguimiento fue abierto correctamente!, pero el servicio de correo tuvo un inconveniente favor comuníquese con la jefatura directa para informar de la apertura.")  # mensaje
+            return HttpResponseRedirect('/seguimiento_formula/listar')  # Redirije a la pantalla principal
 
 
 class cierraSeguimiento(UpdateView):
@@ -400,42 +402,63 @@ class cierraSeguimiento(UpdateView):
             return None
 
         controladorPlan = self.model.objects.get(Q(id=id_controlador) & Q(id_periodo=periodo_actual.id))
-        #Se debe cambiar por email Analistas
-        email_jefatura = controladorPlan.id_jefatura.id_user.email  # correo de rechazo
+
+
         email_jefatura_primera = controladorPlan.jefatura_primerarevision.id_user.email  # correo de rechazo 1era revision
 
-        try:
-            email_jefatura_segunda = controladorPlan.jefatura_segundarevision.id_user.email  # correo de rechazo 2da revision
-        except:
-            email_jefatura_segunda = None
-            pass
+        analistas = list(User.objects.values_list('email', flat=True).filter(groups__in=Group.objects.filter(id='6')))
+        email_jefatura= email_jefatura_primera
+        emails_destino_analistas=analistas
 
-        #instancia_nivel = self.model.objects.get(id=id_controlador)
-        #form = self.form_class(request.POST, instance=controladorPlan)
+        total_actividades_reportadas = Ges_Actividad.objects.filter(
+            Q(id_controlador=id_controlador) & Q(id_periodo=periodo_actual) & Q(flag_reporta=0) & (
+                        ~Q(id_estado_actividad=7) & ~Q(id_estado_actividad=9))).count()
+
         estado = 3
         controladorPlan.id_estado_plan_id = int(estado)
-        try:
-            controladorPlan.save()
 
-            idcorreoJefatura = [email_jefatura, email_jefatura_primera, email_jefatura_segunda]
-            subject = 'Plan Aceptado ' + controladorPlan.id_jefatura.id_nivel.descripcion_nivel
-            message = 'Estimada(o) Usuaria(o), Su plan enviado para revisión fue aceptado por el Subdpto de Planificación Institucional.  Atte. Subdpto. de Planificación Institucional.>Correo generado automaticamente no responder.'
-            messageHtml = 'Estimada(o) Usuaria(o),<br> Su plan enviado para revisión fue aceptado por el Subdpto de Planificación Institucional. <br> Atte. <br>Subdpto. de Planificación Institucional.<br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
-            # send_correo(idcorreoJefatura, subject, message, messageHtml)
+        if total_actividades_reportadas == 0:
 
-            tipo_evento = "Cierra seguimiento Plan"
-            metodo = "Seguimiento cierre - Formula"
-            usuario_evento = self.request.user
-            jefatura_dirigida = None
-            logEventosCreate(tipo_evento, metodo, usuario_evento, jefatura_dirigida)
-            request.session['message_class'] = "alert alert-success"
-            messages.success(self.request, "El seguimiento fue cerrrado correctamente.")
-            return HttpResponseRedirect('/seguimiento_formula/listar')
-        except:
+            try:
+                controladorPlan.save()
+
+                tipo_evento = "Cierra seguimiento Plan"
+                metodo = "Seguimiento cierre - Formula"
+                usuario_evento = self.request.user
+                jefatura_dirigida = None
+                logEventosCreate(tipo_evento, metodo, usuario_evento, jefatura_dirigida)
+
+            except:
+
+                request.session['message_class'] = "alert alert-danger"
+                messages.error(self.request,
+                               "Error interno: El seguimiento no ha podido ser cerrado. Comuníquese con el administrador.")
+                return HttpResponseRedirect('/seguimiento_formula/listar')
+        else:
+
             request.session['message_class'] = "alert alert-danger"
             messages.error(self.request,
-                           "Error interno: El seguimiento no ha podido ser cerrado. Comuníquese con el administrador.")
+                           "Estimado Usuario: Para cerrar el proceso de seguimiento debe actualizar todas las actividades.")
             return HttpResponseRedirect('/seguimiento_formula/listar')
+
+
+        try:
+            EnviarCorreoCierreSeguimiento(emails_destino_analistas, email_jefatura)
+
+            request.session['message_class'] = "alert alert-success"  # Tipo mensaje
+            messages.success(request,
+                             "El periodo de seguimiento fue cerrado correctamente! y se ha enviado un correo a su jefatura directa y a los analistas de gestión!")  # mensaje
+            return HttpResponseRedirect('/seguimiento_formula/listar')  # Redirije a la pantalla principal
+
+        except:
+
+            request.session['message_class'] = "alert alert-warning"  # Tipo mensaje
+            messages.success(request,
+                             "El periodo de seguimiento fue cerrado correctamente!, pero el servicio de correo tuvo un inconveniente favor comuníquese con la jefatura directa para informar de la apertura.")  # mensaje
+            return HttpResponseRedirect('/seguimiento_formula/listar')  # Redirije a la pantalla principal
+
+
+
 
 def logEventosCreate(tipo_evento, metodo ,usuario_evento, jefatura_dirigida):
     logEventos.objects.create(
@@ -509,12 +532,38 @@ def CopiarActividades_a_Historial(id_periodo_seguimiento, id_controlador, period
 
             )
 
+def UpdateFlag(id_controlador,periodo_actual):
 
 
+    Ges_Actividad.objects.filter(Q(id_controlador=id_controlador) & Q(id_periodo=periodo_actual) & (~Q(id_estado_actividad=7) & ~Q(id_estado_actividad=9))).update(flag_reporta=0)
 
 
+def EnviarCorreoInicioSeguimiento(emails_destino_analista, email_jefatura):
+
+    ahora = datetime.now()
+    fecha = ahora.strftime("%d" + "/" + "%m" + "/" + "%Y" + " a las " + "%H:%M")
+
+    idcorreoJefatura=emails_destino_analista + [email_jefatura]
+
+    subject = 'Inicio Etapa de Seguimiento'
+    messageHtml = '<b>Estimada(o) Usuaria(o) del Sistema Capacity Institucional</b>, <br> Le informamos que con fecha <b>'+ str(fecha) +'</b> , el proceso de seguimiento fue abierto. <br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
+
+    email = EmailMessage(subject, messageHtml ,to=idcorreoJefatura)
+    email.content_subtype='html'
+    email.send()
 
 
+def EnviarCorreoCierreSeguimiento(emails_destino_analista, email_jefatura):
 
+    ahora = datetime.now()
+    fecha = ahora.strftime("%d" + "/" + "%m" + "/" + "%Y" + " a las " + "%H:%M")
 
+    idcorreoJefatura=emails_destino_analista + [email_jefatura]
+
+    subject = 'Cierre Etapa de Seguimiento'
+    messageHtml = '<b>Estimada(o) Usuaria(o) del Sistema Capacity Institucional</b>, <br> Le informamos que con fecha <b>'+ str(fecha) +'</b> , el proceso de seguimiento fue cerrado. <br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
+
+    email = EmailMessage(subject, messageHtml ,to=idcorreoJefatura)
+    email.content_subtype='html'
+    email.send()
 

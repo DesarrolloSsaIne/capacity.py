@@ -5,28 +5,52 @@
 
 <form method="post" action="">
     {% csrf_token %}
-{%if estado_seguimiento.estado_seguimiento != 0 or estado_seguimiento.estadoValida != 0  %}
 
 
-<div class="panel-body">
+
+{% if estado_seguimiento.planes_no_aprobados != 0 %}
+
+    <div class="panel-body">
     <div class="modal-wrapper">
         <div class="modal-icon">
             <i class="fa fa-warning"></i>
-        </div>
+                </div>
             <div class="modal-text">
                 <h4>Atención</h4>
-                <p>Estimado Usuario, para abrir un nuevo periodo debe <b>cerrar</b> el proceso que se encuentra abierto.</p>
-
+                <p>Estimado Usuario, se ha detectado que aún existen <b>{{ estado_seguimiento.planes_no_aprobados }}</b> planes no aprobados, por lo cual no se podrá abrir el proceso de seguimiento. </p>
             </div>
+        </div>
     </div>
-
 
   <div class="modal-footer">
 
      <button class="btn btn-default" type="button" data-dismiss="modal">Cerrar</button>
   </div>
 
-</div>
+
+
+
+{% else %}
+
+{%if estado_seguimiento.estado_seguimiento != 0 or estado_seguimiento.estadoValida != 0  %}
+    <div class="panel-body">
+    <div class="modal-wrapper">
+        <div class="modal-icon">
+            <i class="fa fa-warning"></i>
+                </div>
+            <div class="modal-text">
+                <h4>Atención</h4>
+                <p>Estimado Usuario, para abrir un nuevo periodo debe <b>cerrar</b> el proceso que se encuentra abierto. </p>
+            </div>
+        </div>
+    </div>
+
+  <div class="modal-footer">
+
+     <button class="btn btn-default" type="button" data-dismiss="modal">Cerrar</button>
+  </div>
+
+
 {%else %}
 
 
@@ -91,6 +115,7 @@
 
 {%endif %}
 
+{% endif %}
 </form>
 
 

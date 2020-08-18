@@ -1,0 +1,128 @@
+{% extends 'base/base.html' %}
+{% block title %}
+Listado de Planes
+{% endblock %}
+
+{% block content %}
+
+{% if messages %} {% for message in messages %}
+
+	<div style="border-radius:0;" {% if message.tags %} id="danger-alert" class="{{request.session.message_class}} fade show mb-0" role="alert" {% endif %}>
+		{{ message }}
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+
+{% endfor %} {% endif %}
+
+<section class="panel">
+    <header class="panel-heading">
+        <div class="panel-actions">
+            <!--<a href="#" class="fa fa-times"></a>-->
+        </div>
+
+
+        <h2 class="panel-title">Planes no Finalizados</h2>
+
+    </header>
+
+    <div class="panel-body">
+<!--            <div class="form-group">-->
+<!--							<label>Filtrar</label>-->
+<!--							<select class="form-control" id="list_estados" style="max-width:300px;">-->
+<!--                                <option value="" selected>Seleccione...</option>-->
+<!--                             <option value="En Revisión Planificación">En Revisión Planificación</option>-->
+<!--                              <option value="Aprobado">Aprobado</option>-->
+<!--                              <option value="Formulación en Observación Planificación">Formulación en Observación Planificación</option>-->
+
+<!--                            </select>-->
+
+<!--						    </div>-->
+        <table class="table table-bordered table-striped mb-none" id="datatable-default">
+            <thead>
+                <tr>
+
+                    <th>Unidad Plan</th>
+                    <th>Jefatura Elabora</th>
+                    <th>Estado</th>
+
+
+                    <th >Objetivos</th>
+                    <th >Opciones</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                {% for planes in object_list %}
+                <tr>
+
+                    <td> {{ planes.id_jefatura.id_nivel }} </td>
+                    <td> {{ planes.id_jefatura.id_user }} </td>
+                    <td> {{ planes.estado_flujo.descripcion_estado}}</td>
+
+
+
+                      <td style="text-align:center;">
+
+                             		<a type="button" title="Objetivos Asociados al Plan" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom"  id="notification" class="objetivos btn btn-sm btn-success"  href="{% url 'listaObjetivosNoFinalizadas'  planes.id %} "  >
+			                        <span class="fa fa-bars" ></span>
+
+			                    </a>
+
+                    </td>
+                    <td style="text-align:center;">
+
+                        <button type="button" title="Enviar Plan a Bandeja del Administrador" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" class="aceptar btn btn-sm btn-primary" data-id="{% url 'enviaAdministrador' planes.id %}" >
+                            <span class="fa fa-check-square"></span></button>
+
+
+
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+</section>
+
+
+
+<div class="modal fade" tabindex="-1" role="dialog" id="modalRechazar">
+  <div class="modal-dialog modal-xs" role="document">
+	<div class="modal-content">
+
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="modalAceptar">
+  <div class="modal-dialog modal-xs" role="document">
+	<div class="modal-content">
+
+    </div>
+  </div>
+</div>
+		{% endblock %}
+
+	{% block extrajs %}
+
+<script type="text/javascript">
+
+
+
+  $(".aceptar").each(function () {
+      $(this).modalForm({formURL: $(this).data('id'),  modalID: $("#modalAceptar")});
+	})
+
+	  // Js Muestra/Oculta Mensaje Success
+    $(".alert").fadeTo(10000, 500).slideUp("slow", function() {
+        $(this).remove();
+    });
+
+
+</script>
+
+{% endblock %}

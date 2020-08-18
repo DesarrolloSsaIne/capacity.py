@@ -99,5 +99,17 @@ class PlanUpdateForm(forms.ModelForm):
         }
 
 
+class PlanUpdateFormAcepta(forms.ModelForm):
+
+    class Meta:
+        model = Ges_Controlador
+
+        exclude = ('id_periodo',)
+
+        fields = [
+            'id_estado_plan',
+        ]
+
+
 
 

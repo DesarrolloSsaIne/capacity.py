@@ -43,7 +43,8 @@ class GestionControladorUpdateForm(forms.ModelForm):
         fields = [
             'estado_flujo',
             'id_jefatura',
-            'jefatura_primerarevision'
+            'jefatura_primerarevision',
+
 
         ]
 

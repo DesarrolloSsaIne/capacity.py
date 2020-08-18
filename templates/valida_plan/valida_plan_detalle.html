@@ -88,10 +88,10 @@ Objetivos Asociados al Plan
 															<td> {% if objetivos.count_observaciones == none %} 0 {% else %} {{ objetivos.count_observaciones}} {%endif%}</td>
 															<td>  {% if objetivos.count_actividades == none %} 0 {% else %} {{ objetivos.count_actividades}} {%endif%}</td>
                                                      <td style="width:60px; text-align:center;">
-    														<a type="button" title="Actividades Asociadas al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" class="objetivos btn btn-sm btn-success"  href="{% url 'Actividades' objetivos.id  %}"  >
-      													  	  <span class="fa fa-bars"></span></a>
-														  {% if objetivos.count_no_vistos > 0 %} 	<b style="color:black; font-size:14px; margin-right:-20px;" title="Nuevas Observaciones"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top"> ({{ objetivos.count_no_vistos }}) {%endif%}</b>
-
+    														<a type="button" title="Actividades Asociadas al Objetivo"  data-toggle="tooltip" id="notification"  data-original-title="Tooltip on bottom" data-placement="bottom" class="objetivos btn btn-sm btn-success"  href="{% url 'Actividades' objetivos.id  %}"  >
+      													  	  <span class="fa fa-bars"></span>
+														  {% if objetivos.count_no_vistos != 0 and objetivos.count_no_vistos != none %} <span class="badge" title="Nuevas Observaciones"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">{{ objetivos.count_no_vistos }}</span>{%endif%}
+														</a>
 
                                                     </td>
 
@@ -108,9 +108,10 @@ Objetivos Asociados al Plan
 														<td>  {% if objetivos.count_actividades == none %} 0 {% else %} {{ objetivos.count_actividades}} {%endif%}</td>
 
                                                      <td style="width:60px; text-align:center;">
-    														<a type="button" title="Actividades Asociadas al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" class="objetivos btn btn-sm btn-success"  href="{% url 'Actividades' objetivos.id  %}"  >
-      													  	  <span class="fa fa-bars"></span></a>
-														  {% if objetivos.count_no_vistos > 0 %} 	<b style="color:black; font-size:14px; margin-right:-20px;" title="Nuevas Observaciones"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top"> ({{ objetivos.count_no_vistos }}) {%endif%}</b>
+    														<a type="button" title="Actividades Asociadas al Objetivo"  data-toggle="tooltip" id="notification"  data-original-title="Tooltip on bottom" data-placement="bottom" class="objetivos btn btn-sm btn-success"  href="{% url 'Actividades' objetivos.id  %}"  >
+      													  	  <span class="fa fa-bars"></span>
+														  {% if objetivos.count_no_vistos != 0 and objetivos.count_no_vistos != none %}	<span class="badge" title="Nuevas Observaciones"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >{{ objetivos.count_no_vistos }}</span>  {%endif%}
+                                                   </a>
                                                     </td>
 
 													</tr>

@@ -30,7 +30,7 @@
             <br>
 
 					<div class="alert alert-warning" role="alert">
-                      Al presionar "Confirmar"podra comenzar a reportar avances en su plan.
+                      Al presionar "Confirmar" podrá comenzar a reportar avances en su plan.
                     </div>
             <div class="form-group" style="display:none;"> <!--style="display:none;"-->
                 <label>Estado</label>
@@ -43,8 +43,11 @@
     </div>
 
     <div class="modal-footer">
+                   <div id="enviar" style="display:none; text-align:left; " class="alert alert-info" role="alert">
+            Enviando correos, favor espere...
+            </div>
         <button class="estado btn btn-danger" type="submit" id="confirmar">Confirmar</button>
-        <button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
+        <button class="btn btn-default" type="button" id="cancelar"   data-dismiss="modal">Cancelar</button>
     </div>
 
     <div class="alert alert-danger" style="display:none;" id="mjeError">
@@ -54,5 +57,18 @@
 
 </form>
 
+<script>
 
+ $('#confirmar').click(function() {
+
+
+
+                $( this ).hide();
+                $( '#cancelar' ).hide();
+                 $( '#enviar' ).fadeIn();
+
+
+
+ });
+</script>
 

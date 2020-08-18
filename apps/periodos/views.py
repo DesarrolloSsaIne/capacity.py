@@ -182,8 +182,12 @@ class SeguimientoAbrirPeriodo(SuccessMessageMixin, CreateView):
         except Glo_validacion.DoesNotExist:
              estadoValida = 0
 
+        try:
+            planes_no_aprobados= Ges_Controlador.objects.filter(Q(id_periodo=PeriodoActual()) & (~Q(estado_flujo_id=7) & ~Q(estado_flujo_id=2))).count()
+        except Ges_Controlador.DoesNotExist:
+            planes_no_aprobados = 0
 
-        context["estado_seguimiento"] = {'estadoValida': estadoValida, 'estado_seguimiento': estado}
+        context["estado_seguimiento"] = {'estadoValida': estadoValida, 'estado_seguimiento': estado, 'planes_no_aprobados':planes_no_aprobados}
         return context
 
     def post(self, request, *args, **kwargs):
@@ -329,7 +333,7 @@ class ValidacionAbrirPeriodo(SuccessMessageMixin, CreateView):
 
             try:
 
-                #EnviarCorreoAbrir()
+                EnviarCorreoAbrir()
 
                 request.session['message_class'] = "alert alert-success"  # Tipo mensaje
                 messages.success(request, "El periodo de validación fue abierto correctamente! y se ha enviado un correo a las jefaturas que formulan!")  # mensaje

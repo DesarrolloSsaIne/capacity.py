@@ -30,10 +30,15 @@
 					{{ form.estado_flujo}}
 				</div>
 
-                  <div class="form-group">
+                  <div id="select_jefatura" class="form-group">
 					<label >Jefatura revisión</label>
 					{{ form.jefatura_primerarevision}}
 				</div>
+
+
+
+
+
 
                    </span>
 
@@ -41,9 +46,13 @@
 
      </div>
 					<BR>
-					<div class="alert alert-warning" role="alert">
+	<div id="display_confirmar"  class="alert alert-warning" role="alert">
   Al presionar "confirmar" su plan de trabajo será enviado a la jefatura seleccionada.
 </div>
+
+		<div id="display_error" style="display:none;" class="alert alert-danger" role="alert">
+            Su jefatura superior no ha sido cargada, contáctese con el área de Planificación.
+        </div>
 
 </div>
 			</div>
@@ -72,15 +81,35 @@
        $('#id_id_jefatura option:not(:selected)').attr('disabled',true);
         $('#id_estado_flujo option:not(:selected)').attr('disabled',true);
 
+    //});
+
+
+
+    var select_primera = $("#id_jefatura_primerarevision option:last").val();
+
+
+    //alert(select_segunda2);
+
+    if (select_primera == '') {
+
+    $('#display_error').css('display','block');
+    $('#select_jefatura').css('display','none');
+    $('#display_confirmar').css('display','none');
+    $('#confirmar').css('display','none');
+		}
+
     });
 
 
 $('#confirmar').click(function() {
+var select_primera = $("#id_jefatura_primerarevision").val();
 
+if (select_primera != '') {
      $( this ).hide();
+     $( '#display_confirmar' ).hide();
      $( '#cancelar' ).hide();
       $( '#enviar' ).fadeIn();
-
+}
 });
 
 

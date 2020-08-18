@@ -49,7 +49,7 @@ Listado de Planes
                     <th>Fecha Envío Plan</th>
                     <th title="Observaciones Totales Asociadas al Plan" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Obs. Total</th>
                     <th >Objetivos</th>
-                    <th >Opciones</th>
+                    <th style="text-align:center;" >Opciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -67,17 +67,21 @@ Listado de Planes
 
                              		<a type="button" title="Objetivos Asociados al Plan" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom"  id="notification" class="objetivos btn btn-sm btn-success"  href="{% url 'listaObjetivosAnalista'  planes.id %} "  >
 			                        <span class="fa fa-bars" ></span>
-			                        {% if planes.count_no_vistos != 0 and planes.count_no_vistos != none %} <span class="badge" title="Nuevas Observaciones" >{{ planes.count_no_vistos }}</span> {% endif %}
+			                        {% if planes.count_no_vistos != 0 and planes.count_no_vistos != none %} <span class="badge" title="Nuevas Observaciones" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">{{ planes.count_no_vistos }}</span> {% endif %}
 			                    </a>
 
                     </td>
-                    <td style="text-align:center;">
+                    <td style="text-align:center; width:120px;">
 
                         <button type="button" title="Aceptar plan y enviar a revisión." data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" class="aceptar btn btn-sm btn-primary" data-id="{% url 'aceptaplanAnalista' planes.id %}"  {% if planes.estado_flujo_id == 11 or planes.estado_flujo_id == 7 %} disabled tabindex="-1"    {% endif %}>
                             <span class="fa fa-check-square"></span></button>
 
                         <button type="button"  title="Rechazar plan y devolver a jefatura que lo formuló." data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" class="rechazar btn btn-sm btn-danger" data-id="{% url 'rechazaplanAnalista' planes.id %}" {% if planes.estado_flujo_id == 11 or planes.estado_flujo_id == 7 %} disabled tabindex="-1"    {% endif %}>
                             <span class="fa fa-exclamation-triangle"></span></button>
+
+
+                        		 <a  type="button" style="width:30px; height:30px; "  class="create btn btn-sm btn-success" href="{% url 'exporta_plan_analista_xls' planes.id %}"  name="button" title="Descargar Plan en MS Excel" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
+									 <span style="margin-left:-1px; " class="fa fa-file-excel-o"></span></a>
 
                     </td>
                 </tr>
@@ -121,7 +125,7 @@ Listado de Planes
 	})
 
 	  // Js Muestra/Oculta Mensaje Success
-    $(".alert").fadeTo(2000, 500).slideUp("slow", function() {
+    $(".alert").fadeTo(10000, 500).slideUp("slow", function() {
         $(this).remove();
     });
 

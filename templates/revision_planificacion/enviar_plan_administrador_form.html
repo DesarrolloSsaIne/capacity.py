@@ -2,7 +2,7 @@
     <div class="panel-actions">
         <a class="fa fa-times" data-dismiss="modal"></a>
     </div>
-    <h2 class="panel-title">Aprobar Plan</h2>
+    <h2 class="panel-title">Enviar Plan a Administrador</h2>
 </header>
 
 <form method="post" action="">
@@ -22,52 +22,35 @@
                         </div>
                     <div class="modal-text">
                         <strong><h4>Atención</h4></strong>
-                        <p>¿Está seguro que desea <strong>Aprobar</strong> el plan?</p>
+                        <p>Al aceptar el plan será enviado a la bandeja del administrador para que sea asignado a un analista de planificación</p>
                     </div>
                 </div>
 
                 <br>
             <br>
 
-					<div id="display_confirmar"  class="alert alert-warning" role="alert">
-                      Al presionar "Confirmar" términara el flujo y no podra volver a revisar.
-                    </div>
+
             <div  class="form-group" style="display:none;"> <!--style="display:none;"-->
                 <label>Estado</label>
                 <div>{{ form.estado_flujo }}</div>
-                <!--<div>{{ form.id_user }}</div>-->
+
             </div>
 
         </div>
 
     </div>
-    	<div id="enviar" style="display:none; text-align:left; " class="alert alert-info" role="alert">
-            Enviando correos, favor espere...
-       		 </div>
+
     <div class="modal-footer">
         <button class="estado btn btn-danger" type="submit" id="confirmar">Confirmar</button>
-        <button class="btn btn-default" type="button" id="cancelar"  data-dismiss="modal">Cancelar</button>
+        <button class="btn btn-default" type="button"   data-dismiss="modal">Cancelar</button>
     </div>
 
-    <div class="alert alert-danger" style="display:none;" id="mjeError">
 
-        <p id="textError"></p>
-    </div>
 
 </form>
 
-{% block extrajs %}
-    <script type="text/javascript">
 
-               $('#confirmar').click(function() {
 
-     $( this ).hide();
-     $( '#cancelar' ).hide();
-     $( '#confirmar' ).hide();
-     $( '#display_confirmar' ).hide();
-      $( '#enviar' ).fadeIn();
-        });
-    </script>
-{% endblock %}
+
 
 

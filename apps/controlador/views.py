@@ -254,7 +254,10 @@ class ControladorUpdate(UpdateView):
                 messages.error(self.request,
                                "Error interno: No se ha enviado el plan para revisión. Comuníquese con el administrador.")
                 return HttpResponseRedirect('/actividades/listar')
-
+        else:
+            request.session['message_class'] = "alert alert-danger"
+            messages.error(self.request, "Antes de enviar a revisión, debe ingresar actividades a su plan de gestión.")
+            return HttpResponseRedirect('/actividades/listar')
 
 
 

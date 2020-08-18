@@ -256,8 +256,127 @@ class InicioDashboard(TemplateView):
 
             NivelJef= id_jefatura.id_nivel.orden_nivel
 
+            if NivelJef == 2:
 
-            if NivelJef==3:
+                try:
+                    estado_seguimiento = Glo_Seguimiento.objects.order_by('-id')[0]
+                except IndexError:
+                    estado_seguimiento = 0
+                    pass
+
+                if estado_seguimiento != 0:
+                    context['estado_seguimiento'] = {'estado': estado_seguimiento.id_estado_seguimiento}
+                else:
+                    context['estado_seguimiento'] = {'estado': '-'}
+
+                try:
+                    estado_validacion = Glo_validacion.objects.order_by('-id')[0]
+                except IndexError:
+                    estado_validacion = 0
+                    pass
+
+                if estado_validacion != 0:
+                    context['estado_validacion'] = {'estado': estado_validacion.id_estado_periodo}
+                else:
+                    context['estado_validacion'] = {'estado': '-'}
+
+                idSegundoNivel = id_jefatura.id_nivel.id_segundo_nivel_id
+                unidadesAsociadasTN = Ges_TercerNivel.objects.filter(
+                    Q(id_periodo=periodo_actual) & Q(segundo_nivel_id=idSegundoNivel))
+                # unidadesAsociadasCN = Ges_CuartoNivel.objects.filter(
+                #     Q(id_periodo=periodo_actual) & Q(tercer_nivel_id__in=unidadesAsociadasTN))
+
+                objetivosAsociados = Ges_Objetivo_TacticoTN.objects.filter(
+                    Q(id_periodo=periodo_actual) & Q(id_tercer_nivel_id__in=unidadesAsociadasTN))
+
+                total_actividades_por_el_departamento = list(
+                    Ges_Actividad.objects.filter(
+                        Q(id_periodo=periodo_actual) & Q(id_objetivo_tacticotn_id__in=objetivosAsociados)).aggregate(
+                        Count('id')).values())[0]
+                context['total_actividades_por_el_departamento'] = {'cantidad': total_actividades_por_el_departamento}
+
+                GrafEstados = Ges_Actividad.objects.filter(
+                    Q(id_periodo=periodo_actual) & Q(id_objetivo_tacticotn_id__in=objetivosAsociados)).values(
+                    'id_estado_actividad__descripcion_estado').annotate(CantidadEst=Count('id')).order_by(
+                    'id_estado_actividad__orden')  # estado por jefatura
+
+                PlanesPorArea = Ges_Actividad.objects.filter(
+                    Q(id_periodo=periodo_actual) & Q(id_objetivo_tacticotn_id__in=objetivosAsociados)).values(
+                    'id_controlador__id_jefatura__id_nivel__descripcion_nivel',
+                    'id_controlador__estado_flujo__descripcion_estado').annotate(
+                    CantidadPlan=Count('id'))
+
+                UnidadesAsociadas = Ges_Actividad.objects.filter(
+                    Q(id_periodo=periodo_actual) & Q(id_objetivo_tacticotn_id__in=objetivosAsociados)).values(
+                    'id_controlador__id_jefatura__id_nivel__descripcion_nivel').annotate(
+                    CantidadPlan=Count('id')).order_by(
+                    'id_controlador')
+
+                controladores = list(Ges_Actividad.objects.filter(
+                    Q(id_periodo=periodo_actual) & Q(id_objetivo_tacticotn_id__in=objetivosAsociados)).values_list(
+                    'id_controlador', flat=True).distinct().order_by(
+                    'id_controlador'))  ##Trae solo los controladores que han ingresado una actividad
+
+                # controladores = list(Ges_Controlador.objects.filter(Q(id_periodo=periodo_actual)).values_list('id', flat=True).order_by(
+                #     'id')) ##Trae todos los controladores sin importar sin ingresaron algo
+
+                ValFinalizadas = []
+                ValEnCurso = []
+                ValNoIniciado = []
+                ValConRetraso = []
+                ValSinMovimiento = []
+                ValEliminadas = []
+
+                for i in controladores:
+                    val = Ges_Actividad.objects.filter(
+                        Q(id_controlador=i) & Q(id_periodo=periodo_actual) & Q(id_estado_actividad=7) & Q(
+                            id_objetivo_tacticotn_id__in=objetivosAsociados)).count()
+                    ValFinalizadas.append(val)
+
+                    val = Ges_Actividad.objects.filter(
+                        (Q(id_controlador=i) & Q(id_periodo=periodo_actual) & Q(
+                            id_objetivo_tacticotn_id__in=objetivosAsociados)) & (
+                                Q(id_estado_actividad=3) | Q(id_estado_actividad=8))).count()
+                    ValEnCurso.append(val)
+
+                    val = Ges_Actividad.objects.filter(
+                        Q(id_controlador=i) & Q(id_periodo=periodo_actual) & Q(id_estado_actividad=4) & Q(
+                            id_objetivo_tacticotn_id__in=objetivosAsociados)).count()
+                    ValNoIniciado.append(val)
+
+                    val = Ges_Actividad.objects.filter(
+                        Q(id_controlador=i) & Q(id_periodo=periodo_actual) & (
+                                Q(id_estado_actividad=1) | Q(id_estado_actividad=2)) & Q(
+                            id_objetivo_tacticotn_id__in=objetivosAsociados)).count()
+                    ValConRetraso.append(val)
+
+                    val = Ges_Actividad.objects.filter(
+                        Q(id_controlador=i) & Q(id_periodo=periodo_actual) & (
+                                Q(id_estado_actividad=5) | Q(id_estado_actividad=6)) & Q(
+                            id_objetivo_tacticotn_id__in=objetivosAsociados)).count()
+                    ValSinMovimiento.append(val)
+
+                    val = Ges_Actividad.objects.filter(
+                        Q(id_controlador=i) & Q(id_periodo=periodo_actual) & (
+                                Q(id_estado_actividad=9) | Q(id_estado_actividad=10)) & Q(
+                            id_objetivo_tacticotn_id__in=objetivosAsociados)).count()
+                    ValEliminadas.append(val)
+
+                context["valores"] = {"ValFinalizadas": ValFinalizadas,
+                                      "ValEnCurso": ValEnCurso,
+                                      "ValNoIniciado": ValNoIniciado,
+                                      "ValConRetraso": ValConRetraso,
+                                      "ValSinMovimiento": ValSinMovimiento,
+                                      "ValEliminadas": ValEliminadas, }
+
+                context["GrafEstados"] = GrafEstados
+                context["PlanesPorArea"] = PlanesPorArea
+                context["UnidadesAsociadas"] = UnidadesAsociadas
+
+                context["GrupoDashboard"] = 'GrupoJefeSegunda'
+
+
+            if NivelJef == 3:
 
                 try:
                     estado_seguimiento = Glo_Seguimiento.objects.order_by('-id')[0]

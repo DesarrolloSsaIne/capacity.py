@@ -17,48 +17,75 @@
         <div class="row show-grid">
 
             <div class="col-md-12">
-                <span class="show-grid-block">
+
+
+
 
                            <div class="form-group">
 					<label >Jefatura solicitante</label>
 					{{ form.id_jefatura}}
-				</div>
+				        </div>
                             <div class="form-group">
 					<label >Estado flujo</label>
 					{{ form.estado_flujo}}
-				</div>
+				        </div>
+
+
+
+
+
+                    <input style="display:none;" id="nivel_inicial"  type="text" value="{{form.nivel_inicial.value}}">
+
+
+                    {% if form.nivel_inicial.value  == 3 or form.nivel_inicial.value  == 2 %}
+
+
+                    <select  style="display:none;"  class="form-control" name="jefatura_segundarevision" id="jefatura_segundarevision">
+
+                        <option value="0">No requiere segunda revisión | Enviar directo a Planificación</option>
+
+                    </select>
+                <br>
+                        <div id="display_confirmar_3" class="alert alert-warning" role="alert">
+                            Al presionar "confirmar" su plan de gestión será enviado al área de <b>Planificación</b>.
+                        </div>
+
+
+                    {% else %}
+
 
                   <div id="select_jefatura" class="form-group">
 					<label >Jefatura segunda revisión</label>
-					{{ form.jefatura_segundarevision}}
-
-
-				</div>
-           <div style="display:none;" id="display_error" class="alert alert-danger" role="alert">
-            No ha sido cargada su jefatura superior, contáctese con el área de Planificación.
-        </div>
+					{{ form.jefatura_segundarevision}}</div>
 
 
 
-<label id="nivel_inicial" style="display:none;" >{{form.nivel_inicial}}</label>
+
+ {% endif %}
 
 
 
 
 
-                   </span>
+
+
 
             </div>
 
         </div>
+    </div>
         <BR>
-        <div id="display_confirmar" class="alert alert-warning" role="alert">
-            Al presionar "confirmar" su plan de trabajo será enviado a la jefatura seleccionada.
+        <div style="display:none;" id="display_error" class="alert alert-danger" role="alert">
+            Su jefatura superior no ha sido cargada, contáctese con el área de Planificación.
+        </div>
+
+        <div  id="display_confirmar" class="alert alert-warning" role="alert">
+            Al presionar "confirmar" el plan de trabajo será enviado a la jefatura seleccionada.
         </div>
 
 
     </div>
-    </div>
+
 
     			<div id="enviar" style="display:none; text-align:left; " class="alert alert-info" role="alert">
             Enviando correos, favor espere...
@@ -73,51 +100,82 @@
 
         <p id="textError"></p>
     </div>
+
+ <label style="display:none;" >{{form.nivel_inicial}}</label> <!--No borrar-->
 </form>
 
 <script>
     // Shorthand for $( document ).ready()
+
     $(function() {
-        $('#id_id_jefatura option:not(:selected)').attr('disabled', true);
-        $('#id_estado_flujo option:not(:selected)').attr('disabled', true);
-        //id_jefatura_primerarevision
+
+    $('#id_id_jefatura option:not(:selected)').attr('disabled', true);
+    $('#id_estado_flujo option:not(:selected)').attr('disabled', true);
+    var select_segunda = $("#id_jefatura_segundarevision option:last").val();
+    //alert(select_segunda);
 
     var nivel_inicial = $('#nivel_inicial').val();
-    var select_segunda = $("#id_jefatura_segundarevision option:last").val();
 
 
-    //alert(select_segunda2);
 
-    if ((select_segunda == '') && (nivel_inicial != 2))   {
 
-    $('#display_error').css('display','block');
-    $('#select_jefatura').css('display','none');
-    $('#display_confirmar').css('display','none');
-    $('#confirmar').css('display','none');
+     if (nivel_inicial == 3 || nivel_inicial == 2) {
 
-        }else{
+     //alert(nivel_inicial);
 
-            let $option = $('<option />', {
-            text: 'No requiere segunda revisión | Enviar directo a Planificación',
-            value: 0,
-        });
 
-        $('#id_jefatura_segundarevision').append($option);
+        $('#display_confirmar').css('display','none');
 
-        }
+            $('#confirmar').click(function() {
 
-    });
+             $( this ).hide();
+             $( '#cancelar' ).hide();
+             $( '#confirmar' ).hide();
+           //  $( '#display_confirmar_3' ).hide();
+             $( '#enviar' ).fadeIn();
 
-    $('#confirmar').click(function() {
+            });
 
-     $( this ).hide();
-     $( '#cancelar' ).hide();
-     $( '#confirmar' ).hide();
-     $( '#display_confirmar' ).hide();
-      $( '#enviar' ).fadeIn();
+     }
+
+    if (nivel_inicial == 4) {
+
+            if ((select_segunda == '') && (nivel_inicial != 2))   {
+
+            $('#display_error').css('display','block');
+            $('#select_jefatura').css('display','none');
+            $('#display_confirmar').css('display','none');
+            $('#confirmar').css('display','none');
+
+
+                }else{
+                    let $option = $('<option />', {
+                    text: 'No requiere segunda revisión | Enviar directo a Planificación',
+                    value: 0,
+                });
+
+                $('#id_jefatura_segundarevision').append($option);
+
+                }
+
+                $('#confirmar').click(function() {
+                        var select_segunda = $("#id_jefatura_segundarevision").val();
+
+                    if (select_segunda != ''){
+                         $( this ).hide();
+                         $( '#cancelar' ).hide();
+                         $( '#confirmar' ).hide();
+                         $( '#display_confirmar' ).hide();
+                          $( '#enviar' ).fadeIn();
+                    }
+
+                 });
+
+     }
 
 
 });
+
 
 </script>
 

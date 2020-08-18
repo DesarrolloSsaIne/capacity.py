@@ -71,11 +71,16 @@ Actividades Asociadas al Objetivo
 														   {% elif objetivo.id_estado_actividad_id == 5  %}
 														 style="color:#008080; width:140px; "
 														   {% elif objetivo.id_estado_actividad_id == 6  %}
-														 style="color:#13a013; width:140px; "
+														 style="color:#008080; width:140px; "
 														   {% elif objetivo.id_estado_actividad_id == 7  %}
 														 style="color:#13a013; width:140px; "
+
+														  {% elif objetivo.id_estado_actividad_id == 8  %}
+														 style="color:#1e7799; width:140px; "
+
 														     {% elif objetivo.id_estado_actividad_id == 9  %}
 														 style="color:#797963; width:140px; "
+
 														     {% elif objetivo.id_estado_actividad_id == 10  %}
 														 style="color:#797963; width:140px; "
 
@@ -91,7 +96,7 @@ Actividades Asociadas al Objetivo
                                                     <td  style="width:80px; text-align:center;  "   >
 
 
-														<button  {%if objetivo.id_estado_actividad_id == 6 or objetivo.id_estado_actividad_id == 9%} disabled="disabled" {%endif%} type="button" id="notification_ok" title="Reportar Avance de la Actividad" title="Fecha de Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" class="update btn btn-sm btn-primary" data-id="{% url 'RegistroActividadEditarSeguimiento' objetivo.id %}">
+														<button  {%if objetivo.id_estado_actividad_id == 7 or objetivo.id_estado_actividad_id == 9%} disabled="disabled" {%endif%} type="button" id="notification_ok" title="Reportar Avance de la Actividad" title="Fecha de Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" class="update btn btn-sm btn-primary" data-id="{% url 'RegistroActividadEditarSeguimiento' objetivo.id %}">
 
                                                             <span class="fa fa-check-square-o" ></span>
                                                         {%if objetivo.flag_reporta == 1%}<span class="badge" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" title="Actividad Reportada!"  >&#x2713;</span>{%endif%}

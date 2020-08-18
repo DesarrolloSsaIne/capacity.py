@@ -184,7 +184,7 @@ class RechazaPlan(UpdateView):
                 return HttpResponseRedirect('/valida_plan/listarUnidades')
         else:
             request.session['message_class'] = "alert alert-danger"
-            messages.error(self.request, "Debe ingresar al menos una observacion para rechazar el plan.")
+            messages.error(self.request, "Para rechazar el plan, primero debe ingresar al menos una observación a alguna actividad.")
             return HttpResponseRedirect('/valida_plan/listarUnidades')
 
 
