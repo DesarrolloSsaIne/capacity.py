@@ -233,9 +233,17 @@ class ControladorUpdate(UpdateView):
                 jefatura_dirigida = idcorreoJefaturaOb.id_user
                 logEventosCreate(tipo_evento, metodo, usuario_evento, jefatura_dirigida)
 
+                send_mail(
+                    'Subject here',
+                    'Here is the message.',
+                    'jason.rodriguez@ine.cl',
+                    ['jason.rodriguez@ine.cl'],
+                    fail_silently=False,
+                )
+
                 try:
 
-                    EnviarCorreoCierre(id_jefatura, nivel_usuario.id_nivel.descripcion_nivel)
+                   # EnviarCorreoCierre(id_jefatura, nivel_usuario.id_nivel.descripcion_nivel)
                     request.session['message_class'] = "alert alert-success"  # Tipo mensaje
                     messages.success(request,
                                      "El plan fue enviado para su revisión y el correo de notificación fue enviado a su jefatura directa.!")  # mensaje
@@ -281,6 +289,7 @@ def EnviarCorreoCierre(id_jefatura, descripcion_nivel):
 
     email.content_subtype='html'
     email.send()
+
 
 
 

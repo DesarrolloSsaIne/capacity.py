@@ -129,7 +129,11 @@ Actividades Asociadas al Objetivo
 
 
 			$(".volver").click(function() {
-				window.location.href = '{% url 'ActividadesDetalles2' id_nivel_controlador.id  %}';
+				//window.location.href = '{% url 'ActividadesDetalles2' id_nivel_controlador.id  %}';
+
+				var url = '{% url 'ActividadesDetalles2' id_nivel_controlador.id %}';
+     			 var encodedUrl = encodeURIComponent(url);
+   				 window.location.href = encodedUrl
 				return false;
 			});
 

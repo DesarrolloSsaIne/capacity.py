@@ -1,11 +1,11 @@
 from django.contrib import admin
 from django.urls import path, include
-from django.conf.urls import handler404
 
 
 urlpatterns = [
 
     path(r'periodos/', include('apps.periodos.urls')),
+
 
     path(r'accounts/', include('apps.registration.urls')),
     path(r'admin/', admin.site.urls),
@@ -35,6 +35,11 @@ urlpatterns = [
     path(r'planificacion_admin/', include('apps.planificacion_admin.urls')),
 
 
+
+
+
 ]
+
+
 
 

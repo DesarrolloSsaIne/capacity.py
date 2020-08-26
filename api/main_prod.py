@@ -40,8 +40,6 @@ if __name__=='__main__':
     #####//Código en caso que se requiera información adicional dinámica en la imagen de lo contrario no es necesario####
 
 
-
-
     # ##Convierte a Base64 el documento pdf hasta 20 megas
     with open('out2.png', 'rb') as timbre_file:
         jpg_file64 = base64.b64encode(timbre_file.read()).decode('utf-8')

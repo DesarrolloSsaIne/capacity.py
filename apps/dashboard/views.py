@@ -21,15 +21,17 @@ from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.db.models.functions import TruncMonth
 from django.db.models import Count
-
+from django.views.defaults import page_not_found
 import datetime
 from django.contrib.messages.views import SuccessMessageMixin
+from django.shortcuts import render
+from django.http import HttpResponse
 
 # Create your views here.
 
 
 # Dirije al dashboard al momento del login además agrega la variable se sesión grupo #
-
+#
 
 
 class InicioDashboard(TemplateView):

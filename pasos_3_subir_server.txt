@@ -1,3 +1,168 @@
+
+sudo yum -y update
+sudo yum -y install epel-release
+sudo yum -y install httpd mod_wsgi
+
+
+sudo firewall-cmd --zone=public --permanent --add-port=80/tcp
+sudo firewall-cmd --zone=public --permanent --add-port=8000/tcp
+sudo firewall-cmd --zone=public --permanent --add-port=25/tcp
+
+
+firewall-cmd --list-all (verifica los puertos abiertos, deben estar por lo menos el 80 y el 25 abiertos)
+
+
+systemctl restart firewalld (reinicia el firewall)
+setsebool -P httpd_can_network_connect_db 1 (abrir conexiones de bd)
+setsebool -P httpd_can_sendmail 1 (abrir el envío de correos)
+
+
+
+sudo yum install centos-release-scl
+sudo yum -y install rh-python38 python38-devel httpd-devel rh-python38-mod_wsgi
+scl enable rh-python38 bash
+python --version
+
+
+var/wwww
+mkdir nombre_proyecto
+cd nombre_proyecto
+
+
+pip install virtualenv (corroborar que el pip sea de python 3.8 con pip --version)
+virtualenv env
+source env/bin/activate
+
+
+pip install -r requirements.txt (revisar pip que sea para python3.8)
+django-admin.py startproject myfirstproject . (NO OLVIDAR EL PUNTO!!!)
+
+Agregar linea para los static en setting
+STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+
+Agregar el * en setting
+ALLOWED_HOSTS = ['*']
+
+
+Debido a que en centos 7 el sqlite no se actualiza a la versión requerida se debe realizar lo siguiente:
+
+ir a env/lib/python3.8/site-packages/django/db/backends/sqlite3/base.py
+
+Cambiar
+def check_sqlite_version():
+    if Database.sqlite_version_info < (3, 8, 3):
+por
+def check_sqlite_version():
+    if Database.sqlite_version_info < (3, 7, 3):
+
+Este paso se puede omitir si ya se dipone de otra BD.
+
+
+
+python manage.py makemigrations
+python manage.py migrate
+python manage.py collectstatic
+
+
+deactivate
+sudo chown -R apache:apache /var/www/
+
+
+ir a (puede ser por el winscp) y crear archivo django.conf
+
+sudo vim /etc/httpd/conf.d/django.conf
+
+Luego agregar
+
+<VirtualHost *:80>
+
+	AllowEncodedSlashes NoDecode
+	AllowEncodedSlashes On
+        
+        ServerName capacity_institucional
+        DocumentRoot /var/www/
+
+        Alias /static /var/www/capacity_institucional/static
+        <Directory "/var/www/capacity_institucional/static">
+                Options FollowSymLinks
+                Order allow,deny
+                Allow from all
+                Require all granted
+        </Directory>
+
+        Alias /media /var/www/capacity_institucional/media
+        <Directory "/var/www/capacity_institucional/media">
+                Options FollowSymLinks
+                Order allow,deny
+                Allow from all
+                Require all granted
+        </Directory>
+ 
+
+        WSGIPassAuthorization On
+        WSGIDaemonProcess capacity_institucional python-path=/var/www/capacity_institucional:/var/www/capacity_institucional/env/lib/python3.8/site-packages
+        WSGIProcessGroup capacity_institucional
+        WSGIScriptAlias / /var/www/capacity_institucional/proyecto_django/wsgi.py
+
+        <Directory /var/www/capacity_institucional/proyecto_django>
+                <Files wsgi.py>
+                        Require all granted
+                </Files>
+        </Directory>
+</VirtualHost>
+
+
+
+sudo systemctl status httpd (verifica el estado del servicio apache)
+sudo systemctl restart httpd (reinicia el apache)
+
+
+
+Si no hay errores entonces el proceso está finalizado.
+
+si hay algún error...
+
+
+apachectl configtest (para revisar errores)
+
+
+Si la pagina arroja un error al cargar, ir a revisar el log var/log/httpd/access_log
+
+**Si error: AttributeError: ‘module’ object has no attribute ‘lru_cache’ (ir a 1)
+
+
+1.- 
+Este error que se encuentra en los registros de errores de Apache ocurre cuando está utilizando python3 mod_wsgi. Para rectificar esto, ejecute lo siguiente:
+
+sudo cp /opt/rh/httpd24/root/usr/lib64/httpd/modules/mod_rh-python38-wsgi.so /lib64/httpd/modules
+
+
+sudo cp /opt/rh/httpd24/root/etc/httpd/conf.modules.d/10-rh-python38-wsgi.conf /etc/httpd/conf.modules.d
+
+*** A veces por línea de código no funciona, no copia bien los archivos, hay que hacer las copias de los archivos por winscp ***
+
+copiar de: /opt/rh/httpd24/root/usr/lib64/httpd/modules/mod_rh-python38-wsgi.so
+Copiar a: /lib64/httpd/modules
+
+copiar de: /opt/rh/httpd24/root/etc/httpd/conf.modules.d/10-rh-python38-wsgi.conf
+Copiar a: /etc/httpd/conf.modules.d
+
+
+sudo systemctl restart httpd
+
+
+
+ref:
+https://linuxize.com/post/how-to-install-python-3-on-centos-7/
+https://computingforgeeks.com/deploy-python-3-django-application-on-centos-with-apache-and-mod-wsgi/
+https://www.digitalocean.com/community/tutorials/how-to-install-the-apache-web-server-on-centos-7-es
+
+
+
+**********************************************************************************************************
+
+setting.py (este setting funciona)
+
 """
 Django settings for proyecto_django project.
 
@@ -63,7 +228,7 @@ LDAP_AUTH_FORMAT_USERNAME = "django_python3_ldap.utils.format_username_active_di
 LDAP_AUTH_ACTIVE_DIRECTORY_DOMAIN = "INE"
 
 #LDAP_AUTH_CONNECTION_USERNAME = 'jrodriguez' #|| Si le da la chiripiorca al sincronizar descomentar
-#LDAP_AUTH_CONNECTION_PASSWORD = 'JR14202112-9'  #|| Si le da la chiripiorca al sincronizar descomentar
+#LDAP_AUTH_CONNECTION_PASSWORD = '(ine2024)'  #|| Si le da la chiripiorca al sincronizar descomentar
 
 LOGGING = {
     "version": 1,
@@ -139,7 +304,6 @@ INSTALLED_APPS = [
 
 
 
-
 ]
 
 MIDDLEWARE = [
@@ -197,10 +361,10 @@ WSGI_APPLICATION = 'proyecto_django.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'mysql_cymysql',
-        'NAME': 'django',
-        'USER': 'root',
-        'PASSWORD': 'admin',
-        'HOST': 'localhost',
+        'NAME': 'DJANGO_TEST_JASON',
+        'USER': 'jason',
+        'PASSWORD': '1SUMU79S',
+        'HOST': '10.91.163.94',
         'PORT': 3306,
     }
 }
@@ -247,6 +411,7 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
 
+
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
 
 
@@ -262,16 +427,30 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # DEFAULT_FROM_EMAIL = 'jasonrd2@gmail.com'
 
+#EMAIL_USE_TLS = False
+#EMAIL_HOST = '192.168.1.235'
+#EMAIL_PORT = 25
+#EMAIL_HOST_USER = 'capacity.planificacion@ine.cl'
+#EMAIL_HOST_PASSWORD = '(Morande_801)'
+#EMAIL_HOST_USER = 'jason.rodriguez@ine.cl'
+#EMAIL_HOST_PASSWORD = 'JR14202112-9'
+#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+#DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+#EMAIL_USE_SSL = False
+
+
 EMAIL_USE_TLS = False
 EMAIL_HOST = '192.168.1.235'
 EMAIL_PORT = 25
-# EMAIL_HOST_USER = 'capacity.planificacion@ine.cl'
-# EMAIL_HOST_PASSWORD = '(Morande_801)'
-EMAIL_HOST_USER = 'jason.rodriguez@ine.cl'
-EMAIL_HOST_PASSWORD = 'JR14202112-9'
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = 'capacity.planificacion@ine.cl'
 EMAIL_USE_SSL = False
 
+*********************************************************************************************************
+
+-- Sincronizar usuarios LDAP
+
+python manage.py ldap_sync_users
 
 

@@ -10,6 +10,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models.deletion import ProtectedError
 from django.db.models import Q
 from django.db.models.deletion import ProtectedError
+from apps.registration.models import UsuariosExcepcion
 
 # Create your views here.
 
@@ -143,10 +144,11 @@ def PerfilAsignaAnalista(request):
     template_name = 'perfiles/perfil_form.html'
 
     jefes_list = list(Ges_Jefatura.objects.values_list('id_user_id', flat=True))
+    cuentas_genericas = list(UsuariosExcepcion.objects.values_list('username', flat=True))
+    cuentas_genericas_id = list(User.objects.values_list('id', flat=True).filter(username__in=cuentas_genericas))
 
-    # self.fields['id_user'].queryset = User.objects.all().exclude(id__in=jefes_list)
 
-    qs = User.objects.exclude(Q(groups__in=Group.objects.all()) | Q(id__in=jefes_list)) #Envío los usuario que no pertenezcan a algún grupo.
+    qs = User.objects.exclude(Q(groups__in=Group.objects.all()) | Q(id__in=jefes_list) | Q(id__in=cuentas_genericas_id) | Q(first_name='geoportal')).order_by('username') #Envío los usuario que no pertenezcan a algún grupo.
 
     context = {"qs": qs} # aquí le envío lo que quiero al modal para que lo muestre, incluso una lista.
 

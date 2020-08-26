@@ -7,7 +7,7 @@ urlpatterns = [
 
 
     path('login/', login, name="login"),
-    path('logout/', logout, name="logout"),
+    path(r'logout/', logout, name="logout"),
     url(r'listar/', LogList.as_view(), name='LogListar'),
 
 

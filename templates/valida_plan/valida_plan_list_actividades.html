@@ -40,8 +40,8 @@ Actividades Asociadas al Objetivo
 						<th>Volumen</th>
 						<th>Personas Asignadas</th>
 						<th>Total Horas</th>
-						<th  title="Fecha Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Fecha I. Act.</th>
-						<th  title="Fecha de Término de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Fecha T. Act.</th>
+						<th  title="Fecha Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Fecha Inicio Act.</th>
+						<th  title="Fecha de Término de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Fecha Término Act.</th>
 						<th>Familia Cargo</th>
 						<th>Periodicidad</th>
 						<th style="display:none;">count NV</th>
@@ -144,7 +144,10 @@ Actividades Asociadas al Objetivo
 
 
 			$(".volver").click(function() {
-				window.location.href = '{% url 'ActividadesDetalles' id_nivel_controlador.id  %}';
+				//window.location.href = '{% url 'ActividadesDetalles' id_nivel_controlador.id  %}';
+				 var url = '{% url 'ActividadesDetalles' id_nivel_controlador.id %}';
+     			 var encodedUrl = encodeURIComponent(url);
+   				 window.location.href = encodedUrl
 				return false;
 			});
 

@@ -94,7 +94,7 @@ Actividades Asociadas al Objetivo
 
                                                           <button type="button"  title="Observaciones a la Actividad" title="Fecha de Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" id="notification"  class="update btn btn-sm btn-primary"  data-id="{% url 'gestionobservacionactividades' objetivo.id %}"  >
 														  <span class="fa fa-comments" ></span>
-                                                               {% if objetivo.count_no_vistos != 0 and objetivo.count_no_vistos != none %} <span class="badge" title="Nuevas Observaciones a la actividad" >{{ objetivo.count_no_vistos }}</span> {% endif %}
+                                                               {% if objetivo.count_no_vistos != 0 and objetivo.count_no_vistos != none %} <span class="badge" title="Nuevas Observaciones a la actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" >{{ objetivo.count_no_vistos }}</span> {% endif %}
 														  </button>
                                                     </td>
 

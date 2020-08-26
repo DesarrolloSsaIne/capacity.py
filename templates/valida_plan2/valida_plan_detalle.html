@@ -244,6 +244,40 @@ Objetivos Asociados al Plan
 
 <script type="text/javascript">
 
+$(function() {
+
+
+function rollDice(){
+   return (Math.floor(Math.random()*9999)+1);
+}
+
+function generateToken(){
+ 	var stringLength = 100;
+	var stringArray = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','!','?'];
+	var rndString = "";
+
+	for (var i = 1; i < stringLength; i++) {
+			var rndNum = Math.ceil(Math.random() * stringArray.length) - 1;
+			rndString = rndString + stringArray[rndNum];
+		};
+	return rndString
+}
+
+
+    $( ".objetivos" ).each(function( index ) {
+      var url = $(this).attr('href'); //get current url
+      url = url.replace(/ /g, "")
+
+      var encodedUrl = encodeURIComponent(url);
+      var number = rollDice();
+      var tokenstr = generateToken();
+      encodedUrl = encodedUrl + number + tokenstr
+
+      $(this).attr("href", encodedUrl);
+    });
+
+});
+
 $(".volver").click(function() {
     window.location.href = '{% url 'UnidadesList2'  %}';
     return false;

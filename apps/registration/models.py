@@ -15,3 +15,9 @@ class logEventos(models.Model):
     jefatura_dirigida = models.ForeignKey(User, on_delete=models.PROTECT, null=True, blank=True, related_name="jefatura_dirigida")
 
 
+class UsuariosExcepcion(models.Model):
+    username=models.CharField(max_length=50, blank=True, null=True)
+
+
+
+
