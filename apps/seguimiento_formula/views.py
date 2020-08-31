@@ -41,6 +41,7 @@ class ActividadesObjetivosList(ListView): #clase modificada por JR- sprint 8 - O
             periodo_seguimiento=None
             pass
 
+
         if periodo_seguimiento:
 
             try:
@@ -212,17 +213,12 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
         fechas_corte= Glo_Seguimiento.objects.order_by('-id')[0]
 
 
-
-
-
         context['fechas'] = {'fecha_inicio_corte_str':str(fechas_corte.fecha_inicio_corte)  ,
                              'fecha_termino_corte_str':str(fechas_corte.fecha_termino_corte),
                              'fecha_inicio_corte': fechas_corte.fecha_inicio_corte,
                              'fecha_termino_corte': fechas_corte.fecha_termino_corte,
 
                              }
-
-
         return context
 
     def post(self, request, *args, **kwargs):
@@ -339,6 +335,8 @@ class iniciaSeguimiento(UpdateView):
 
         controladorPlan = self.model.objects.get(Q(id=id_controlador) & Q(id_periodo=periodo_actual.id))
 
+        area_plan = controladorPlan.id_jefatura.id_nivel
+
         email_jefatura_primera = controladorPlan.jefatura_primerarevision.id_user.email  # correo de rechazo 1era revision
 
         analistas = list(User.objects.values_list('email', flat=True).filter(groups__in=Group.objects.filter(id='6')))
@@ -371,7 +369,7 @@ class iniciaSeguimiento(UpdateView):
 
 
         try:
-            EnviarCorreoInicioSeguimiento(emails_destino_analistas, email_jefatura)
+            EnviarCorreoInicioSeguimiento(emails_destino_analistas, email_jefatura, area_plan)
 
             request.session['message_class'] = "alert alert-success"  # Tipo mensaje
             messages.success(request,
@@ -410,6 +408,9 @@ class cierraSeguimiento(UpdateView):
         email_jefatura= email_jefatura_primera
         emails_destino_analistas=analistas
 
+
+        area_plan = controladorPlan.id_jefatura.id_nivel
+
         total_actividades_reportadas = Ges_Actividad.objects.filter(
             Q(id_controlador=id_controlador) & Q(id_periodo=periodo_actual) & Q(flag_reporta=0) & (
                         ~Q(id_estado_actividad=7) & ~Q(id_estado_actividad=9))).count()
@@ -443,7 +444,7 @@ class cierraSeguimiento(UpdateView):
 
 
         try:
-            EnviarCorreoCierreSeguimiento(emails_destino_analistas, email_jefatura)
+            EnviarCorreoCierreSeguimiento(emails_destino_analistas, email_jefatura, area_plan)
 
             request.session['message_class'] = "alert alert-success"  # Tipo mensaje
             messages.success(request,
@@ -538,30 +539,31 @@ def UpdateFlag(id_controlador,periodo_actual):
     Ges_Actividad.objects.filter(Q(id_controlador=id_controlador) & Q(id_periodo=periodo_actual) & (~Q(id_estado_actividad=7) & ~Q(id_estado_actividad=9))).update(flag_reporta=0)
 
 
-def EnviarCorreoInicioSeguimiento(emails_destino_analista, email_jefatura):
+def EnviarCorreoInicioSeguimiento(emails_destino_analista, email_jefatura,area_plan):
 
     ahora = datetime.now()
     fecha = ahora.strftime("%d" + "/" + "%m" + "/" + "%Y" + " a las " + "%H:%M")
-
+    area_plan = str(area_plan)
     idcorreoJefatura=emails_destino_analista + [email_jefatura]
 
     subject = 'Inicio Etapa de Seguimiento'
-    messageHtml = '<b>Estimada(o) Usuaria(o) del Sistema Capacity Institucional</b>, <br> Le informamos que con fecha <b>'+ str(fecha) +'</b> , el proceso de seguimiento fue abierto. <br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
+    messageHtml = '<b>Estimada(o) Usuaria(o) del Sistema Capacity Institucional</b>, <br> Le informamos que con fecha <b>'+ str(fecha) +'</b> , el proceso de seguimiento del área: <b>' + area_plan + '</b> fue abierto. <br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
 
     email = EmailMessage(subject, messageHtml ,to=idcorreoJefatura)
     email.content_subtype='html'
     email.send()
 
 
-def EnviarCorreoCierreSeguimiento(emails_destino_analista, email_jefatura):
+def EnviarCorreoCierreSeguimiento(emails_destino_analista, email_jefatura, area_plan):
 
     ahora = datetime.now()
     fecha = ahora.strftime("%d" + "/" + "%m" + "/" + "%Y" + " a las " + "%H:%M")
 
+    area_plan = str(area_plan)
     idcorreoJefatura=emails_destino_analista + [email_jefatura]
 
     subject = 'Cierre Etapa de Seguimiento'
-    messageHtml = '<b>Estimada(o) Usuaria(o) del Sistema Capacity Institucional</b>, <br> Le informamos que con fecha <b>'+ str(fecha) +'</b> , el proceso de seguimiento fue cerrado. <br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
+    messageHtml = '<b>Estimada(o) Usuaria(o) del Sistema Capacity Institucional</b>, <br> Le informamos que con fecha <b>'+ str(fecha) +'</b> , el proceso de seguimiento del área: <b>' + area_plan + '</b> fue cerrado. <br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
 
     email = EmailMessage(subject, messageHtml ,to=idcorreoJefatura)
     email.content_subtype='html'

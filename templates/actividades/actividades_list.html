@@ -45,8 +45,8 @@
 
 								 <button type="button" class="confirm btn btn-sm btn-warning" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top"  name="button" title="Iniciar plan" {% if total_disponible.id_controlador.estado_flujo_id > 2 %} disabled   {% endif %}  >
       								<span class="fa fa-coffee"></span></button>
-                                <button type="button" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top"  title="Enviar plan para su revisión" class="enviar btn btn-sm btn-success" {% if total_disponible.id_controlador.estado_flujo_id > 3 and total_disponible.id_controlador.estado_flujo_id <= 7 or total_disponible.id_controlador.estado_flujo_id == 2 %} disabled   {% endif %} data-id="{% url 'controlador_editar' total_disponible.id_controlador.id %}" >
-      													  <span class="fa fa-paper-plane"></span></button>
+                                <button type="button" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top"  title="Enviar plan para su revisión" class="enviar btn btn-sm btn-success" {% if total_disponible.id_controlador.estado_flujo_id == 1 or total_disponible.id_controlador.estado_flujo_id == 2 or total_disponible.id_controlador.estado_flujo_id == 4 or total_disponible.id_controlador.estado_flujo_id == 5 or total_disponible.id_controlador.estado_flujo_id == 6 or total_disponible.id_controlador.estado_flujo_id == 7 or total_disponible.id_controlador.estado_flujo_id == 10 %} disabled {% endif %} data-id="{% url 'controlador_editar' total_disponible.id_controlador.id %}" >
+      							<span class="fa fa-paper-plane"></span></button>
 
 
 									<!--<a href="#" class="fa fa-times"></a>-->
@@ -70,7 +70,7 @@
                                              <th title="Total de observaciones asociadas al objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >Obs. Objetivos Total</th>
 					                            <th title="Total de actividades relacionadas a este objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >Actividades Total</th>
                                             <th>Actividades</th>
-                                            <th style="{%if estado_flujo.estado.id != 9%} display:none; {% endif %} " >Observaciones</th>
+                                            <th style="{%if estado_flujo.estado.id != 9 and estado_flujo.estado.id != 11 %} display:none; {% endif %} " >Observaciones</th>
                                           {% endif %}
 
                                           {% if orden.orden_nivel == 3 %}
@@ -80,7 +80,7 @@
                                              <th title="Total de observaciones asociadas al objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >Obs. Objetivos Total</th>
 					                            <th title="Total de actividades relacionadas a este objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >Actividades Total</th>
                                                 <th>Actividades</th>
-                                            <th style="{%if estado_flujo.estado.id != 9%} display:none; {% endif %} " >Observaciones</th>
+                                            <th style="{%if estado_flujo.estado.id != 9 and estado_flujo.estado.id != 11 %} display:none; {% endif %} " >Observaciones</th>
 
 
                                           {% endif %}
@@ -92,7 +92,7 @@
                                              <th title="Total de observaciones asociadas al objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Obs. Objetivos Total</th>
 					                            <th title="Total de actividades relacionadas a este objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >Actividades Total</th>
                                                 <th>Actividades</th>
-                                            <th  style="{%if estado_flujo.estado.id != 9%} display:none; {% endif %} " >Observaciones</th>
+                                            <th  style="{%if estado_flujo.estado.id != 9 and estado_flujo.estado.id != 11 %} display:none; {% endif %} " >Observaciones</th>
 
 
                                           {% endif %}
@@ -117,16 +117,16 @@
 
 
 
-                                                            <a  type="button" title="Actividades Asociadas al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom"  id="notification" class="objetivos btn btn-sm btn-success"  {% if total_disponible.id_controlador.estado_flujo_id > 3 and total_disponible.id_controlador.estado_flujo_id <= 7 or total_disponible.id_controlador.estado_flujo_id == 2 %} disabled tabindex="-1"  {% endif %} href="{% url 'ActividadesDetail' objetivos.id %}"  >
+                                                            <a  type="button" title="Actividades Asociadas al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom"  id="notification" class="objetivos btn btn-sm btn-success"   href="{% url 'ActividadesDetail' objetivos.id %}"  >
                                                             <span class="fa fa-bars" ></span>
                                                              {% if objetivos.count_no_vistos != 0 and objetivos.count_no_vistos != none %} <span class="badge" title="Nuevas Observaciones" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top"  >{{ objetivos.count_no_vistos }}</span> {% endif %}
                                                             </a>
 
                                                    </td>
-                                                              <td style="width:40px; text-align:center; {%if estado_flujo.estado.id != 9%} display:none; {% endif %} "  >
+                                                              <td style="width:40px; text-align:center; {%if estado_flujo.estado.id != 9 and estado_flujo.estado.id != 11 %} display:none; {% endif %} "  >
 
 
-                                                          <button type="button"  title="Observaciones Asociadas al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" id="notification"  class="update btn btn-sm btn-primary" {% if total_disponible.id_controlador.estado_flujo_id > 3 and total_disponible.id_controlador.estado_flujo_id <= 7 or total_disponible.id_controlador.estado_flujo_id == 2 %} disabled tabindex="-1"  {% endif %} data-id="{% url 'gestionobservacionobjetivos' objetivos.id %}"  >
+                                                          <button type="button"  title="Observaciones Asociadas al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" id="notification"  class="update btn btn-sm btn-primary"  data-id="{% url 'gestionobservacionobjetivos' objetivos.id %}"  >
 														  <span class="fa fa-comments" ></span>
                                                                {% if objetivos.count_no_vistos_obs != 0 and objetivos.count_no_vistos_obs != none %} <span class="badge" title="Nuevas Observaciones al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >{{ objetivos.count_no_vistos_obs }}</span> {% endif %}
 														  </button>
@@ -151,16 +151,16 @@
 
 
 
-                                                            <a  type="button" title="Actividades Asociadas al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom"  id="notification" class="objetivos btn btn-sm btn-success"  {% if total_disponible.id_controlador.estado_flujo_id > 3 and total_disponible.id_controlador.estado_flujo_id <= 7 or total_disponible.id_controlador.estado_flujo_id == 2 %} disabled tabindex="-1"  {% endif %} href="{% url 'ActividadesDetail' objetivos.id %}"  >
+                                                            <a  type="button" title="Actividades Asociadas al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom"  id="notification" class="objetivos btn btn-sm btn-success"  href="{% url 'ActividadesDetail' objetivos.id %}"  >
                                                             <span class="fa fa-bars" ></span>
                                                              {% if objetivos.count_no_vistos != 0 and objetivos.count_no_vistos != none %} <span class="badge" title="Nuevas Observaciones" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top"  >{{ objetivos.count_no_vistos }}</span> {% endif %}
                                                             </a>
 
                                                    </td>
-                                                              <td style="width:40px; text-align:center; {%if estado_flujo.estado.id != 9%} display:none; {% endif %} "  >
+                                                              <td style="width:40px; text-align:center; {%if estado_flujo.estado.id != 9  and estado_flujo.estado.id != 11 %} display:none; {% endif %} "  >
 
 
-                                                          <button type="button"  title="Observaciones Asociadas al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" id="notification"  class="update btn btn-sm btn-primary" {% if total_disponible.id_controlador.estado_flujo_id > 3 and total_disponible.id_controlador.estado_flujo_id <= 7 or total_disponible.id_controlador.estado_flujo_id == 2 %} disabled tabindex="-1"  {% endif %} data-id="{% url 'gestionobservacionobjetivos' objetivos.id %}"  >
+                                                          <button type="button"  title="Observaciones Asociadas al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" id="notification"  class="update btn btn-sm btn-primary"  data-id="{% url 'gestionobservacionobjetivos' objetivos.id %}"  >
 														  <span class="fa fa-comments" ></span>
                                                                {% if objetivos.count_no_vistos_obs != 0 and objetivos.count_no_vistos_obs != none %} <span class="badge" title="Nuevas Observaciones al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >{{ objetivos.count_no_vistos_obs }}</span> {% endif %}
 														  </button>
@@ -184,16 +184,16 @@
 
 
 
-                                                            <a  type="button" title="Actividades Asociadas al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom"  id="notification" class="objetivos btn btn-sm btn-success"  {% if total_disponible.id_controlador.estado_flujo_id > 3 and total_disponible.id_controlador.estado_flujo_id <= 7 or total_disponible.id_controlador.estado_flujo_id == 2 %} disabled tabindex="-1"  {% endif %} href="{% url 'ActividadesDetail' objetivos.id %}"  >
+                                                            <a  type="button" title="Actividades Asociadas al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom"  id="notification" class="objetivos btn btn-sm btn-success"   href="{% url 'ActividadesDetail' objetivos.id %}"  >
                                                             <span class="fa fa-bars" ></span>
                                                              {% if objetivos.count_no_vistos != 0 and objetivos.count_no_vistos != none %} <span class="badge" title="Nuevas Observaciones" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top"  >{{ objetivos.count_no_vistos }}</span> {% endif %}
                                                             </a>
 
                                                    </td>
-                                                            <td style="width:40px; text-align:center; {%if estado_flujo.estado.id != 9%} display:none; {% endif %} "  >
+                                                            <td style="width:40px; text-align:center; {%if estado_flujo.estado.id != 9 and estado_flujo.estado.id != 11 %} display:none; {% endif %} "  >
 
 
-                                                          <button type="button"  title="Observaciones Asociadas al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" id="notification"  class="update btn btn-sm btn-primary" {% if total_disponible.id_controlador.estado_flujo_id > 3 and total_disponible.id_controlador.estado_flujo_id <= 7 or total_disponible.id_controlador.estado_flujo_id == 2 %} disabled tabindex="-1"  {% endif %} data-id="{% url 'gestionobservacionobjetivos' objetivos.id %}"  >
+                                                          <button type="button"  title="Observaciones Asociadas al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" id="notification"  class="update btn btn-sm btn-primary"  data-id="{% url 'gestionobservacionobjetivos' objetivos.id %}"  >
 														  <span class="fa fa-comments" ></span>
                                                                {% if objetivos.count_no_vistos_obs != 0 and objetivos.count_no_vistos_obs != none %} <span class="badge" title="Nuevas Observaciones al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >{{ objetivos.count_no_vistos_obs }}</span> {% endif %}
 														  </button>
@@ -223,6 +223,8 @@
 
 
 {% endif %}
+
+
 <!--Cabecera del modal -->
 <div class="modal fade" tabindex="-1" role="dialog" id="modalCreate">
   <div class="modal-dialog modal-lg" role="document">

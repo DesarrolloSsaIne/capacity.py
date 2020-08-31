@@ -120,7 +120,7 @@ class ControladorDelete(SuccessMessageMixin, DeleteView ):
 
         except ProtectedError as e:
             request.session['message_class'] = "alert alert-danger"
-            messages.error(request, "Error de integridad: .")
+            messages.error(request, "Error de integridad: La jefatura esta asociada a un proceso por lo cual no puede ser eliminada .")
             return HttpResponseRedirect('/controlador/listar')
 
         except Exception  as e:
@@ -233,17 +233,10 @@ class ControladorUpdate(UpdateView):
                 jefatura_dirigida = idcorreoJefaturaOb.id_user
                 logEventosCreate(tipo_evento, metodo, usuario_evento, jefatura_dirigida)
 
-                send_mail(
-                    'Subject here',
-                    'Here is the message.',
-                    'jason.rodriguez@ine.cl',
-                    ['jason.rodriguez@ine.cl'],
-                    fail_silently=False,
-                )
 
                 try:
 
-                   # EnviarCorreoCierre(id_jefatura, nivel_usuario.id_nivel.descripcion_nivel)
+                    EnviarCorreoCierre(id_jefatura, nivel_usuario.id_nivel.descripcion_nivel)
                     request.session['message_class'] = "alert alert-success"  # Tipo mensaje
                     messages.success(request,
                                      "El plan fue enviado para su revisión y el correo de notificación fue enviado a su jefatura directa.!")  # mensaje
@@ -283,7 +276,7 @@ def EnviarCorreoCierre(id_jefatura, descripcion_nivel):
     idcorreoJefatura=list(controladorPlan)
 
     subject = 'Revisión Plan ' + str(descripcion_nivel)
-    messageHtml = 'Estimada(o) Usuaria(o),<br> Se informa que se le ha asignado un plan de gestión para su revisión, ingrese al sitio de capacity institucional y revise su banjeda.<br> Atte. <br>Subdpto. de Planificación Institucional.<br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
+    messageHtml = 'Estimada(o) Usuaria(o),<br> Se informa que se le ha asignado un plan de gestión para su revisión, ingrese al sitio de capacity institucional y revise su bandeja.<br> Atte. <br>Subdpto. de Planificación Institucional.<br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
 
     email = EmailMessage(subject, messageHtml ,to=idcorreoJefatura)
 

@@ -36,6 +36,10 @@ class UnidadesList(ListView): #Modificado por JR- sprint 8 - OK
         except:
             periodo_valida = None
             pass
+
+
+
+
         if periodo_valida:
             try:
 
@@ -47,12 +51,10 @@ class UnidadesList(ListView): #Modificado por JR- sprint 8 - OK
                 id_controlador = 0
                 pass
 
-
-
             if id_controlador == 0:
                 context['error'] = {'id': 1}
                 return context
-                #sys.exit(1)
+
             else:
                 try:
                     id_jefatura = Ges_Jefatura.objects.get(id_user=id_usuario_actual)

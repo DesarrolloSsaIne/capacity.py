@@ -12,6 +12,7 @@ class EjeList(ListView):
     model = Ges_Ejes
     template_name = 'eje/eje_list.html'
 
+
     def get_context_data(self, **kwargs):
         context = super(EjeList, self).get_context_data(**kwargs)
 

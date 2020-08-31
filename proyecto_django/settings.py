@@ -197,7 +197,7 @@ WSGI_APPLICATION = 'proyecto_django.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'mysql_cymysql',
-        'NAME': 'django',
+        'NAME': 'django_local_uno_desa',
         'USER': 'root',
         'PASSWORD': 'admin',
         'HOST': 'localhost',

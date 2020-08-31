@@ -249,7 +249,15 @@ class GeneraReportCurvaEjecucion(TemplateView):
             acumPlan_ant = ValMesesAcum[Mes - 2]
             acumFin_ant = ValMesesAcumEjec[Mes - 2]
 
-            ValDesviacion_mes_anterior = "{0:.2f}".format(((acumFin_ant / acumPlan_ant) - 1) * 100)
+            if acumPlan_ant != 0:
+                ValDesviacion_mes_anterior = "{0:.2f}".format(((acumFin_ant / acumPlan_ant) - 1) * 100)
+            else:
+                acumPlan_ant=1
+                ValDesviacion_mes_anterior = "{0:.2f}".format(((acumFin_ant / acumPlan_ant) - 1) * 100)
+
+
+
+
         else:
             ValDesviacion_mes_anterior = 0
 

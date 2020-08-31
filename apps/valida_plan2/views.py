@@ -117,15 +117,11 @@ def EnviarCorreoAcepta_jefaturas(emails_jefaturas, area_plan):
     email.send()
 
 def EnviarCorreoAcepta_Planificacion(email_planificacion, area_plan):
-    # try:
-    #     periodo_actual = Glo_Periodos.objects.get(id_estado=1)
-    # except Glo_Periodos.DoesNotExist:
-    #     return None
+
 
     ahora = datetime.now()
     fecha = ahora.strftime("%d" + "/" + "%m" + "/" + "%Y" + " a las " + "%H:%M")
 
-    #controladorPlan = Ges_Jefatura.objects.values_list('id_user__email' , flat=True).filter(Q(id_periodo=periodo_actual) & Q(id=id_jefatura))
     idcorreoJefatura=[str(email_planificacion)]
     area_plan=str(area_plan)
 
