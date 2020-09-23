@@ -88,7 +88,6 @@ LOGGING = {
 INSTALLED_APPS = [
 
 
-
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -131,13 +130,6 @@ INSTALLED_APPS = [
     'apps.seguimiento_formula',
     'apps.reportes',
     'apps.planificacion_admin',
-
-
-
-
-
-
-
 
 
 ]

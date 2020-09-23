@@ -15,7 +15,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 class Ges_Actividad (models.Model):
     descripcion_actividad= models.CharField(max_length=2000)
     id_periodicidad= models.ForeignKey(Glo_Periodicidad, on_delete=models.PROTECT)
-    id_producto_estadistico= models.ForeignKey(Glo_ProductosEstadisticos, on_delete=models.PROTECT)
+    id_producto_estadistico= models.ForeignKey(Glo_ProductosEstadisticos, on_delete=models.PROTECT, null=True, blank=True)
     horas_actividad= models.CharField(max_length=4)
     volumen= models.CharField(max_length=3)
     personas_asignadas= models.CharField(max_length=3)
