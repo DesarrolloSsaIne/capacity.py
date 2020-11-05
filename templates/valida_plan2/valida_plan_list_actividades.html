@@ -38,7 +38,7 @@ Actividades Asociadas al Objetivo
 						<th >Fecha Término</th>
 
                         <th title="Total de Observaciones Asociadas a la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Total Obs.</th>
-						<th>Obs.</th>
+						<th>Opciones</th>
 
 					</tr>
 				</thead>
@@ -54,13 +54,20 @@ Actividades Asociadas al Objetivo
 
 
                         <td>{% if objetivo.count_observaciones == None %}0{% else %}{{ objetivo.count_observaciones }}{%endif%} </td>
-						<td style="width:40px; text-align:center;">
+						<td style="width:80px; text-align:center;">
 
 
 
                             <button type="button"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom"   title="Observaciones a la Actividad" id="notification"  class="update btn btn-sm btn-primary"  data-id="{% url 'gestionobservacionver' objetivo.id %}"  >
 							<span class="fa fa-comments" ></span>
+								{% if objetivo.count_no_vistos != 0 and objetivo.count_no_vistos != none %} <span class="badge" title="Nuevas Observaciones"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">{{ objetivo.count_no_vistos }}</span> {% endif %}
 							</button>
+
+							 <button type="button"  title="Detalle Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top"  class="update btn btn-sm btn-warning"  data-id="{% url 'detalleactividadesValidaPlan2' objetivo.id %}"  >
+							<span class="fa fa-search" ></span>
+
+							</button>
+
 
 
                              </td>

@@ -67,20 +67,20 @@
      											<th>Objetivo Táctico Segundo Nivel</th>
 
                                               <th title="Total de observaciones asociadas a la(s) actividad(es) de este objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >Obs. Actividades Total</th>
-                                             <th title="Total de observaciones asociadas al objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >Obs. Objetivos Total</th>
+                                             <th title="Total de observaciones asociadas al objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" style="{%if estado_flujo.estado.id != 8 and estado_flujo.estado.id != 9 and estado_flujo.estado.id != 11 %} display:none; {% endif %} " >Obs. Objetivos Total</th>
 					                            <th title="Total de actividades relacionadas a este objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >Actividades Total</th>
                                             <th>Actividades</th>
-                                            <th style="{%if estado_flujo.estado.id != 9 and estado_flujo.estado.id != 11 %} display:none; {% endif %} " >Observaciones</th>
+                                            <th style="{%if estado_flujo.estado.id != 8 and estado_flujo.estado.id != 9 and estado_flujo.estado.id != 11 %} display:none; {% endif %} " >Observaciones</th>
                                           {% endif %}
 
                                           {% if orden.orden_nivel == 3 %}
 
      											<th>Objetivo Táctico Tercer Nivel</th>
                                            <th title="Total de observaciones asociadas a la(s) actividad(es) de este objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >Obs. Actividades Total</th>
-                                             <th title="Total de observaciones asociadas al objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >Obs. Objetivos Total</th>
+                                             <th title="Total de observaciones asociadas al objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top"  style="{%if estado_flujo.estado.id != 8 and estado_flujo.estado.id != 9 and estado_flujo.estado.id != 11 %} display:none; {% endif %} " >Obs. Objetivos Total</th>
 					                            <th title="Total de actividades relacionadas a este objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >Actividades Total</th>
                                                 <th>Actividades</th>
-                                            <th style="{%if estado_flujo.estado.id != 9 and estado_flujo.estado.id != 11 %} display:none; {% endif %} " >Observaciones</th>
+                                            <th style="{%if estado_flujo.estado.id != 8 and estado_flujo.estado.id != 9 and estado_flujo.estado.id != 11 %} display:none; {% endif %} " >Observaciones</th>
 
 
                                           {% endif %}
@@ -89,10 +89,10 @@
 
      											<th>Objetivo Operativo</th>
                                             <th title="Total de observaciones asociadas a la(s) actividad(es) de este objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >Obs. Actividades Total</th>
-                                             <th title="Total de observaciones asociadas al objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Obs. Objetivos Total</th>
+                                             <th  title="Total de observaciones asociadas al objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" style="{%if estado_flujo.estado.id != 8 and estado_flujo.estado.id != 9 and estado_flujo.estado.id != 11 %} display:none; {% endif %} " >Obs. Objetivos Total</th>
 					                            <th title="Total de actividades relacionadas a este objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >Actividades Total</th>
                                                 <th>Actividades</th>
-                                            <th  style="{%if estado_flujo.estado.id != 9 and estado_flujo.estado.id != 11 %} display:none; {% endif %} " >Observaciones</th>
+                                            <th  style="{%if estado_flujo.estado.id != 8 and estado_flujo.estado.id != 9 and estado_flujo.estado.id != 11 %} display:none; {% endif %} " >Observaciones</th>
 
 
                                           {% endif %}
@@ -108,7 +108,7 @@
 
                                                         <td> {{ objetivos.descripcion_objetivo }}</td>
                                                         <td> {% if objetivos.count_observaciones == none %} 0 {% else %} {{ objetivos.count_observaciones}} {%endif%}</td>
-                                                         <td>{% if objetivos.count_observaciones_obj == none %} 0 {% else %} {{ objetivos.count_observaciones_obj}} {%endif%}</td>
+                                                         <td style="{%if estado_flujo.estado.id != 8 and estado_flujo.estado.id != 9 and estado_flujo.estado.id != 11 %} display:none; {% endif %} ">{% if objetivos.count_observaciones_obj == none %} 0 {% else %} {{ objetivos.count_observaciones_obj}} {%endif%}</td>
 
 
 
@@ -123,7 +123,7 @@
                                                             </a>
 
                                                    </td>
-                                                              <td style="width:40px; text-align:center; {%if estado_flujo.estado.id != 9 and estado_flujo.estado.id != 11 %} display:none; {% endif %} "  >
+                                                              <td style="width:40px; text-align:center; {%if estado_flujo.estado.id != 8 and estado_flujo.estado.id != 9 and estado_flujo.estado.id != 11 %} display:none; {% endif %} "  >
 
 
                                                           <button type="button"  title="Observaciones Asociadas al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" id="notification"  class="update btn btn-sm btn-primary"  data-id="{% url 'gestionobservacionobjetivos' objetivos.id %}"  >
@@ -144,7 +144,7 @@
 
                                                         <td> {{ objetivos.descripcion_objetivo}}</td>
                                                         <td> {% if objetivos.count_observaciones == none %} 0 {% else %} {{ objetivos.count_observaciones}} {%endif%}</td>
-							                            <td>{% if objetivos.count_observaciones_obj == none %} 0 {% else %} {{ objetivos.count_observaciones_obj}} {%endif%}</td>
+							                            <td style="{%if estado_flujo.estado.id != 8 and estado_flujo.estado.id != 9 and estado_flujo.estado.id != 11 %} display:none; {% endif %} ">{% if objetivos.count_observaciones_obj == none %} 0 {% else %} {{ objetivos.count_observaciones_obj}} {%endif%}</td>
                                                         <td>{% if objetivos.count_actividad == None %}0{% else %}{{ objetivos.count_actividad }}{%endif%} </td>
 
                                                            <td style="width:60px; text-align:center;">
@@ -157,7 +157,7 @@
                                                             </a>
 
                                                    </td>
-                                                              <td style="width:40px; text-align:center; {%if estado_flujo.estado.id != 9  and estado_flujo.estado.id != 11 %} display:none; {% endif %} "  >
+                                                              <td style="width:40px; text-align:center; {%if estado_flujo.estado.id != 8 and estado_flujo.estado.id != 9  and estado_flujo.estado.id != 11 %} display:none; {% endif %} "  >
 
 
                                                           <button type="button"  title="Observaciones Asociadas al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" id="notification"  class="update btn btn-sm btn-primary"  data-id="{% url 'gestionobservacionobjetivos' objetivos.id %}"  >
@@ -176,8 +176,8 @@
 													<tr>
 
                                                         <td> {{ objetivos.descripcion_objetivo}}</td>
-                                                        	<td> {% if objetivos.count_observaciones == none %} 0 {% else %} {{ objetivos.count_observaciones}} {%endif%}</td>
-							                             <td>{% if objetivos.count_observaciones_obj == none %} 0 {% else %} {{ objetivos.count_observaciones_obj}} {%endif%}</td>
+                                                        	<td > {% if objetivos.count_observaciones == none %} 0 {% else %} {{ objetivos.count_observaciones}} {%endif%}</td>
+							                             <td style="{%if estado_flujo.estado.id != 8 and estado_flujo.estado.id != 9 and estado_flujo.estado.id != 11 %} display:none; {% endif %} " >{% if objetivos.count_observaciones_obj == none %} 0 {% else %} {{ objetivos.count_observaciones_obj}} {%endif%}</td>
                                                         <td>{% if objetivos.count_actividad == None %}0{% else %}{{ objetivos.count_actividad }}{%endif%} </td>
 
                                                            <td style="width:60px; text-align:center;">
@@ -190,7 +190,7 @@
                                                             </a>
 
                                                    </td>
-                                                            <td style="width:40px; text-align:center; {%if estado_flujo.estado.id != 9 and estado_flujo.estado.id != 11 %} display:none; {% endif %} "  >
+                                                            <td style="width:40px; text-align:center; {%if estado_flujo.estado.id != 8 and estado_flujo.estado.id != 9 and estado_flujo.estado.id != 11 %} display:none; {% endif %} "  >
 
 
                                                           <button type="button"  title="Observaciones Asociadas al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" id="notification"  class="update btn btn-sm btn-primary"  data-id="{% url 'gestionobservacionobjetivos' objetivos.id %}"  >
@@ -211,7 +211,7 @@
 								</table>
 
 															<div align="right" style="margin-right:100px;" >
-							<h5 style="color:#1e7799;">Total Horas Programadas:	<b>{{total_disponible.total_horas}}</b> | Total Horas Disponibles:  <b>{{total_disponible.total_utilizado}}</b> | Porcentaje de Carga Planificada: <b>{{total_disponible.consumidas}} (<label>{{total_disponible.avance_porcentaje}}%</label>)</b> </h5>
+							<h5 style="color:#1e7799;">Total horas disponible área:	<b>{{total_disponible.total_horas}}</b> | Total Horas Disponibles:  <b>{{total_disponible.total_utilizado}}</b> | Total horas y Porcentaje de Carga Programada: <b>{{total_disponible.consumidas}} (<label>{{total_disponible.avance_porcentaje}}%</label>)</b> </h5>
 							</div>
 
 							</div>

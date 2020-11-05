@@ -24,6 +24,9 @@ from django.contrib import messages
 from django.core.mail import EmailMessage,send_mass_mail
 from openpyxl import Workbook
 from django.http import HttpResponse
+from decimal import *
+from django.db.models import Sum
+from apps.gestion_horas.models import Ges_Registro_Horas
 
 def EnviarCorreoRechazo_jefaturas(emails_jefaturas, area_plan):
     # try:
@@ -87,6 +90,11 @@ class UnidadesListar(ListView):
                 count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (
                     ~Q(user_observa=id_usuario_actual))))
 
+            count_no_vistos_generales = Ges_Observaciones_sr.objects.values('id_controlador').filter(
+                id_controlador=OuterRef('pk')).annotate(
+                count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (
+                    ~Q(user_observa=id_usuario_actual))))
+
             count_observaciones = Ges_Observaciones.objects.values('id_controlador').filter(
                 id_controlador=OuterRef('pk')).annotate(
                 count_id_actividad=Count('id'))
@@ -95,6 +103,7 @@ class UnidadesListar(ListView):
                 Q(analista_asignado=id_usuario_actual) & Q(id_periodo=periodo_actual.id) & Q(
                     estado_flujo__in= [6,7,11])).annotate(
                 count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
+                count_no_vistos_generales=Subquery(count_no_vistos_generales.values('count_id_actividad')),
                 count_observaciones=Subquery(count_observaciones.values('count_id_actividad')[0:1])).order_by(
                 '-count_no_vistos', '-count_observaciones')
 
@@ -152,6 +161,43 @@ class ObjetivosListar(ListView):
 
         id_orden = controlador.nivel_inicial
         self.request.session['id_controlador_real'] = controlador.id
+
+        try:
+
+            total_dias = list(Ges_Registro_Horas.objects.filter(
+                Q(id_nivel=controlador.id_jefatura.id_nivel_id) & Q(id_periodo=periodo_actual.id)).aggregate(
+                Sum('dias_habiles')).values())[0]
+
+            total_utilizado = list(Ges_Actividad.objects.filter(
+                Q(id_controlador=controlador.id) & Q(id_periodo=periodo_actual.id)).aggregate(
+                Sum('total_horas')).values())[0]
+
+            if total_dias != None:
+                total_horas = total_dias * 8
+            else:
+                total_horas = 0
+
+            if total_utilizado != None:
+                consumidas = total_utilizado
+                total_utilizado = total_horas - total_utilizado
+                try:
+                    avance_porcentaje = (consumidas / total_horas) * 100
+                    avance_porcentaje = Decimal(avance_porcentaje)
+                    avance_porcentaje = avance_porcentaje.quantize(Decimal('0.1'), rounding=ROUND_UP)
+                except ZeroDivisionError:
+                    avance_porcentaje = 0
+
+            else:
+                total_utilizado = total_horas
+                consumidas = 0
+                avance_porcentaje = 0
+            total_utilizado = int(total_utilizado)
+            consumidas = int(consumidas)
+
+        except Ges_Registro_Horas.DoesNotExist:
+            return None
+
+
        # vaar= controlador.id_jefatura.id_nivel_id
 
         id_nivel = Ges_Niveles.objects.get(
@@ -162,18 +208,29 @@ class ObjetivosListar(ListView):
                     id_objetivo_tactico=OuterRef('pk')).annotate(
                     count_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id)))
 
-                count_no_vistos = Ges_Observaciones_sr.objects.values('id_objetivo_tactico').filter(
+                count_no_vistos_obj = Ges_Observaciones_sr.objects.values('id_objetivo_tactico').filter(
                     id_objetivo_tactico=OuterRef('pk')).annotate(
                     count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (
                         ~Q(user_observa=id_usuario_actual))))
 
-                count_observaciones = Ges_Observaciones_sr.objects.values('id_objetivo_tactico').filter(
+                count_no_vistos = Ges_Observaciones.objects.values('id_objetivo').filter(
+                    id_objetivo=OuterRef('pk')).annotate(
+                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (
+                        ~Q(user_observa=id_usuario_actual))))
+
+                count_observaciones_obj = Ges_Observaciones_sr.objects.values('id_objetivo_tactico').filter(
                     id_objetivo_tactico=OuterRef('pk')).annotate(
+                    count_id_actividad=Count('id'))
+
+                count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(
+                    id_objetivo=OuterRef('pk')).annotate(
                     count_id_actividad=Count('id'))
 
                 replies2 = Ges_Objetivo_Tactico.objects.filter(
                     Q(id_segundo_nivel_id=id_nivel.id_segundo_nivel_id) & Q(id_periodo=periodo_actual.id)).annotate(
+                    count_no_vistos_obj=Subquery(count_no_vistos_obj.values('count_id_actividad')),
                     count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
+                    count_observaciones_obj=Subquery(count_observaciones_obj.values('count_id_actividad')),
                     count_observaciones=Subquery(count_observaciones.values('count_id_actividad')),
                     count_actividad=Subquery(answer_subquery.values('count_actividad')[0:1])).order_by(
                     '-count_no_vistos', '-count_observaciones')
@@ -183,18 +240,29 @@ class ObjetivosListar(ListView):
                     id_objetivo_tacticotn=OuterRef('pk')).annotate(
                     count_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id)))
 
-                count_no_vistos = Ges_Observaciones_sr.objects.values('id_objetivo_tacticotn').filter(
+                count_no_vistos_obj = Ges_Observaciones_sr.objects.values('id_objetivo_tacticotn').filter(
                     id_objetivo_tacticotn=OuterRef('pk')).annotate(
                     count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (
                         ~Q(user_observa=id_usuario_actual))))
 
-                count_observaciones = Ges_Observaciones_sr.objects.values('id_objetivo_tacticotn').filter(
+                count_no_vistos = Ges_Observaciones.objects.values('id_objetivo').filter(
+                    id_objetivo=OuterRef('pk')).annotate(
+                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (
+                        ~Q(user_observa=id_usuario_actual))))
+
+                count_observaciones_obj = Ges_Observaciones_sr.objects.values('id_objetivo_tacticotn').filter(
                     id_objetivo_tacticotn=OuterRef('pk')).annotate(
+                    count_id_actividad=Count('id'))
+
+                count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(
+                    id_objetivo=OuterRef('pk')).annotate(
                     count_id_actividad=Count('id'))
 
                 replies2 = Ges_Objetivo_TacticoTN.objects.filter(
                     Q(id_tercer_nivel_id=id_nivel.id_tercer_nivel_id) & Q(id_periodo=periodo_actual.id)).annotate(
+                    count_no_vistos_obj=Subquery(count_no_vistos_obj.values('count_id_actividad')),
                     count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
+                    count_observaciones_obj=Subquery(count_observaciones_obj.values('count_id_actividad')),
                     count_observaciones=Subquery(count_observaciones.values('count_id_actividad')),
                     count_actividad=Subquery(answer_subquery.values('count_actividad')[0:1])).order_by(
                     '-count_no_vistos', '-count_observaciones')
@@ -204,18 +272,29 @@ class ObjetivosListar(ListView):
                     id_objetivo_operativo=OuterRef('pk')).annotate(
                     count_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id)))
 
-                count_no_vistos = Ges_Observaciones_sr.objects.values('id_objetivo_operativo').filter(
+                count_no_vistos_obj = Ges_Observaciones_sr.objects.values('id_objetivo_operativo').filter(
                     id_objetivo_operativo=OuterRef('pk')).annotate(
                     count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (
                         ~Q(user_observa=id_usuario_actual))))
 
-                count_observaciones = Ges_Observaciones_sr.objects.values('id_objetivo_operativo').filter(
+                count_no_vistos = Ges_Observaciones.objects.values('id_objetivo').filter(
+                    id_objetivo=OuterRef('pk')).annotate(
+                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (
+                        ~Q(user_observa=id_usuario_actual))))
+
+                count_observaciones_obj = Ges_Observaciones_sr.objects.values('id_objetivo_operativo').filter(
                     id_objetivo_operativo=OuterRef('pk')).annotate(
+                    count_id_actividad=Count('id'))
+
+                count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(
+                    id_objetivo=OuterRef('pk')).annotate(
                     count_id_actividad=Count('id'))
 
                 replies2 = Ges_Objetivo_Operativo.objects.filter(
                     Q(id_cuarto_nivel_id=id_nivel.id_cuarto_nivel_id) & Q(id_periodo=periodo_actual.id)).annotate(
+                    count_no_vistos_obj=Subquery(count_no_vistos_obj.values('count_id_actividad')),
                     count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
+                    count_observaciones_obj=Subquery(count_observaciones_obj.values('count_id_actividad')),
                     count_observaciones=Subquery(count_observaciones.values('count_id_actividad')),
                     count_actividad=Subquery(answer_subquery.values('count_actividad')[0:1])).order_by(
                     '-count_no_vistos', '-count_observaciones')
@@ -225,6 +304,12 @@ class ObjetivosListar(ListView):
         context['orden'] = {'orden_nivel': id_orden}
         context['niveles'] = replies2
         context['objetivo'] = id_nivel
+        context['total_disponible'] = {'total_dias': total_dias, 'total_horas': total_horas,
+                                       'total_utilizado': total_utilizado,
+                                       'consumidas': consumidas,
+                                       'avance_porcentaje': avance_porcentaje
+
+                                       }
         self.request.session['id_orden'] = id_orden
         return context
 
@@ -529,45 +614,69 @@ class RechazaPlan(UpdateView):
 
         estado = 11
         controladorPlan.estado_flujo_id = int(estado)
-        if int(lista_observaciones) > 0:
-            try:
-                controladorPlan.save()
 
+        count_obs_no_vistas = Ges_Observaciones.objects.filter(
+            Q(id_controlador=id_controlador) & Q(observado=1) & ~Q(user_observa_id=id_usuario_actual) & Q(
+                id_periodo=periodo_actual.id)).count()
+        count_obs_no_vistas_generales = Ges_Observaciones_sr.objects.filter(
+            Q(id_controlador=id_controlador) & Q(observado=1) & ~Q(user_observa_id=id_usuario_actual) & Q(
+                id_periodo=periodo_actual.id)).count()
 
-                tipo_evento = "Rechaza plan Analista"
-                metodo = "Revisión - Planificación"
-                usuario_evento = self.request.user
-                jefatura_dirigida = None
-                logEventosCreate(tipo_evento, metodo, usuario_evento, jefatura_dirigida)
+        count_obs_nuevas = Ges_Observaciones.objects.filter(
+            Q(id_controlador=id_controlador) & Q(observado=1) & Q(user_observa_id=id_usuario_actual) & Q(
+                id_periodo=periodo_actual.id)).count()
+        count_obs_nuevas_generales = Ges_Observaciones_sr.objects.filter(
+            Q(id_controlador=id_controlador) & Q(observado=1) & Q(user_observa_id=id_usuario_actual) & Q(
+                id_periodo=periodo_actual.id)).count()
 
-
+        if count_obs_no_vistas == 0 and count_obs_no_vistas_generales == 0:
+            if count_obs_nuevas > 0 or count_obs_nuevas_generales > 0:
                 try:
+                    controladorPlan.save()
 
+                    tipo_evento = "Rechaza plan Analista"
+                    metodo = "Revisión - Planificación"
+                    usuario_evento = self.request.user
+                    jefatura_dirigida = None
+                    logEventosCreate(tipo_evento, metodo, usuario_evento, jefatura_dirigida)
 
-                    EnviarCorreoRechazo_jefaturas(emails_jefaturas, area_plan )
+                    try:
 
-                    request.session['message_class'] = "alert alert-success"  # Tipo mensaje
-                    messages.success(request,
-                                     "El Plan fue rechazado correctamente y el correo de notificación fue enviado a las jefaturas!.")  # mensaje
-                    return HttpResponseRedirect('/revision_planificacion/listarUnidadesAnalista')  # Redirije a la pantalla principal
+                        EnviarCorreoRechazo_jefaturas(emails_jefaturas, area_plan)
+
+                        request.session['message_class'] = "alert alert-success"  # Tipo mensaje
+                        messages.success(request,
+                                         "El Plan fue rechazado correctamente y el correo de notificación fue enviado a las jefaturas!.")  # mensaje
+                        return HttpResponseRedirect(
+                            '/revision_planificacion/listarUnidadesAnalista')  # Redirije a la pantalla principal
+
+                    except:
+
+                        request.session['message_class'] = "alert alert-warning"  # Tipo mensaje
+                        messages.success(request,
+                                         "El Plan fue rechazado correctamente!, pero el servicio de correo tuvo un inconveniente favor comuníquese con las jefaturas para informar del rechazo.")  # mensaje
+                        return HttpResponseRedirect(
+                            '/revision_planificacion/listarUnidadesAnalista')  # Redirije a la pantalla principal
+
 
                 except:
-
-                    request.session['message_class'] = "alert alert-warning"  # Tipo mensaje
-                    messages.success(request,
-                                     "El Plan fue rechazado correctamente!, pero el servicio de correo tuvo un inconveniente favor comuníquese con las jefaturas para informar del rechazo.")  # mensaje
-                    return HttpResponseRedirect('/revision_planificacion/listarUnidadesAnalista')  # Redirije a la pantalla principal
-
-
-            except:
+                    request.session['message_class'] = "alert alert-danger"
+                    messages.error(self.request,
+                                   "Error interno: El plan no fue rechazado, intente nuevamente o comuníquese con el administrador.")
+                    return HttpResponseRedirect('/revision_planificacion/listarUnidadesAnalista')
+            else:
                 request.session['message_class'] = "alert alert-danger"
-                messages.error(self.request,
-                               "Error interno: El plan no fue rechazado, intente nuevamente o comuníquese con el administrador.")
+                messages.error(self.request, "Para rechazar el plan, primero debe ingresar al menos una observacion.")
                 return HttpResponseRedirect('/revision_planificacion/listarUnidadesAnalista')
+
         else:
             request.session['message_class'] = "alert alert-danger"
-            messages.error(self.request, "Debe ingresar al menos una observacion para rechazar el plan.")
+            messages.error(self.request, "Para rechazar el plan, primero debe leer todas las observaciones.")
             return HttpResponseRedirect('/revision_planificacion/listarUnidadesAnalista')
+
+
+
+
 
 
 
@@ -605,54 +714,52 @@ class AceptaPlan(UpdateView):
         #form = self.form_class(request.POST, instance=controladorPlan)
         estado = 7
         controladorPlan.estado_flujo_id = int(estado)
-        try:
-            controladorPlan.save()
+        count_obs_no_vistas = Ges_Observaciones.objects.filter(
+            Q(id_controlador=id_controlador) & Q(observado=1) & ~Q(user_observa_id=id_usuario_actual) & Q(id_periodo=periodo_actual.id)).count()
+        count_obs_no_vistas_generales = Ges_Observaciones_sr.objects.filter(
+            Q(id_controlador=id_controlador) & Q(observado=1) & ~Q(user_observa_id=id_usuario_actual) & Q(id_periodo=periodo_actual.id)).count()
 
-            tipo_evento = "Aprueba plan Analista"
-            metodo = "Revisión - Planificación"
-            usuario_evento = self.request.user
-            jefatura_dirigida = None
-            logEventosCreate(tipo_evento, metodo, usuario_evento, jefatura_dirigida)
-
+        if count_obs_no_vistas == 0 and count_obs_no_vistas_generales == 0:
             try:
+                controladorPlan.save()
 
-                EnviarCorreoAcepta_jefaturas(emails_jefaturas, area_plan)
+                tipo_evento = "Aprueba plan Analista"
+                metodo = "Revisión - Planificación"
+                usuario_evento = self.request.user
+                jefatura_dirigida = None
+                logEventosCreate(tipo_evento, metodo, usuario_evento, jefatura_dirigida)
 
-                request.session['message_class'] = "alert alert-success"  # Tipo mensaje
-                messages.success(request,
-                                 "El Plan fue aceptado correctamente y el correo de notificación fue enviado a las jefaturas!.")  # mensaje
-                return HttpResponseRedirect(
-                    '/revision_planificacion/listarUnidadesAnalista')  # Redirije a la pantalla principal
+                try:
+
+                    EnviarCorreoAcepta_jefaturas(emails_jefaturas, area_plan)
+
+                    request.session['message_class'] = "alert alert-success"  # Tipo mensaje
+                    messages.success(request,
+                                     "El Plan fue aceptado correctamente y el correo de notificación fue enviado a las jefaturas!.")  # mensaje
+                    return HttpResponseRedirect(
+                        '/revision_planificacion/listarUnidadesAnalista')  # Redirije a la pantalla principal
+
+                except:
+
+                    request.session['message_class'] = "alert alert-warning"  # Tipo mensaje
+                    messages.success(request,
+                                     "El Plan fue aceptado correctamente!, pero el servicio de correo tuvo un inconveniente favor comuníquese con las jefaturas para informar del rechazo.")  # mensaje
+                    return HttpResponseRedirect(
+                        '/revision_planificacion/listarUnidadesAnalista')  # Redirije a la pantalla principal
+
 
             except:
+                request.session['message_class'] = "alert alert-danger"
+                messages.error(self.request,
+                               "Error interno: El plan no ha podido ser aceptado. Comuníquese con el administrador.")
+                return HttpResponseRedirect('/revision_planificacion/listarUnidadesAnalista')
+        else:
 
-                request.session['message_class'] = "alert alert-warning"  # Tipo mensaje
-                messages.success(request,
-                                 "El Plan fue aceptado correctamente!, pero el servicio de correo tuvo un inconveniente favor comuníquese con las jefaturas para informar del rechazo.")  # mensaje
-                return HttpResponseRedirect(
-                    '/revision_planificacion/listarUnidadesAnalista')  # Redirije a la pantalla principal
-
-
-
-            # idcorreoJefatura = [email_jefatura, email_jefatura_primera, email_jefatura_segunda]
-            # subject = 'Plan Aceptado ' + controladorPlan.id_jefatura.id_nivel.descripcion_nivel
-            # message = 'Estimada(o) Usuaria(o), Su plan enviado para revisión fue aceptado por el Subdpto de Planificación Institucional.  Atte. Subdpto. de Planificación Institucional.>Correo generado automaticamente no responder.'
-            # messageHtml = 'Estimada(o) Usuaria(o),<br> Su plan enviado para revisión fue aceptado por el Subdpto de Planificación Institucional. <br> Atte. <br>Subdpto. de Planificación Institucional.<br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
-            # # send_correo(idcorreoJefatura, subject, message, messageHtml)
-            #
-            # tipo_evento = "Aprueba plan Analista"
-            # metodo = "Revisión - Planificación"
-            # usuario_evento = self.request.user
-            # jefatura_dirigida = None
-            # logEventosCreate(tipo_evento, metodo, usuario_evento, jefatura_dirigida)
-            # request.session['message_class'] = "alert alert-success"
-            # messages.success(self.request, "El plan fue aceptado correctamente.")
-            # return HttpResponseRedirect('/revision_planificacion/listarUnidadesAnalista')
-        except:
             request.session['message_class'] = "alert alert-danger"
             messages.error(self.request,
-                           "Error interno: El plan no ha podido ser aceptado. Comuníquese con el administrador.")
+                           "Estimado usuario, para aceptar el plan debe leer todas las observaciones relacionadas.")
             return HttpResponseRedirect('/revision_planificacion/listarUnidadesAnalista')
+
 
 class EnviarPlanAdministrador(UpdateView):
     model = Ges_Controlador

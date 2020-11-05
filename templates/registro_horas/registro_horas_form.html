@@ -108,6 +108,9 @@ $("#confirmar").click(function(){
 
 
 var anio_actual= moment().year();
+var anio_actual = anio_actual +1;
+
+//alert(anio_actual);
 
 fecha_inicio = $("#fecha_inicio").val();
 fecha_termino = $("#fecha_termino").val();
@@ -134,6 +137,7 @@ return false
 if (moment(fecha_inicio).isBefore(fecha_termino)){
 	//alert('ok');
 }else{
+
 	$("#mjeError").css("display","block");
 	$("#textError").text("Error : La fecha de inicio no puede ser superior a la fecha de término.");
 return false

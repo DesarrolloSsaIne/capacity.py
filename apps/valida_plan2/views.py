@@ -17,7 +17,9 @@ from django.db.models import Subquery, OuterRef, Count # import agregados por JR
 from django.db.models.deletion import ProtectedError
 from django.urls import reverse_lazy
 from django.http import JsonResponse
-
+from apps.gestion_horas.models import Ges_Registro_Horas
+from django.db.models import Sum
+from decimal import *
 from django.core import mail
 from django.conf import settings
 from django.utils.module_loading import import_string
@@ -166,36 +168,53 @@ class RechazaPlan(UpdateView):
 
         estado = 9 # estado rechazo segundo nivel
         controladorPlan.estado_flujo_id = int(estado)
-        if int(lista_observaciones) > 0:
-            try:
-                controladorPlan.save()
+
+        count_obs_no_vistas= Ges_Observaciones.objects.filter(Q(id_controlador=id_controlador ) & Q(observado=1) & ~Q(user_observa_id = id_usuario_actual) & Q(id_periodo=periodo_actual.id)).count()
+        count_obs_no_vistas_generales = Ges_Observaciones_sr.objects.filter(
+            Q(id_controlador=id_controlador) & Q(observado=1) & ~Q(user_observa_id=id_usuario_actual) & Q(id_periodo=periodo_actual.id)).count()
+
+
+        count_obs_nuevas= Ges_Observaciones.objects.filter(Q(id_controlador=id_controlador ) & Q(observado=1) & Q(user_observa_id = id_usuario_actual) & Q(id_periodo=periodo_actual.id)).count()
+        count_obs_nuevas_generales = Ges_Observaciones_sr.objects.filter(
+            Q(id_controlador=id_controlador) & Q(observado=1) & Q(user_observa_id=id_usuario_actual) & Q(id_periodo=periodo_actual.id)).count()
+
+        if count_obs_no_vistas == 0 and count_obs_no_vistas_generales == 0:
+            if count_obs_nuevas > 0 or count_obs_nuevas_generales > 0:
                 try:
+                    controladorPlan.save()
+                    try:
 
-                    EnviarCorreoRechazo_formulador(email_jefatura)
-                    EnviarCorreoRechazo_jefaturas(emails_jefaturas,area_plan )
+                        EnviarCorreoRechazo_formulador(email_jefatura)
+                        EnviarCorreoRechazo_jefaturas(emails_jefaturas, area_plan)
 
-                    request.session['message_class'] = "alert alert-success"  # Tipo mensaje
-                    messages.success(request,
-                                     "El Plan fue rechazado correctamente y el correo de notificación fue enviado a quien formuló el plan!.")  # mensaje
-                    return HttpResponseRedirect('/valida_plan2/listarUnidades2')  # Redirije a la pantalla principal
+                        request.session['message_class'] = "alert alert-success"  # Tipo mensaje
+                        messages.success(request,
+                                         "El Plan fue rechazado correctamente y el correo de notificación fue enviado a quien formuló el plan!.")  # mensaje
+                        return HttpResponseRedirect('/valida_plan2/listarUnidades2')  # Redirije a la pantalla principal
+
+                    except:
+
+                        request.session['message_class'] = "alert alert-warning"  # Tipo mensaje
+                        messages.success(request,
+                                         "El Plan fue rechazado correctamente!, pero el servicio de correo tuvo un inconveniente favor comuníquese con su la jefatura que redactó el plan para informarle del rechazo.")  # mensaje
+                        return HttpResponseRedirect('/valida_plan2/listarUnidades2')  # Redirije a la pantalla principal
+
 
                 except:
-
-                    request.session['message_class'] = "alert alert-warning"  # Tipo mensaje
-                    messages.success(request,
-                                     "El Plan fue rechazado correctamente!, pero el servicio de correo tuvo un inconveniente favor comuníquese con su la jefatura que redactó el plan para informarle del rechazo.")  # mensaje
-                    return HttpResponseRedirect('/valida_plan2/listarUnidades2')  # Redirije a la pantalla principal
-
-
-            except:
+                    request.session['message_class'] = "alert alert-danger"
+                    messages.error(self.request,
+                                   "Error interno: El plan no fue rechazado, intente nuevamente o comuníquese con el administrador.")
+                    return HttpResponseRedirect('/valida_plan2/listarUnidades2')
+            else:
                 request.session['message_class'] = "alert alert-danger"
-                messages.error(self.request,
-                               "Error interno: El plan no fue rechazado, intente nuevamente o comuníquese con el administrador.")
+                messages.error(self.request, "Debe ingresar al menos una observacion para rechazar el plan.")
                 return HttpResponseRedirect('/valida_plan2/listarUnidades2')
         else:
             request.session['message_class'] = "alert alert-danger"
-            messages.error(self.request, "Debe ingresar al menos una observacion para rechazar el plan.")
+            messages.error(self.request, "Para rechazar el plan, primero debe leer todas las observaciones.")
             return HttpResponseRedirect('/valida_plan2/listarUnidades2')
+
+
 
 
 class AceptaPlan(UpdateView):
@@ -206,6 +225,7 @@ class AceptaPlan(UpdateView):
     def post(self, request, *args, **kwargs):
         self.object = self.get_object
         id_controlador = kwargs['pk']
+        id_usuario_actual = self.request.user.id
 
         try:
             periodo_actual = Glo_Periodos.objects.get(id_estado=1)
@@ -229,47 +249,49 @@ class AceptaPlan(UpdateView):
             estado = 10
         estado = int(estado)
         controladorPlan.estado_flujo_id = int(estado)
-        try:
-            controladorPlan.save()
 
+        count_obs_no_vistas = Ges_Observaciones.objects.filter(
+            Q(id_controlador=id_controlador) & Q(observado=1) & ~Q(user_observa_id=id_usuario_actual)).count()
+        count_obs_no_vistas_generales = Ges_Observaciones_sr.objects.filter(
+            Q(id_controlador=id_controlador) & Q(observado=1) & ~Q(user_observa_id=id_usuario_actual)).count()
+
+        if count_obs_no_vistas == 0 and count_obs_no_vistas_generales == 0:
             try:
+                controladorPlan.save()
 
-                EnviarCorreoAcepta_formulador(email_jefatura)
-                EnviarCorreoAcepta_jefaturas(emails_jefaturas, area_plan)
-                EnviarCorreoAcepta_Planificacion(email_admin_planificacion,area_plan )
+                try:
 
-                request.session['message_class'] = "alert alert-success"  # Tipo mensaje
-                messages.success(request,
-                                 "El Plan fue aceptado correctamente y el correo de notificación fue enviado al área de Planificación!.")  # mensaje
-                return HttpResponseRedirect('/valida_plan2/listarUnidades2')  # Redirije a la pantalla principal
+                    EnviarCorreoAcepta_formulador(email_jefatura)
+                    EnviarCorreoAcepta_jefaturas(emails_jefaturas, area_plan)
+                    EnviarCorreoAcepta_Planificacion(email_admin_planificacion, area_plan)
+
+                    request.session['message_class'] = "alert alert-success"  # Tipo mensaje
+                    messages.success(request,
+                                     "El Plan fue aceptado correctamente y el correo de notificación fue enviado al área de Planificación!.")  # mensaje
+                    return HttpResponseRedirect('/valida_plan2/listarUnidades2')  # Redirije a la pantalla principal
+
+                except:
+
+                    request.session['message_class'] = "alert alert-warning"  # Tipo mensaje
+                    messages.success(request,
+                                     "El Plan fue aceptado correctamente!, pero el servicio de correo tuvo un inconveniente favor comuníquese con el área de Planificación informando el envío del plan de gestión.")  # mensaje
+                    return HttpResponseRedirect('/valida_plan2/listarUnidades2')  # Redirije a la pantalla principal
+
 
             except:
+                request.session['message_class'] = "alert alert-danger"
+                messages.error(self.request,
+                               "Error interno: El plan no ha podido ser aceptado. Comuníquese con el administrador.")
+                return HttpResponseRedirect('/valida_plan2/listarUnidades2')
 
-                request.session['message_class'] = "alert alert-warning"  # Tipo mensaje
-                messages.success(request,
-                                 "El Plan fue aceptado correctamente!, pero el servicio de correo tuvo un inconveniente favor comuníquese con el área de Planificación informando el envío del plan de gestión.")  # mensaje
-                return HttpResponseRedirect('/valida_plan2/listarUnidades2')  # Redirije a la pantalla principal
+        else:
 
-            # request.session['message_class'] = "alert alert-success"
-            # messages.success(self.request, "El plan fue aceptado correctamente y enviado al área de Planificación para su revisión.")
-            # #idcorreoJefatura = [email_jefatura_ingresaAct]
-            # subject = 'Plan Aceptado'
-            # message = 'Estimada(o) Usuaria(o), Su plan enviado para revisión fue aceptado.  Atte. Subdpto. de Planificación Institucional.>Correo generado automaticamente no responder.'
-            # messageHtml = 'Estimada(o) Usuaria(o),<br> Su plan enviado para revisión fue aceptado. <br> Atte. <br>Subdpto. de Planificación Institucional.<br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
-            # # send_correo(idcorreoJefatura, subject, message, messageHtml)
-            # # este correo se le debe enviar al analista
-            # #email_jefatura_2revision = email_jefatura_2revision
-            # #idcorreoJefatura = [email_jefatura_2revision]
-            # subject = 'Revisión de Plan'
-            # message = 'Estimada(o) Usuaria(o), Se ha cargado un nuevo plan  para su revisión.  Atte. Subdpto. de Planificación Institucional.>Correo generado automaticamente no responder.'
-            # messageHtml = 'Estimada(o) Usuaria(o),<br> Se ha cargado un nuevo plan  para su revisión. <br> Atte. <br>Subdpto. de Planificación Institucional.<br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
-            # # send_correo(idcorreoJefatura, subject, message, messageHtml)
-            # return HttpResponseRedirect('/valida_plan2/listarUnidades2')
-        except:
             request.session['message_class'] = "alert alert-danger"
             messages.error(self.request,
-                           "Error interno: El plan no ha podido ser aceptado. Comuníquese con el administrador.")
+                           "Estimado usuario, para enviar el plan debe leer todas las observaciones relacionadas.")
             return HttpResponseRedirect('/valida_plan2/listarUnidades2')
+
+
 
 
 
@@ -297,17 +319,24 @@ class UnidadesList(ListView): #Modificado por JR- sprint 8 - OK
         try:
             id_jefatura = Ges_Jefatura.objects.get(id_user=id_usuario_actual)
 
-            count_no_vistos = Ges_Observaciones_sr.objects.values('id_controlador').filter(
+            count_no_vistos = Ges_Observaciones.objects.values('id_controlador').filter(
                 id_controlador=OuterRef('pk')).annotate(
-                count_id_actividad=Count('id', filter=Q(observado=1)  & Q(id_periodo=periodo_actual.id) & (~Q(user_observa=id_usuario_actual))))
+                count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (
+                    ~Q(user_observa=id_usuario_actual))))
 
             count_observaciones = Ges_Observaciones_sr.objects.values('id_controlador').filter(
                 id_controlador=OuterRef('pk')).annotate(
                 count_id_actividad=Count('id'))
 
+            count_no_vistos_generales = Ges_Observaciones_sr.objects.values('id_controlador').filter(
+                id_controlador=OuterRef('pk')).annotate(
+                count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (
+                    ~Q(user_observa=id_usuario_actual))))
+
             id_controlador = Ges_Controlador.objects.filter(
                 Q(jefatura_segundarevision=id_jefatura.id) & Q(id_periodo=periodo_actual.id) & Q(estado_flujo=5)).annotate(
                 count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
+                count_no_vistos_generales=Subquery(count_no_vistos_generales.values('count_id_actividad')),
                 count_observaciones=Subquery(count_observaciones.values('count_id_actividad'))).order_by(
                 '-count_no_vistos', '-count_observaciones')
 
@@ -345,6 +374,45 @@ class Objetivos(ListView): #Modificado por JR- sprint 8 - OK
         self.request.session['id_controlador_real'] = controlador.id
        # vaar= controlador.id_jefatura.id_nivel_id
 
+
+
+        try:
+
+            total_dias = list(Ges_Registro_Horas.objects.filter(
+                Q(id_nivel=controlador.id_jefatura.id_nivel_id) & Q(id_periodo=periodo_actual.id)).aggregate(
+                Sum('dias_habiles')).values())[0]
+
+            total_utilizado = list(Ges_Actividad.objects.filter(
+                Q(id_controlador=controlador.id) & Q(id_periodo=periodo_actual.id)).aggregate(
+                Sum('total_horas')).values())[0]
+
+            if total_dias != None:
+                total_horas = total_dias * 8
+            else:
+                total_horas = 0
+
+            if total_utilizado != None:
+                consumidas = total_utilizado
+                total_utilizado = total_horas - total_utilizado
+                try:
+                    avance_porcentaje = (consumidas / total_horas) * 100
+                    avance_porcentaje = Decimal(avance_porcentaje)
+                    avance_porcentaje = avance_porcentaje.quantize(Decimal('0.1'), rounding=ROUND_UP)
+                except ZeroDivisionError:
+                    avance_porcentaje = 0
+
+            else:
+                total_utilizado = total_horas
+                consumidas = 0
+                avance_porcentaje = 0
+            total_utilizado = int(total_utilizado)
+            consumidas = int(consumidas)
+
+        except Ges_Registro_Horas.DoesNotExist:
+            return None
+
+
+
         id_nivel = Ges_Niveles.objects.get(
             Q(id=controlador.id_jefatura.id_nivel_id) & Q(id_periodo=periodo_actual.id))
 
@@ -359,18 +427,30 @@ class Objetivos(ListView): #Modificado por JR- sprint 8 - OK
                    id_objetivo_tacticotn=OuterRef('pk')).annotate(
                    count_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id)))
 
-                count_no_vistos = Ges_Observaciones_sr.objects.values('id_objetivo_tacticotn').filter(
+                count_no_vistos_general = Ges_Observaciones_sr.objects.values('id_objetivo_tacticotn').filter(
                     id_objetivo_tacticotn=OuterRef('pk')).annotate(
                     count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (~Q(user_observa=id_usuario_actual))))
 
-                count_observaciones = Ges_Observaciones_sr.objects.values('id_objetivo_tacticotn').filter(
+                count_no_vistos = Ges_Observaciones.objects.values('id_objetivo').filter(
+                    id_objetivo=OuterRef('pk')).annotate(
+                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (
+                        ~Q(user_observa=id_usuario_actual))))
+
+                count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(
+                    id_objetivo=OuterRef('pk')).annotate(
+                    count_id_actividad=Count('id'))
+
+
+                count_observaciones_general = Ges_Observaciones_sr.objects.values('id_objetivo_tacticotn').filter(
                     id_objetivo_tacticotn=OuterRef('pk')).annotate(
                     count_id_actividad=Count('id'))
 
                 replies2 = Ges_Objetivo_TacticoTN.objects.filter(
                     Q(id_tercer_nivel_id=id_nivel.id_tercer_nivel_id) & Q(id_periodo=periodo_actual.id)).annotate(
+                    count_no_vistos_general=Subquery(count_no_vistos_general.values('count_id_actividad')),
                     count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
                     count_observaciones=Subquery(count_observaciones.values('count_id_actividad')),
+                    count_observaciones_general=Subquery(count_observaciones_general.values('count_id_actividad')),
                     count_actividad=Subquery(answer_subquery.values('count_actividad')[0:1])).order_by(
                     '-count_no_vistos', '-count_observaciones')
 
@@ -382,18 +462,31 @@ class Objetivos(ListView): #Modificado por JR- sprint 8 - OK
                    id_objetivo_tactico=OuterRef('pk')).annotate(
                    count_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id)))
 
-                count_no_vistos = Ges_Observaciones_sr.objects.values('id_objetivo_tactico').filter(
+                count_no_vistos_general = Ges_Observaciones_sr.objects.values('id_objetivo_tactico').filter(
                     id_objetivo_tactico=OuterRef('pk')).annotate(
                     count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (~Q(user_observa=id_usuario_actual))))
 
-                count_observaciones = Ges_Observaciones_sr.objects.values('id_objetivo_tactico').filter(
+                count_no_vistos = Ges_Observaciones.objects.values('id_objetivo').filter(
+                    id_objetivo=OuterRef('pk')).annotate(
+                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (
+                        ~Q(user_observa=id_usuario_actual))))
+
+                count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(
+                    id_objetivo=OuterRef('pk')).annotate(
+                    count_id_actividad=Count('id'))
+
+
+
+                count_observaciones_general = Ges_Observaciones_sr.objects.values('id_objetivo_tactico').filter(
                     id_objetivo_tactico=OuterRef('pk')).annotate(
                     count_id_actividad=Count('id'))
 
                 replies2 = Ges_Objetivo_Tactico.objects.filter(
                     Q(id_segundo_nivel_id=id_nivel.id_segundo_nivel_id) & Q(id_periodo=periodo_actual.id)).annotate(
+                    count_no_vistos_general=Subquery(count_no_vistos_general.values('count_id_actividad')),
                     count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
                     count_observaciones=Subquery(count_observaciones.values('count_id_actividad')),
+                    count_observaciones_general=Subquery(count_observaciones_general.values('count_id_actividad')),
                     count_actividad=Subquery(answer_subquery.values('count_actividad')[0:1])).order_by(
                     '-count_no_vistos', '-count_observaciones')
 
@@ -405,17 +498,29 @@ class Objetivos(ListView): #Modificado por JR- sprint 8 - OK
                    id_objetivo_operativo=OuterRef('pk')).annotate(
                    count_id_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id)))
 
-                count_no_vistos = Ges_Observaciones_sr.objects.values('id_objetivo_operativo').filter(
+                count_no_vistos_general = Ges_Observaciones_sr.objects.values('id_objetivo_operativo').filter(
                     id_objetivo_operativo=OuterRef('pk')).annotate(
                     count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (~Q(user_observa=id_usuario_actual))))
 
-                count_observaciones = Ges_Observaciones_sr.objects.values('id_objetivo_operativo').filter(
+                count_no_vistos = Ges_Observaciones.objects.values('id_objetivo').filter(
+                    id_objetivo=OuterRef('pk')).annotate(
+                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (
+                        ~Q(user_observa=id_usuario_actual))))
+
+                count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(
+                    id_objetivo=OuterRef('pk')).annotate(
+                    count_id_actividad=Count('id'))
+
+
+                count_observaciones_general = Ges_Observaciones_sr.objects.values('id_objetivo_operativo').filter(
                     id_objetivo_operativo=OuterRef('pk')).annotate(
                     count_id_actividad=Count('id'))
 
                 replies2 = Ges_Objetivo_Operativo.objects.filter(
                     Q(id_cuarto_nivel_id=id_nivel.id_cuarto_nivel_id) & Q(id_periodo=periodo_actual.id)).annotate(
+                    count_no_vistos_general=Subquery(count_no_vistos_general.values('count_id_actividad')),
                     count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
+                    count_observaciones_general=Subquery(count_observaciones_general.values('count_id_actividad')),
                     count_observaciones=Subquery(count_observaciones.values('count_id_actividad')),
                     count_actividad=Subquery(answer_subquery.values('count_id_actividad'))
                     ).order_by(
@@ -426,6 +531,16 @@ class Objetivos(ListView): #Modificado por JR- sprint 8 - OK
             context['orden'] = {'orden_nivel': id_orden}
             context['niveles'] = replies2
             context['objetivo'] = id_nivel
+            context['total_disponible'] = {'total_dias': total_dias, 'total_horas': total_horas,
+                                           'total_utilizado': total_utilizado,
+                                           'consumidas': consumidas,
+                                           'avance_porcentaje': avance_porcentaje
+
+                                           }
+
+
+
+
             self.request.session['id_orden'] = id_orden
 
 
@@ -458,9 +573,15 @@ class Actividades(ListView): # Modificado por JR- sprint 8 - OK
             count_observaciones = Ges_Observaciones_sr.objects.values('id_actividad').filter(id_actividad=OuterRef('pk')).annotate(
             count_id_actividad=Count('id'))
 
+            count_no_vistos = Ges_Observaciones.objects.values('id_actividad_id').filter(
+                id_actividad=OuterRef('pk')).annotate(
+                count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (
+                    ~Q(user_observa=id_usuario_actual))))
+
             lista_actividades = Ges_Actividad.objects.filter(
               Q(id_objetivo_tactico=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)).annotate(
-             count_observaciones=Subquery(count_observaciones.values('count_id_actividad'))).order_by('-count_observaciones')
+                count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
+                count_observaciones=Subquery(count_observaciones.values('count_id_actividad'))).order_by('-count_observaciones')
 
             nombre=  Ges_Objetivo_Tactico.objects.get(id=self.kwargs['pk'])
 
@@ -471,9 +592,15 @@ class Actividades(ListView): # Modificado por JR- sprint 8 - OK
             count_observaciones = Ges_Observaciones.objects.values('id_actividad').filter(id_actividad=OuterRef('pk')).annotate(
             count_id_actividad=Count('id'))
 
+            count_no_vistos = Ges_Observaciones.objects.values('id_actividad_id').filter(
+                id_actividad=OuterRef('pk')).annotate(
+                count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (
+                    ~Q(user_observa=id_usuario_actual))))
+
             lista_actividades = Ges_Actividad.objects.filter(
               Q(id_objetivo_tacticotn=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)).annotate(
-             count_observaciones=Subquery(count_observaciones.values('count_id_actividad'))).order_by('-count_observaciones')
+                count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
+                count_observaciones=Subquery(count_observaciones.values('count_id_actividad'))).order_by('-count_observaciones')
 
 
             nombre = Ges_Objetivo_TacticoTN.objects.get(id=self.kwargs['pk'])
@@ -484,9 +611,15 @@ class Actividades(ListView): # Modificado por JR- sprint 8 - OK
             count_observaciones = Ges_Observaciones.objects.values('id_actividad').filter(id_actividad=OuterRef('pk')).annotate(
             count_id_actividad=Count('id'))
 
+            count_no_vistos = Ges_Observaciones.objects.values('id_actividad_id').filter(
+                id_actividad=OuterRef('pk')).annotate(
+                count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (
+                    ~Q(user_observa=id_usuario_actual))))
+
             lista_actividades = Ges_Actividad.objects.filter(
               Q(id_objetivo_operativo=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)).annotate(
-             count_observaciones=Subquery(count_observaciones.values('count_id_actividad'))).order_by('-count_observaciones')
+                count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
+                count_observaciones=Subquery(count_observaciones.values('count_id_actividad'))).order_by('-count_observaciones')
 
 
             nombre = Ges_Objetivo_Operativo.objects.get(id=self.kwargs['pk'])
@@ -551,7 +684,13 @@ def GestionObservacionesVer(request, id):
     except Glo_Periodos.DoesNotExist:
         return None
 
+    id_usuario_actual = request.user.id  # obtiene id usuario actual
 
+    novacio= Ges_Observaciones.objects.filter(Q(id_actividad=id) & Q(id_periodo=periodo_activo.id) & (~Q(user_observa=id_usuario_actual)))
+    #actualiza el estado a leido
+    if novacio:
+
+        Ges_Observaciones.objects.filter(Q(id_actividad=id) & Q(id_periodo=periodo_activo.id) & (~Q(user_observa=id_usuario_actual))).update(observado=0,)
 
     qs = Ges_Observaciones.objects.filter(Q(id_actividad=id) & Q(id_periodo=periodo_activo.id))
 
@@ -626,7 +765,7 @@ def GestionObservacionesObjetivosVp2(request, id):
     if var == 2:
         qs = Ges_Observaciones_sr.objects.filter(Q(id_objetivo_tactico=id) & Q(id_periodo=periodo_activo.id))
     if var == 3:
-        qs = Ges_Observaciones_sr.objects.filter(Q(id_objetivo_tactivotn=id) & Q(id_periodo=periodo_activo.id))
+        qs = Ges_Observaciones_sr.objects.filter(Q(id_objetivo_tacticotn=id) & Q(id_periodo=periodo_activo.id))
     if var == 4:
         qs = Ges_Observaciones_sr.objects.filter(Q(id_objetivo_operativo=id) & Q(id_periodo=periodo_activo.id))
 
@@ -668,3 +807,12 @@ def GestionObservacionesObjetivosVp2(request, id):
 
     return render(request, template_name, args)
 
+def ActividadDetalle(request, id):
+
+    template_name = "valida_plan2/modal_valida_plan_actividad_detalle.html"
+    qs = Ges_Actividad.objects.get(id=id) #Cualquier QS con la que quiera obtener datos para enviar al modal.
+    context = {"qs": qs} # aquí le envío lo que quiero al modal para que lo muestre, incluso una lista.
+
+
+
+    return render(request, template_name, context)

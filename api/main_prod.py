@@ -40,7 +40,7 @@ if __name__=='__main__':
     #####//Código en caso que se requiera información adicional dinámica en la imagen de lo contrario no es necesario####
 
 
-    # ##Convierte a Base64 el documento pdf hasta 20 megas
+    #Convierte a base 64 la imagen para agregarla al layout
     with open('out2.png', 'rb') as timbre_file:
         jpg_file64 = base64.b64encode(timbre_file.read()).decode('utf-8')
 
@@ -69,12 +69,13 @@ if __name__=='__main__':
                         'a08253d568bf46f2a5ef8217dbb06da7', algorithm='HS256').decode('utf-8')
 
 
+    #El doc_estampado nace al ejecutar main_pdf.py que toma el doc_original y le coloca una frase y un QR al final de la hoja
 
-    with open('doc.pdf', 'rb') as pdf_file: # Convierte a Base64 el documento pdf hasta 20 megas
+    with open('doc_estampado.pdf', 'rb') as pdf_file: # Convierte a Base64 el documento pdf hasta 20 megas
         pdfb64 = base64.b64encode(pdf_file.read()).decode('utf-8')
 
 
-    with open('doc.pdf', "rb") as f: # Genera el checksum desde el documento pdf hasta 20 megas
+    with open('doc_estampado.pdf', "rb") as f: # Genera el checksum desde el documento pdf hasta 20 megas
         bytesConv = f.read()
         readable_hash = hashlib.sha256(bytesConv).hexdigest()
         checksum= readable_hash
@@ -103,7 +104,8 @@ if __name__=='__main__':
 
         pdfSigned = base64.b64decode(str(pdfb64Signed)) # convierte a pdf
 
-        with open(os.path.expanduser('DocumentoFirmadoProd.pdf'), 'wb') as fout: #guarda el pdf en carpeta
+        #RECORDAR QUE EL EN DOC_FIRMADO.PDF EL TIMBRE LO COLOCA EL LAYOUT. LA FRASE Y EL QR VIENEN DESDE MAIN_PDF.PY
+        with open(os.path.expanduser('doc_firmado.pdf'), 'wb') as fout: #guarda el pdf en carpeta
             fout.write(pdfSigned)
             fout.close()
 

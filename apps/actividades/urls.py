@@ -1,6 +1,6 @@
 from django.conf.urls import url, include
 from apps.actividades.views import ActividadesObjetivosList,ActividadesDetail,ActividadCreate, ActividadesDelete,\
-    ActividadEdit,update_estate, GestionObservacionesObjetivos,GestionObservacionesActividades, calculaferiados
+    ActividadEdit,update_estate, GestionObservacionesObjetivos,GestionObservacionesActividades, calculaferiados, nuevaActividadAjax ,CalcularFeriados
 from django.contrib.auth.decorators import login_required
 from django.urls import path
 
@@ -16,7 +16,9 @@ urlpatterns = [
 
     url(r'^updateEstate/', update_estate, name='updateEstate'),
     url(r'^calculaferiados/', calculaferiados, name='calculaferiados'),
+    url(r'^calculaferiadoscreate/', CalcularFeriados, name='calculaferiadoscreate'),
 
+    url(r'^nuevaActividadAjax/', nuevaActividadAjax, name='nuevaActividadAjax'),
     path('gestionObservacionObjetivos/<int:id>', GestionObservacionesObjetivos, name="gestionobservacionobjetivos"),
     path('gestionObservacionActividades/<int:id>', GestionObservacionesActividades, name="gestionobservacionactividades"),
 

@@ -9,7 +9,7 @@ from django.db.models import Q
 from django.db.models import Case, CharField, Value, When
 from apps.periodos.models import Glo_Periodos
 from apps.objetivos.models import Ges_Objetivo_Estrategico, Ges_Objetivo_Operativo, Ges_Objetivo_Tactico, Ges_Objetivo_TacticoTN
-from apps.actividades.models import Ges_Actividad
+from apps.actividades.models import Ges_Actividad, Ges_Actividad_Historia
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
@@ -381,7 +381,7 @@ class ActividadCreate(SuccessMessageMixin, CreateView):
         kwargs['transversal'] = self.request.session['tv']
 
         return kwargs
-
+    '''
     def post(self, request, *args, **kwargs):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
@@ -480,6 +480,106 @@ class ActividadCreate(SuccessMessageMixin, CreateView):
         #     messages.error(self.request,
         #                    "Aviso :  El total de horas de la actividad supera el total de horas entre la fecha de inicio y término.")
         #     return HttpResponseRedirect('/actividades/detalle/' + str(self.request.session['id_objetivo']))
+        '''
+
+def CalcularFeriados(request):
+    response_data = {}
+    try:
+        periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+    except Glo_Periodos.DoesNotExist:
+        return None
+    if request.POST.get('action') == 'post':  # Ajax para enviar el calulo de feriados
+
+        fecha_inicio_actividad = request.POST.get('fecha_inicio_actividad')
+        fecha_termino_actividad = request.POST.get('fecha_termino_actividad')
+
+        feriados = Ges_Feriados.objects.filter(Q(id_periodo=periodo_actual.id) & Q(fecha_feriado__range=(
+            fecha_inicio_actividad, fecha_termino_actividad))).count()
+
+        response_data['feriados'] = feriados
+
+    return JsonResponse(response_data)
+
+def nuevaActividadAjax(request):
+    response_data = {}
+    id_usuario_actual = request.user.id
+
+    try:
+        periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+    except Glo_Periodos.DoesNotExist:
+        return None
+
+    try:
+        id_jefatura = Ges_Jefatura.objects.get(Q(id_user=id_usuario_actual) & Q(id_periodo=periodo_actual.id))
+    except Ges_Jefatura.DoesNotExist:
+        return None
+
+    try:
+        usuario_controlador = Ges_Controlador.objects.get(id_jefatura=id_jefatura.id)
+    except Ges_Controlador.DoesNotExist:
+        return None
+
+    if request.session['id_orden'] == 2:
+        id_objetivo = Ges_Objetivo_Tactico.objects.get(id=request.session['id_objetivo'])
+        id_objetivo_tactico = id_objetivo
+    else:
+        id_objetivo_tactico = None
+
+    if request.session['id_orden'] == 3:
+        id_objetivo = Ges_Objetivo_TacticoTN.objects.get(id=request.session['id_objetivo'])
+        id_objetivo_tacticotn = id_objetivo
+    else:
+        id_objetivo_tacticotn = None
+
+    if request.session['id_orden'] == 4:
+        id_objetivo = Ges_Objetivo_Operativo.objects.get(id=request.session['id_objetivo'])
+        id_objetivo_operativo = id_objetivo
+    else:
+        id_objetivo_operativo = None
+
+    #get parameters
+    if request.POST.get('action') == 'post':
+        Descripcion = request.POST.get('Descripcion')
+        Periocidad = request.POST.get('Periocidad')
+        Horas = request.POST.get('Horas')
+        Volumen = request.POST.get('Volumen')
+        Personas = request.POST.get('Personas')
+        Familia = request.POST.get('Familia')
+        Producto = request.POST.get('Producto')
+        fecha_inicio_actividad = request.POST.get('fecha_inicio_actividad')
+        fecha_termino_actividad = request.POST.get('fecha_termino_actividad')
+        Total_horas = request.POST.get('Total_horas')
+        if Producto == "":
+            Producto = None
+
+        response_data['descripcion'] = Descripcion
+
+        Ges_Actividad.objects.create(
+
+            id_estado_actividad_id=4,
+            flag_reporta=0,
+            estado=1,
+            id_controlador=usuario_controlador,
+            id_periodo=periodo_actual,
+            descripcion_actividad=Descripcion,
+            id_periodicidad_id=Periocidad,
+            horas_actividad=Horas,
+            volumen=Volumen,
+            personas_asignadas=Personas,
+            id_familia_cargo_id=Familia,
+            id_producto_estadistico_id=Producto,
+            fecha_inicio_actividad=fecha_inicio_actividad,
+            fecha_termino_actividad=fecha_termino_actividad,
+            total_horas=Total_horas,
+            id_objetivo_tactico=id_objetivo_tactico,
+            id_objetivo_tacticotn=id_objetivo_tacticotn,
+            id_objetivo_operativo=id_objetivo_operativo,
+
+        )
+
+    return JsonResponse(response_data)
+
+
 
 class ActividadEdit(SuccessMessageMixin, UpdateView ):
     model = Ges_Actividad
@@ -581,7 +681,19 @@ class ActividadesDelete(SuccessMessageMixin, DeleteView ):
 
     def delete(self, request, *args, **kwargs):
         obj = self.get_object()
+
+
+
         try:
+
+            id_usuario_actual = self.request.user.id  # obtiene id usuario actual
+            id_objetivo = self.request.session['id_objetivo']
+            id_actividad = kwargs['pk']
+            ObservacionesDelete(id_usuario_actual, id_objetivo, id_actividad)  # Elimina objetivos asociados
+
+
+
+
             obj.delete()
             request.session['message_class'] = "alert alert-success"
             messages.success(self.request, "El registro fue eliminado correctamente!")
@@ -646,7 +758,7 @@ def GestionObservacionesObjetivos(request, id):
     if var == 2:
         qs = Ges_Observaciones_sr.objects.filter(Q(id_objetivo_tactico=id) & Q(id_periodo=periodo_activo.id))
     if var == 3:
-        qs = Ges_Observaciones_sr.objects.filter(Q(id_objetivo_tactivotn=id) & Q(id_periodo=periodo_activo.id))
+        qs = Ges_Observaciones_sr.objects.filter(Q(id_objetivo_tacticotn=id) & Q(id_periodo=periodo_activo.id))
     if var == 4:
         qs = Ges_Observaciones_sr.objects.filter(Q(id_objetivo_operativo=id) & Q(id_periodo=periodo_activo.id))
 
@@ -833,6 +945,30 @@ def calculaferiados(request):
         return JsonResponse(response_data)
 
     return render(request, '/actividades/listar/', {'messages':'success'})
+
+
+def ObservacionesDelete(id_usuario_actual, id_objetivo, id_actividad):
+
+    id_jefatura = Ges_Jefatura.objects.get(id_user=id_usuario_actual)
+
+    Nivel_Controlador= Ges_Controlador.objects.get(id_jefatura=id_jefatura)
+
+    # if Nivel_Controlador.nivel_inicial == 2:
+    #     Ges_Observaciones_sr.objects.filter(id_objetivo_tactico=id_objetivo).delete()
+    #
+    # if Nivel_Controlador.nivel_inicial == 3:
+    #     Ges_Observaciones_sr.objects.filter(id_objetivo_tacticotn=id_objetivo).delete()
+    #
+    # if Nivel_Controlador.nivel_inicial == 4:
+    #     Ges_Observaciones_sr.objects.filter(id_objetivo_operativo=id_objetivo).delete()
+
+    Ges_Observaciones.objects.filter(id_actividad=id_actividad).delete()
+    Ges_Actividad_Historia.objects.filter(id_actividad=id_actividad).delete()
+
+
+    return None
+
+
 
 
 

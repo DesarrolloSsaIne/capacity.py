@@ -123,6 +123,10 @@
 
 										<p id="textError"></p>
 								</div>
+				<div class="alert alert-warning" style="display:none;" id="mjeAdver">
+
+										<p id="textAdver"></p>
+									</div>
 			</form>
 <script>
 
@@ -165,6 +169,28 @@ fecha_termino = $("#fecha_termino_actividad").val();
 /////////////////////////////////////////////////// fin ajax feriados//////////////////////////////////////////////
 });
 
+$( "#fecha_termino_actividad, #fecha_inicio_actividad" )
+  .focusout(function() {
+  var anio_actual= 2021
+
+	fecha_inicio = $("#fecha_inicio_actividad").val();
+	fecha_termino = $("#fecha_termino_actividad").val();
+
+    var valuesStart = fecha_inicio.split("-");
+	var anio_inicio = valuesStart[0];
+
+    var valuesStart = fecha_termino.split("-");
+	var anio_termino = valuesStart[0];
+
+	if (anio_inicio!=anio_actual || anio_termino!=anio_actual){
+
+	$("#mjeAdver").css("display","block");
+	$("#textAdver").text("Advertencia : El sistema se encuentra habilitado para el periodo 2021")
+	}
+	else
+	{$("#mjeAdver").css("display","none");}
+  })
+
 $("#confirmar").click(function(){
 
 var horas_actividad;
@@ -178,11 +204,11 @@ horas_disponibles = $('#total_disponible_id').val()
 horas_actividad= parseInt(horas_actividad)
 horas_disponibles = parseInt(horas_disponibles)
 
-if (horas_actividad>horas_disponibles){
-	$("#mjeError").css("display","block");
-	$("#textError").text("Error : No cuenta con saldo de horas disponibles para asignar a la actividad.");
-return false
-}
+//if (horas_actividad>horas_disponibles){
+	//$("#mjeError").css("display","block");
+	//$("#textError").text("Error : No cuenta con saldo de horas disponibles para asignar a la actividad.");
+//return false
+//}
 
 if (horas_actividad<1){
 	$("#mjeError").css("display","block");
@@ -191,7 +217,8 @@ return false
 }
 
 
-var anio_actual= moment().year();
+var anio_actual= 2021
+//var anio_actual= moment().year();
 
 fecha_inicio = $("#fecha_inicio_actividad").val();
 fecha_termino = $("#fecha_termino_actividad").val();
@@ -210,9 +237,10 @@ if (anio_inicio==anio_actual && anio_termino==anio_actual){
 	//alert('ok');
 }else{
 	$("#mjeError").css("display","block");
-	$("#textError").text("Error : Las fechas seleccionadas deben corresponder al año en curso.");
+	$("#textError").text("Error : Las fechas seleccionadas deben corresponder al año 2021.");
 return false
 }
+
 
 
 if (moment(fecha_inicio).isBefore(fecha_termino) || moment(fecha_inicio).isSameOrBefore(fecha_termino)){
@@ -325,10 +353,15 @@ Date.prototype.getWeekNumber = function(){
 
 function checkWeek($fecha) {
   var s = $fecha;
-  var m = moment(s, 'YYYY-MM-DD');
-  //alert(m.format('W'));
-  var $semana = m.toDate().getWeekNumber()
-  return $semana
+
+  //var m = moment(s, 'YYYY-MM-DD');
+  //var $semana = m.toDate().getWeekNumber()
+
+  s= new Date(s)
+  let onejan = new Date(s.getFullYear(), 0, 1);
+  let week = Math.ceil( (((s.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7 );
+  //return $semana
+  return week
 }
 
 $(function() {
@@ -348,11 +381,17 @@ $(function() {
 		if(periocidad == "Semanal")
  		{
 			//var dia_semanas = semanadelano($('#fecha_inicio_actividad').val())
+			var inicio= $('#fecha_inicio_actividad').val()
+			var termino = $('#fecha_termino_actividad').val()
 			var dia_semana0 = checkWeek($('#fecha_inicio_actividad').val())
 			var dia_semana1 = checkWeek($('#fecha_termino_actividad').val())
+			if(inicio == "2021-01-01")
+			{dia_semana0 = 1 }
+			if(termino == "2021-01-01")
+			{dia_semana1 = 1 }
 			var num_semana = (dia_semana1- dia_semana0) + 1
  			total = (+horas) * (+volumen) * (+personas) * (+num_semana);
-	console.log(total)
+	//console.log(total)
  		}//fin condicion
 
  			if(periocidad == "Quincenal")

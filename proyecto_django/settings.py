@@ -61,9 +61,9 @@ LDAP_AUTH_USER_LOOKUP_FIELDS = ("username",)
 LDAP_AUTH_FORMAT_USERNAME = "django_python3_ldap.utils.format_username_active_directory"
 
 LDAP_AUTH_ACTIVE_DIRECTORY_DOMAIN = "INE"
-
-#LDAP_AUTH_CONNECTION_USERNAME = 'jrodriguez' #|| Si le da la chiripiorca al sincronizar descomentar
-#LDAP_AUTH_CONNECTION_PASSWORD = 'JR14202112-9'  #|| Si le da la chiripiorca al sincronizar descomentar
+#
+# LDAP_AUTH_CONNECTION_USERNAME = 'jrodriguez' #|| Si le da la chiripiorca al sincronizar descomentar
+# LDAP_AUTH_CONNECTION_PASSWORD = 'JR14202112-9'  #|| Si le da la chiripiorca al sincronizar descomentar
 
 LOGGING = {
     "version": 1,
@@ -99,6 +99,7 @@ INSTALLED_APPS = [
     'django_python3_ldap',
     'sitetree',
     'mathfilters',
+
 
 
 
@@ -197,6 +198,17 @@ DATABASES = {
     }
 }
 
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'mysql_cymysql',
+#         'NAME': 'CAPACITY_DB_PRD',
+#         'USER': 'jason',
+#         'PASSWORD': '1SUMU79S',
+#         'HOST': '10.91.163.94',
+#         'PORT': 3306,
+#     }
+# }
 
 
 # Password validation

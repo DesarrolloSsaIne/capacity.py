@@ -81,8 +81,8 @@ Registro de Horas
 
 
 
-													<td> {{ horas.fecha_inicio}}</td>
-													<td> {{ horas.fecha_termino}}</td>
+													<td><span style='display: none;'>{{horas.fecha_inicio|date:"Ymd"}}</span> {{ horas.fecha_inicio}}</td>
+													<td><span style='display: none;'>{{horas.fecha_termino|date:"Ymd"}}</span> {{ horas.fecha_termino}}</td>
 													<td class="dias_habiles"> {{ horas.dias_habiles}}</td>
                                                     <td style="width:130px;"> {% if horas.tiene_vacaciones == False %}No{% else %}Sí{%endif%}</td>
 													{% if horas.notas == NULL %}

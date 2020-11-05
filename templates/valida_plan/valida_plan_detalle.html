@@ -51,27 +51,33 @@ Objetivos Asociados al Plan
                                           {% if orden.orden_nivel == 2 %}
 
      											<th>Objetivo Táctico Segundo Nivel</th>
-											    <th title="Total Observaciones Asociadas a la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Total Obs.</th>
+														<th title="Total Observaciones Asociadas al Conjunto de Actividades (objetivo)" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Total Obs. Objetivos</th>
+												<th title="Total Observaciones Asociadas a la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Total Obs. Actividades</th>
 												 <th title="Total Actividades Asociadas al Objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Total Act.</th>
-                                                <th>Actividades</th>
+                                                   <th title="Detalle de Actividades Asociadas al Objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Actividades</th>
+												<th title="Observaciones Asociadas al Objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Observaciones</th>
 
                                           {% endif %}
 
                                           {% if orden.orden_nivel == 3 %}
 
      											<th>Objetivo Táctico Tercer Nivel</th>
-												<th title="Total Observaciones Asociadas a la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Total Obs.</th>
+															<th title="Total Observaciones Asociadas al Conjunto de Actividades (objetivo)" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Total Obs. Objetivos</th>
+												<th title="Total Observaciones Asociadas a la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Total Obs. Actividades</th>
 												 <th title="Total Actividades Asociadas al Objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Total Act.</th>
-                                                <th>Actividades</th>
+                                                   <th title="Detalle de Actividades Asociadas al Objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Actividades</th>
+												<th title="Observaciones Asociadas al Objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Observaciones</th>
 
                                           {% endif %}
 
                                           {% if orden.orden_nivel == 4 %}
 
      											<th>Objetivo Operativo</th>
-												<th title="Total Observaciones Asociadas a la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Total Obs.</th>
+											<th title="Total Observaciones Asociadas al Conjunto de Actividades (objetivo)" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Total Obs. Objetivos</th>
+												<th title="Total Observaciones Asociadas a la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Total Obs. Actividades</th>
 												 <th title="Total Actividades Asociadas al Objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Total Act.</th>
-                                                <th>Actividades</th>
+                                                   <th title="Detalle de Actividades Asociadas al Objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Actividades</th>
+												<th title="Observaciones Asociadas al Objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Observaciones</th>
 
 
                                           {% endif %}
@@ -85,7 +91,8 @@ Objetivos Asociados al Plan
 													<tr>
 
                                                         <td> {{ objetivos.descripcion_objetivo}}</td>
-															<td> {% if objetivos.count_observaciones == none %} 0 {% else %} {{ objetivos.count_observaciones}} {%endif%}</td>
+															<td> {% if objetivos.count_observaciones_obj == none %} 0 {% else %} {{ objetivos.count_observaciones_obj}} {%endif%}</td>
+														<td> {% if objetivos.count_observaciones == none %} 0 {% else %} {{ objetivos.count_observaciones}} {%endif%}</td>
 															<td>  {% if objetivos.count_actividades == none %} 0 {% else %} {{ objetivos.count_actividades}} {%endif%}</td>
                                                      <td style="width:60px; text-align:center;">
     														<a type="button" title="Actividades Asociadas al Objetivo"  data-toggle="tooltip" id="notification"  data-original-title="Tooltip on bottom" data-placement="bottom" class="objetivos btn btn-sm btn-success"  href="{% url 'Actividades' objetivos.id  %}"  >
@@ -94,6 +101,14 @@ Objetivos Asociados al Plan
 														</a>
 
                                                     </td>
+
+													<td style="width:40px; text-align:center;">
+														 <button type="button"  title="Observaciones Asociadas al Objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" id="notification"  class="update btn btn-sm btn-primary"  data-id="{% url 'gestionobservacionvp' objetivos.id %}"  >
+														<span class="fa fa-comments" ></span>
+														 {% if objetivos.count_no_vistos_obj != 0 and objetivos.count_no_vistos_obj != none %} <span class="badge" title="Nuevas Observaciones al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >{{ objetivos.count_no_vistos_obj }}</span> {% endif %}
+														</button>
+													 </td>
+
 
 													</tr>
 									            {% endfor %}
@@ -104,7 +119,8 @@ Objetivos Asociados al Plan
 													<tr>
 
                                                         <td> {{ objetivos.descripcion_objetivo}}</td>
-															<td> {% if objetivos.count_observaciones == none %} 0 {% else %} {{ objetivos.count_observaciones}} {%endif%}</td>
+															<td> {% if objetivos.count_observaciones_obj == none %} 0 {% else %} {{ objetivos.count_observaciones_obj}} {%endif%}</td>
+														<td> {% if objetivos.count_observaciones == none %} 0 {% else %} {{ objetivos.count_observaciones}} {%endif%}</td>
 														<td>  {% if objetivos.count_actividades == none %} 0 {% else %} {{ objetivos.count_actividades}} {%endif%}</td>
 
                                                      <td style="width:60px; text-align:center;">
@@ -113,6 +129,13 @@ Objetivos Asociados al Plan
 														  {% if objetivos.count_no_vistos != 0 and objetivos.count_no_vistos != none %}	<span class="badge" title="Nuevas Observaciones"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >{{ objetivos.count_no_vistos }}</span>  {%endif%}
                                                    </a>
                                                     </td>
+
+														<td style="width:40px; text-align:center;">
+														 <button type="button"  title="Observaciones Asociadas al Objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" id="notification"  class="update btn btn-sm btn-primary"  data-id="{% url 'gestionobservacionvp' objetivos.id %}"  >
+														<span class="fa fa-comments" ></span>
+														 {% if objetivos.count_no_vistos_obj != 0 and objetivos.count_no_vistos_obj != none %} <span class="badge" title="Nuevas Observaciones al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >{{ objetivos.count_no_vistos_obj }}</span> {% endif %}
+														</button>
+													 </td>
 
 													</tr>
 									            {% endfor %}
@@ -123,6 +146,7 @@ Objetivos Asociados al Plan
 													<tr>
 
                                                         <td> {{ objetivos.descripcion_objetivo}}</td>
+														<td> {% if objetivos.count_observaciones_obj == none %} 0 {% else %} {{ objetivos.count_observaciones_obj}} {%endif%}</td>
 														<td> {% if objetivos.count_observaciones == none %} 0 {% else %} {{ objetivos.count_observaciones}} {%endif%}</td>
 														<td>  {% if objetivos.count_actividades == none %} 0 {% else %} {{ objetivos.count_actividades}} {%endif%}</td>
 
@@ -133,6 +157,13 @@ Objetivos Asociados al Plan
 														</a>
                                                     </td>
 
+													<td style="width:40px; text-align:center;">
+														 <button type="button"  title="Observaciones Asociadas al Objetivo" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" id="notification"  class="update btn btn-sm btn-primary"  data-id="{% url 'gestionobservacionvp' objetivos.id %}"  >
+														<span class="fa fa-comments" ></span>
+														 {% if objetivos.count_no_vistos_obj != 0 and objetivos.count_no_vistos_obj != none %} <span class="badge" title="Nuevas Observaciones al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >{{ objetivos.count_no_vistos_obj }}</span> {% endif %}
+														</button>
+													 </td>
+
 													</tr>
 									            {% endfor %}
 									  {% endif %}
@@ -142,7 +173,7 @@ Objetivos Asociados al Plan
 								</table>
 
 			<div align="right" style="margin-right:100px;" >
-							<h5 style="color:#1e7799;">Total Horas Programadas:	<b>{{total_disponible.total_horas}}</b> | Total Horas Disponibles:  <b>{{total_disponible.total_utilizado}}</b> | Porcentaje de Carga Planificada: <b>{{total_disponible.consumidas}}(<label>{{total_disponible.avance_porcentaje}}%</label>)</b> </h5>
+							<h5 style="color:#1e7799;">Total horas disponible área:	<b>{{total_disponible.total_horas}}</b> | Total Horas Disponibles:  <b>{{total_disponible.total_utilizado}}</b> | Total horas y Porcentaje de Carga Programada: <b>{{total_disponible.consumidas}}(<label>{{total_disponible.avance_porcentaje}}%</label>)</b> </h5>
 							</div>
 
 							</div>
@@ -296,7 +327,7 @@ $('#datatable-default').on('click', '.descripcion_actividad', function () {
 });
 
 $('#datatable-default').DataTable({
-"ordering": false //desactiva el ordenamiento de la tabla para que el order_by del queryset funcione. ("order": [[ 3, "desc" ]]) para ordenar desde jquery.
+//"ordering": false //desactiva el ordenamiento de la tabla para que el order_by del queryset funcione. ("order": [[ 3, "desc" ]]) para ordenar desde jquery.
 });
 
 </script>

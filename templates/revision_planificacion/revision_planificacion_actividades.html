@@ -50,13 +50,13 @@ Actividades Asociadas al Objetivo
 				<tbody>
 					{%  for objetivo in object_list %}
 					<tr>
-						<td> {{ forloop.counter }}</td>
+						<td style="width:20px;"> {{ forloop.counter }}</td>
 						<td class="descripcion_actividad"  style="cursor:pointer;  overflow: hidden;  display: table-cell;  text-overflow: ellipsis;  border: solid 1px #dddddd; white-space: nowrap;">{{ objetivo.descripcion_actividad }}</td>
 
 						<td style="width:170px;">{{ objetivo.fecha_inicio_actividad }}</td>
 						<td style="width:190px;">{{ objetivo.fecha_termino_actividad }}</td>
 
-							<td   {% if objetivo.id_estado_actividad_id == 1  %}
+							<td style="width:150px;"   {% if objetivo.id_estado_actividad_id == 1  %}
 														 style="color:red; width:140px; "
 														  {% elif objetivo.id_estado_actividad_id == 2  %}
 														 style="color:#3688fc; width:140px; "
@@ -78,9 +78,9 @@ Actividades Asociadas al Objetivo
 
 														{{ objetivo.id_estado_actividad}} {%endif%}</td>
 
-						<td style="display:none;>">{{ objetivo.count_no_vistos }}</td>
+						<td style="display:none;">{{ objetivo.count_no_vistos }}</td>
 
-						   <td> {% if objetivo.count_observaciones == none %} 0 {% else %} {{ objetivo.count_observaciones}} {%endif%}</td>
+						   <td style="width:30px;"> {% if objetivo.count_observaciones == none %} 0 {% else %} {{ objetivo.count_observaciones}} {%endif%}</td>
 
 
 						 <td style="width:80px; text-align:center;">

@@ -23,6 +23,8 @@ from django.core.mail import EmailMessage,send_mass_mail
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import get_template
 from django.template import Context
+from apps.valida_plan.models import Ges_Observaciones
+from apps.valida_plan2.models import Ges_Observaciones_sr
 
 from django.conf import settings
 
@@ -109,9 +111,14 @@ class ControladorDelete(SuccessMessageMixin, DeleteView ):
             nivel_jefatura = Ges_Controlador.objects.get(id=id_controlador)
             user_id_jefatura = nivel_jefatura.id_jefatura.id_user
 
+
+
             obj.delete()
-            g = Group.objects.get(id=1)
+
+            g = Group.objects.get(user=user_id_jefatura)
             g.user_set.remove(user_id_jefatura)
+
+
 
 
             request.session['message_class'] = "alert alert-success"
@@ -221,44 +228,60 @@ class ControladorUpdate(UpdateView):
         Actividades = Ges_Actividad.objects.filter(Q(id_periodo=periodo_actual.id) & Q(
             id_controlador=instancia_nivel.id)).count()
 
-        if Actividades != 0:
 
-            if form.is_valid():
-                form.save()
+        count_obs_no_vistas = Ges_Observaciones.objects.filter(
+            Q(id_controlador=id_nivel) & Q(observado=1) & ~Q(user_observa_id=id_usuario_actual)).count()
+        count_obs_no_vistas_generales = Ges_Observaciones_sr.objects.filter(
+            Q(id_controlador=id_nivel) & Q(observado=1) & ~Q(user_observa_id=id_usuario_actual)).count()
 
-                update_state(id_jefatura_solicita,id_jefatura,  4)
-                tipo_evento = "Envío Plan a primera revisión"
-                metodo = "Controlador - ControladorUpdate"
-                usuario_evento = nivel_usuario.id_user
-                jefatura_dirigida = idcorreoJefaturaOb.id_user
-                logEventosCreate(tipo_evento, metodo, usuario_evento, jefatura_dirigida)
+        if count_obs_no_vistas == 0 and count_obs_no_vistas_generales == 0:
+            if Actividades != 0:
 
+                if form.is_valid():
+                    form.save()
 
-                try:
+                    update_state(id_jefatura_solicita, id_jefatura, 4)
+                    tipo_evento = "Envío Plan a primera revisión"
+                    metodo = "Controlador - ControladorUpdate"
+                    usuario_evento = nivel_usuario.id_user
+                    jefatura_dirigida = idcorreoJefaturaOb.id_user
+                    logEventosCreate(tipo_evento, metodo, usuario_evento, jefatura_dirigida)
 
-                    EnviarCorreoCierre(id_jefatura, nivel_usuario.id_nivel.descripcion_nivel)
-                    request.session['message_class'] = "alert alert-success"  # Tipo mensaje
-                    messages.success(request,
-                                     "El plan fue enviado para su revisión y el correo de notificación fue enviado a su jefatura directa.!")  # mensaje
-                    return HttpResponseRedirect('/actividades/listar')  # Redirije a la pantalla principal
+                    try:
 
-                except:
+                        EnviarCorreoCierre(id_jefatura, nivel_usuario.id_nivel.descripcion_nivel)
+                        request.session['message_class'] = "alert alert-success"  # Tipo mensaje
+                        messages.success(request,
+                                         "El plan fue enviado para su revisión y el correo de notificación fue enviado a su jefatura directa.!")  # mensaje
+                        return HttpResponseRedirect('/actividades/listar')  # Redirije a la pantalla principal
 
-                    request.session['message_class'] = "alert alert-warning"  # Tipo mensaje
-                    messages.success(request,
-                                     "El plan fue enviado para su revisión! , pero el servicio de correo tuvo un inconveniente favor comuníquese con su jefatura directa para informarle el envío del plan para revisión.")  # mensaje
-                    return HttpResponseRedirect('/actividades/listar')  # Redirije a la pantalla principal
+                    except:
 
+                        request.session['message_class'] = "alert alert-warning"  # Tipo mensaje
+                        messages.success(request,
+                                         "El plan fue enviado para su revisión! , pero el servicio de correo tuvo un inconveniente favor comuníquese con su jefatura directa para informarle el envío del plan para revisión.")  # mensaje
+                        return HttpResponseRedirect('/actividades/listar')  # Redirije a la pantalla principal
+
+                else:
+
+                    request.session['message_class'] = "alert alert-danger"
+                    messages.error(self.request,
+                                   "Error interno: No se ha enviado el plan para revisión. Comuníquese con el administrador.")
+                    return HttpResponseRedirect('/actividades/listar')
             else:
-
                 request.session['message_class'] = "alert alert-danger"
                 messages.error(self.request,
-                               "Error interno: No se ha enviado el plan para revisión. Comuníquese con el administrador.")
+                               "Antes de enviar a revisión, debe ingresar actividades a su plan de gestión.")
                 return HttpResponseRedirect('/actividades/listar')
+
+
         else:
+
             request.session['message_class'] = "alert alert-danger"
-            messages.error(self.request, "Antes de enviar a revisión, debe ingresar actividades a su plan de gestión.")
+            messages.error(self.request,
+                           "Estimado usuario, para enviar el plan debe leer todas las observaciones relacionadas.")
             return HttpResponseRedirect('/actividades/listar')
+
 
 
 

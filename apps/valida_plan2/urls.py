@@ -4,7 +4,7 @@ from . import views
 from django.contrib.auth.decorators import login_required
 from django.conf.urls import url
 from apps.valida_plan2.views import UnidadesList, Objetivos, Actividades,  RechazaPlan, AceptaPlan, \
-    ObservacionesListar,GestionObservacionesVer, GestionObservacionesObjetivosVp2
+    ObservacionesListar,GestionObservacionesVer, GestionObservacionesObjetivosVp2, ActividadDetalle
 
 urlpatterns = [
 
@@ -18,6 +18,8 @@ urlpatterns = [
 
     path('gestionObservacionVer/<int:id>', GestionObservacionesVer, name="gestionobservacionver"),
 path('gestionObservacionVp2/<int:id>', GestionObservacionesObjetivosVp2, name="gestionobservacionvp2"),
+
+path('detalleactividadesVp2/<int:id>', ActividadDetalle, name="detalleactividadesValidaPlan2"),
 
 ########################################################################################################################
 ########################################################################################################################

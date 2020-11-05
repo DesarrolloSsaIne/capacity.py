@@ -38,7 +38,7 @@ Listado de Planes
 											<th>Jefatura Elabora Plan</th>
 											<th>Estado Plan</th>
 											<th>Fecha Envío Plan</th>
-											<th title="Observaciones Totales Asociadas al Plan" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Obs. Total</th>
+<!--											<th title="Observaciones Totales Asociadas al Plan" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Obs. Total</th>-->
                                             <th title="Objetivos Asociados al Plan" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Objetivos</th>
 											<th>Opciones</th>
 										</tr>
@@ -52,14 +52,18 @@ Listado de Planes
                                                     <td> {{ planes.id_jefatura.id_user }} </td>
 													<td> {{ planes.estado_flujo.descripcion_estado}}</td>
 													<td> {{ planes.fecha_ultima_modificacion}}</td>
-													<td > {% if planes.count_observaciones == none %} 0 {% else %} {{ planes.count_observaciones}} {%endif%}</td>
+<!--													<td > {% if planes.count_observaciones == none %} 0 {% else %} {{ planes.count_observaciones}} {%endif%}</td>-->
     												 <td style="text-align:center;">
 
 
-														 <a type="button" title="Objetivos Asociados al Plan" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" id="notification" class="objetivos btn btn-sm btn-success"  href="{% url 'ActividadesDetalles2'  planes.id %} ">
+														 <a type="button" title="Objetivos Asociados al Plan" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom"  id="notification" class="objetivos btn btn-sm btn-success"  href="{% url 'ActividadesDetalles2'  planes.id %} ">
 															<span class="fa fa-bars" ></span>
-															{% if planes.count_no_vistos != 0 and planes.count_no_vistos != none %} <span class="badge" title="Nuevas Observaciones"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">{{ planes.count_no_vistos }}</span> {% endif %}
-														</a>
+															{% if planes.count_no_vistos != 0 and planes.count_no_vistos != none or planes.count_no_vistos_generales != 0 and planes.count_no_vistos_generales != none %} <span class="badge" title="Nuevas Observaciones"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
+																						{% if planes.count_no_vistos == none %}{{ planes.count_no_vistos_generales }}{% endif %}
+																						{% if planes.count_no_vistos_generales == none %}{{ planes.count_no_vistos }}{% endif %}
+																						 {% if planes.count_no_vistos_generales != none and planes.count_no_vistos != none   %}{{ planes.count_no_vistos|add:planes.count_no_vistos_generales }}{% endif %}</span> {% endif %}
+
+														 </a>
 
 
 

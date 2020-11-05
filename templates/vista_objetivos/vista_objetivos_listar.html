@@ -29,7 +29,7 @@
 								</div>
 
 
-								<h2 class="panel-title">  Listado Objetivos  </h2>
+								<h2 class="panel-title">  Listado Objetivos del Área  </h2>
 
 							</header>
 							<div class="panel-body">
@@ -38,21 +38,32 @@
 										<tr>
                                           {% if orden.orden_nivel == 1 or orden.orden_nivel == 4 %}
 											<th>Eje</th>
-											<th>Objetivo Estratégico</th>
-											<th>Objetivo Táctico Tercer Nivel</th>
-											<th>Objetivo Táctico Segundo Nivel</th>
-                                             <th>Objetivo Operativo</th>
+											<th>Estratégicos</th>
+											<th>Táctico Tercer Nivel</th>
+											<th>Tácticos</th>
+                                             <th>Operativos</th>
 
 
 
 
                                           {% endif %}
-                                          {% if orden.orden_nivel == 2 or orden.orden_nivel == 3 %}
+                                          {% if orden.orden_nivel == 2  %}
+
+ 											<th>Eje</th>
+											<th>Estratégicos</th>
+											<th>Tácticos</th>
 
 
-											<th>Obj. Táctico</th>
-											<th>Obj. Estratégico</th>
-											 <th>Eje</th>
+                                          {% endif %}
+
+										  {% if  orden.orden_nivel == 3 %}
+
+ 											<th>Eje</th>
+											<th>Estratégicos</th>
+											<th>Tácticos</th>
+											<th>Tácticos Tercer Nivel</th>
+
+
                                           {% endif %}
 										</tr>
 									</thead>
@@ -73,14 +84,29 @@
 													</tr>
                                             {% endfor %}
                                       {% endif %}
-                                          {% if orden.orden_nivel == 2 or orden.orden_nivel == 3 %}
+                                          {% if orden.orden_nivel == 2  %}
                                              {% for objetivos in niveles %}
 										<tr>
 
-
-                                                    <td> {{ objetivos.descripcion_objetivo }}</td>
+											<td> {{ objetivos.id_objetivo_estrategico.ges_eje }}</td>
 											<td> {{ objetivos.id_objetivo_estrategico}}</td>
-											       <td> {{ objetivos.id_objetivo_estrategico.ges_eje }}</td>
+                                            <td> {{ objetivos.descripcion_objetivo }}</td>
+
+
+									</tr>
+                                            {% endfor %}
+                                          {% endif %}
+
+									      {% if orden.orden_nivel == 3 %}
+                                             {% for objetivos in niveles %}
+										<tr>
+
+											<td> {{ objetivos.id_objetivo_tactico.id_objetivo_estrategico.ges_eje }}</td>
+											<td> {{ objetivos.id_objetivo_tactico.id_objetivo_estrategico}}</td>
+											<td> {{ objetivos.id_objetivo_tactico}}</td>
+                                            <td> {{ objetivos.descripcion_objetivo }}</td>
+
+
 									</tr>
                                             {% endfor %}
                                           {% endif %}

@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.db.models.deletion import ProtectedError
 from apps.periodos.models import Glo_Periodos
+from django.contrib.auth.models import User, Group
 # Create your views here.
 
 
@@ -80,6 +81,8 @@ class JefaturaDelete(SuccessMessageMixin, DeleteView ):
         obj = self.get_object()
         try:
             obj.delete()
+
+
             request.session['message_class'] = "alert alert-success"
             messages.success(self.request, "El registro fue eliminado correctamente!")
             return HttpResponseRedirect('/jefaturas/listar/')

@@ -57,18 +57,105 @@
 
 </div>
 
+<div class="panel-body">
+	<div class="container"  >
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group"  >
+<!--                        <p style="color:#1e7799;">Ingrese Observación</p>-->
 
+                         <textarea id="observacion" placeholder = "Ingrese una observación, máximo 2000 caracteres." name="observacion" class="md-textarea form-control" maxlength="2000" rows="3" style="width:835px; "></textarea>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
 
 
 
     <div class="modal-footer">
-
+        <button id="btnGuarda" class="btn btn-primary" type="submit">Aceptar</button>
         <button id="btnCerrar" class="btn btn-default" type="button" data-dismiss="modal">Cerrar</button>
     </div>
 
 </form>
 
 
+	<script type="text/javascript">
+
+
+$("#btnCerrar").click(function(){
+location.reload(true);
+return true;
+});
+
+$("#btnDismiss").click(function(){
+location.reload(true);
+return true;
+});
+
+  $("#btnGuarda").click(function(){
+  //$(this).attr('disabled','disabled');
+
+    if (document.getElementById("observacion").value == "") {
+     document.getElementById("observacion").focus();
+     return false;
+  }
+
+
+
+   var obs = document.getElementById("observacion").value;
+   var usuario =  document.getElementById("fullname").value;
+    var id_objetivo =  document.getElementById("id_objetivo").value;
+
+    $.ajax({
+        dataType : 'json',
+        cache: false,
+        type:'POST',
+        url:'{% url "gestionobservacionvp" id_objetivo %}',
+
+        data:{
+            csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+            observacion: obs,
+            action: 'post'
+
+        },
+        success:function(json){
+          document.getElementById("post-form").reset();
+          // alert(json.fecha);
+
+
+            $("#cont").append('<div class="row">'+
+			'<div class="col-md-6">'+
+				'<div class="form-group" >'+
+                    '<div id="cont_1" class="container_light" style="width:835px;">'+
+                        '<span class="nombre-left">'+ usuario +'</span>'+
+                        '<br><br>'+
+                    '<p>' + json.observacion + '</p>'+
+                    '<span class="time-right">'+ json.fecha +'</span>'+
+                    '</div>'+
+                    '</div>'+
+                '</div>'+
+            '</div>')
+
+        },
+        error : function(xhr,errmsg,err) {
+        console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+    },
+
+        complete : function(xhr, status) {
+          // alert('Petición realizada');
+           var objDiv = document.getElementById("panelbody");
+          objDiv.scrollTop = objDiv.scrollHeight;
+
+        }
+    });
+     return false;
+});
+
+
+
+        </script>
 
 
 

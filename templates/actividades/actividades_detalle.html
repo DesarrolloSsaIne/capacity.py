@@ -1,4 +1,5 @@
 {% extends 'base/base.html' %}
+
 {% block title %}
 Actividades Asociadas al Objetivo
 {% endblock %}
@@ -67,10 +68,10 @@ Actividades Asociadas al Objetivo
 													<td style="width:60px;"> {{ objetivo.volumen}}</td>
 													<td style="width:80px;"> {{ objetivo.personas_asignadas}}</td>
 													<td style="width:60px;"> {{ objetivo.total_horas}}</td>
-													<td style="width:90px;"> {{ objetivo.id_familia_cargo}}</td>
-													<td style="width:60px;" > {{ objetivo.id_producto_estadistico}}</td>
-													<td style="width:80px;" > {{ objetivo.fecha_inicio_actividad}}</td>
-													<td style="width:80px;"> {{ objetivo.fecha_termino_actividad}}</td>
+													<td style="width:90px;">  {{ objetivo.id_familia_cargo}} </td>
+													<td class="descripcion_producto"  style="cursor:pointer; max-width: 10px; overflow: hidden;  display: table-cell;  text-overflow: ellipsis;  border: solid 1px #dddddd; white-space: nowrap;">{% if objetivo.id_producto_estadistico == None %} - {% else %} {{ objetivo.id_producto_estadistico}}{% endif %}</td>
+													<td style="width:80px;" ><span style='display: none;'>{{objetivo.fecha_inicio_actividad|date:"Ymd"}}</span>  {{ objetivo.fecha_inicio_actividad}} </td>
+													<td style="width:80px;"><span style='display: none;'>{{objetivo.fecha_termino_actividad|date:"Ymd"}}</span>  {{ objetivo.fecha_termino_actividad}}</td>
 													<td style="width:50px;"> {% if objetivo.count_observaciones == none %} 0 {% else %} {{ objetivo.count_observaciones}} {%endif%}</td>
 
                                                     <td style="width:80px; align:center; " >
@@ -102,7 +103,7 @@ Actividades Asociadas al Objetivo
 									</tbody>
 								</table>
 																<div align="right" style="margin-right:100px;" >
-							<h5 style="color:#1e7799;">Total Horas Programadas:	<b>{{total_disponible.total_horas}}</b> | Total Horas Disponibles: <b>{{total_disponible.total_utilizado}}</b> | Porcentaje de Carga Planificada: <b>{{total_disponible.consumidas}}({{total_disponible.avance_porcentaje}}%)</b></h5>
+							<h5 style="color:#1e7799;">Total horas disponible área:	<b>{{total_disponible.total_horas}}</b> | Total Horas Disponibles: <b>{{total_disponible.total_utilizado}}</b> | Total horas y Porcentaje de Carga Programada: <b>{{total_disponible.consumidas}}({{total_disponible.avance_porcentaje}}%)</b></h5>
 								<input id="total_disponible_id"  type="hidden" value="{{ total_disponible.total_utilizado }}">
 																</div>
 							</div>
@@ -167,7 +168,29 @@ Actividades Asociadas al Objetivo
 
         </div>
 
+        <div class="modal fade" id="observacion_center_prod" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
 
+				<header class="panel-heading">
+				<div class="panel-actions">
+				<a class="fa fa-times" data-dismiss="modal"></a>
+				</div>
+				<h2 class="panel-title">Detalle Actividad</h2>
+			</header>
+
+              <div class="modal-body">
+               	<textarea id="txt_obs_campo_expand_prod" rows="15" cols="80" class="form-control" style="width:100%;resize: none; " maxlength="5000" readonly  ></textarea>
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
 
 
 
@@ -224,8 +247,14 @@ $('#datatable-default').on('click', '.descripcion_actividad', function () {
     $('#observacion_center').modal('toggle');
 });
 
+$('#datatable-default').on('click', '.descripcion_producto', function () {
+
+    $('#txt_obs_campo_expand_prod').val($(this).parents('tr').find('td:nth-child(9)').text())
+    $('#observacion_center_prod').modal('toggle');
+});
+
 $('#datatable-default').DataTable({
-"ordering": false //desactiva el ordenamiento de la tabla para que el order_by del queryset funcione. ("order": [[ 3, "desc" ]]) para ordenar desde jquery.
+"order": [[ 10, "asc" ]] //desactiva el ordenamiento de la tabla para que el order_by del queryset funcione. ("order": [[ 3, "desc" ]]) para ordenar desde jquery.
 });
 
 

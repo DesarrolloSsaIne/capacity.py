@@ -365,17 +365,17 @@ class RegistroHorasCreate(SuccessMessageMixin, CreateView ):
 
 
 
-        try:
-            existe_usuario =  Ges_Registro_Horas.objects.get(Q(id_user=id_usuario_ingreso) & Q(id_periodo=periodo_actual.id))
-        except Ges_Registro_Horas.DoesNotExist:
-            existe_usuario = None
+        # try:
+        #     existe_usuario =  Ges_Registro_Horas.objects.get(Q(id_user=id_usuario_ingreso) & Q(id_periodo=periodo_actual.id))
+        # except Ges_Registro_Horas.DoesNotExist:
+        #     existe_usuario = None
 
 
         nivel_usuario =  Ges_Jefatura.objects.values('id_nivel').get(id_user=id_usuario_actual)['id_nivel']
 
         id_nivel =Ges_Niveles.objects.get(id=nivel_usuario)
 
-        anio_hoy=date.today().year
+        anio_hoy=date.today().year + 1 #Se agrega el +1 cuando pidieron que el ingreso de dotación realizado el 2020 corresponda al 2021
 
 
         fecha_inicio = request.POST['fecha_inicio']
@@ -409,36 +409,30 @@ class RegistroHorasCreate(SuccessMessageMixin, CreateView ):
 
         dias_habiles_brutos_vacaciones_feriados= dias_habiles_brutos_vacaciones - feriados
 
-        if   (anio_inicio == anio_hoy and anio_termino == anio_hoy) and (fecha_inicio<fecha_termino):
+        if (anio_inicio == anio_hoy and anio_termino == anio_hoy) and (fecha_inicio < fecha_termino):
             if form.is_valid():
-                if existe_usuario:
+                if dias_habiles_brutos_vacaciones_feriados < 1:
                     request.session['message_class'] = "alert alert-warning"
                     messages.error(self.request,
-                                   "Aviso :  El usuario ya se encuentra ingresado en "  + str(existe_usuario.id_nivel) +  ", vuelva a intentarlo.")
+                                   "Aviso :  El cálculo de días hábiles no puede ser menor a 1, revise la fecha de inicio y fecha de termino ingresada.")
                     return HttpResponseRedirect('/horas/listar/')
                 else:
 
-                    if dias_habiles_brutos_vacaciones_feriados < 1:
-                        request.session['message_class'] = "alert alert-warning"
-                        messages.error(self.request,
-                                       "Aviso :  El cálculo de días hábiles no puede ser menor a 1, revise la fecha de inicio y fecha de termino ingresada.")
-                        return HttpResponseRedirect('/horas/listar/')
-                    else:
+                    form.instance.id_nivel = id_nivel
+                    form.instance.dias_habiles = dias_habiles_brutos_vacaciones_feriados
+                    form.instance.id_periodo = periodo_actual
+                    form.save()
+                    request.session['message_class'] = "alert alert-success"
+                    messages.success(self.request, "Los datos fueron creados correctamente!")
+                    return HttpResponseRedirect('/horas/listar/')
 
-                        form.instance.id_nivel = id_nivel
-                        form.instance.dias_habiles = dias_habiles_brutos_vacaciones_feriados
-                        form.instance.id_periodo = periodo_actual
-                        form.save()
-                        request.session['message_class'] = "alert alert-success"
-                        messages.success(self.request, "Los datos fueron creados correctamente!")
-                        return HttpResponseRedirect('/horas/listar/')
             else:
                 request.session['message_class'] = "alert alert-danger"
                 messages.error(self.request, "Error interno: No se ha creado el registro. Comuníquese con el administrador.")
                 return HttpResponseRedirect('/horas/listar/')
         else:
             request.session['message_class'] = "alert alert-warning"
-            messages.error(self.request, "Aviso : El año ingresado debe ser el presente y los rangos válidos.")
+            messages.error(self.request, "Aviso : El año ingresado debe ser el 2021 y los rangos válidos.")
             return HttpResponseRedirect('/horas/listar/')
 
 
@@ -495,15 +489,15 @@ class RegistroHorasUpdate(SuccessMessageMixin, UpdateView ):
         except Ges_Registro_Horas.DoesNotExist:
             id_usuario_fila = None
 
-        try:
-            existe_usuario =  Ges_Registro_Horas.objects.get(Q(id_user=id_usuario_ingreso) & Q(id_periodo=periodo_actual.id))
-        except Ges_Registro_Horas.DoesNotExist:
-            existe_usuario = None
+        # try:
+        #     existe_usuario =  Ges_Registro_Horas.objects.get(Q(id_user=id_usuario_ingreso) & Q(id_periodo=periodo_actual.id))
+        # except Ges_Registro_Horas.DoesNotExist:
+        #     existe_usuario = None
 
         nivel_usuario =  Ges_Jefatura.objects.values('id_nivel').get(id_user=id_usuario_actual)['id_nivel']
         id_nivel =Ges_Niveles.objects.get(id=nivel_usuario)
 
-        anio_hoy=date.today().year
+        anio_hoy=date.today().year + 1 #Se agrega el +1 cuando pidieron que el ingreso de dotación realizado el 2020 corresponda al 2021
 
 
         fecha_inicio=request.POST['fecha_inicio']
@@ -541,35 +535,61 @@ class RegistroHorasUpdate(SuccessMessageMixin, UpdateView ):
 
         if   (anio_inicio == anio_hoy and anio_termino == anio_hoy) and (fecha_inicio<fecha_termino):
             if form.is_valid():
-                if existe_usuario and (id_usuario_fila != id_usuario_ingreso_int):
+                if dias_habiles_brutos_vacaciones_feriados < 1:
                     request.session['message_class'] = "alert alert-warning"
                     messages.error(self.request,
-                                   "Aviso :  El usuario ya se encuentra ingresado en "  + str(existe_usuario.id_nivel) +  ", vuelva a intentarlo.")
+                                   "Aviso :  El cálculo de días hábiles no puede ser menor a 1, revise la fecha de inicio y fecha de termino ingresada.")
                     return HttpResponseRedirect('/horas/listar/')
                 else:
-                    if dias_habiles_brutos_vacaciones_feriados < 1:
 
-                        request.session['message_class'] = "alert alert-warning"
-                        messages.error(self.request,
-                                       "Aviso :  El cálculo de días hábiles no puede ser menor a 1, revise la fecha de inicio y fecha de termino ingresada.")
-                        return HttpResponseRedirect('/horas/listar/')
-                    else:
+                    form.instance.id_nivel = id_nivel
+                    form.instance.dias_habiles = dias_habiles_brutos_vacaciones_feriados
+                    form.instance.id_periodo = periodo_actual
+                    form.save()
+                    request.session['message_class'] = "alert alert-success"
+                    messages.success(self.request, "Los datos fueron creados correctamente!")
+                    return HttpResponseRedirect('/horas/listar/')
 
-                        form.instance.id_nivel = id_nivel
-                        form.instance.dias_habiles = dias_habiles_brutos_vacaciones_feriados
-
-                        form.save()
-                        request.session['message_class'] = "alert alert-success"
-                        messages.success(self.request, "Los datos fueron actualizados correctamente!")
-                        return HttpResponseRedirect('/horas/listar/')
             else:
-
-
                 request.session['message_class'] = "alert alert-danger"
-                messages.error(self.request, "Error interno: No se ha actualizado el registro. Comuníquese con el administrador.")
+                messages.error(self.request, "Error interno: No se ha creado el registro. Comuníquese con el administrador.")
                 return HttpResponseRedirect('/horas/listar/')
         else:
             request.session['message_class'] = "alert alert-warning"
-            messages.error(self.request, "Aviso: El año ingresado debe ser el presente y los rangos válidos.")
+            messages.error(self.request, "Aviso : El año ingresado debe ser el 2021 y los rangos válidos.")
             return HttpResponseRedirect('/horas/listar/')
+
+        # if   (anio_inicio == anio_hoy and anio_termino == anio_hoy) and (fecha_inicio<fecha_termino):
+        #     if form.is_valid():
+        #         if existe_usuario and (id_usuario_fila != id_usuario_ingreso_int):
+        #             request.session['message_class'] = "alert alert-warning"
+        #             messages.error(self.request,
+        #                            "Aviso :  El usuario ya se encuentra ingresado en "  + str(existe_usuario.id_nivel) +  ", vuelva a intentarlo.")
+        #             return HttpResponseRedirect('/horas/listar/')
+        #         else:
+        #             if dias_habiles_brutos_vacaciones_feriados < 1:
+        #
+        #                 request.session['message_class'] = "alert alert-warning"
+        #                 messages.error(self.request,
+        #                                "Aviso :  El cálculo de días hábiles no puede ser menor a 1, revise la fecha de inicio y fecha de termino ingresada.")
+        #                 return HttpResponseRedirect('/horas/listar/')
+        #             else:
+        #
+        #                 form.instance.id_nivel = id_nivel
+        #                 form.instance.dias_habiles = dias_habiles_brutos_vacaciones_feriados
+        #
+        #                 form.save()
+        #                 request.session['message_class'] = "alert alert-success"
+        #                 messages.success(self.request, "Los datos fueron actualizados correctamente!")
+        #                 return HttpResponseRedirect('/horas/listar/')
+        #     else:
+        #
+        #
+        #         request.session['message_class'] = "alert alert-danger"
+        #         messages.error(self.request, "Error interno: No se ha actualizado el registro. Comuníquese con el administrador.")
+        #         return HttpResponseRedirect('/horas/listar/')
+        # else:
+        #     request.session['message_class'] = "alert alert-warning"
+        #     messages.error(self.request, "Aviso: El año ingresado debe ser el presente y los rangos válidos.")
+        #     return HttpResponseRedirect('/horas/listar/')
 

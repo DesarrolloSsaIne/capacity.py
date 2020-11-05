@@ -85,10 +85,16 @@
 
 
 	<script type="text/javascript">
+$("#btnCerrar").click(function(){
 
+location.reload(true);
+return true;
+});
 
   $("#btnGuarda").click(function(){
   //$(this).attr('disabled','disabled');
+
+
 
 
    var usuario =  document.getElementById("fullname").value;

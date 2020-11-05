@@ -5,10 +5,12 @@ from reportlab.lib.pagesizes import letter
 import PyPDF2
 import PyPDF2 as pypdf
 
+######SIRVE PARA AGREGAR LA FRASE AL FINAL DE LAS HORAS ADEMÁS DE PODER INCLUIR QR O ALGO ASÍ
+
 if __name__=='__main__':
 
-    nombre_pdf_original = "Tutorial Publicar Sitio Python.pdf" # Cambia aquí el nombre de tu documento original
-    nombre_pdf_salida = "doc.pdf" # Cambia aquí el nombre del PDF de salida
+    nombre_pdf_original = "doc_original.pdf" # Cambia aquí el nombre de tu documento original
+    nombre_pdf_salida = "doc_estampado.pdf" # Cambia aquí el nombre del PDF de salida
 
 
     ####################MENSAJE BLANCO PARA TOAS LAS PAGINAS (EXCEPTO LA ÚLTIMA)####################################

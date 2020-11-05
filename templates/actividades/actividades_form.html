@@ -1,11 +1,11 @@
 			<header class="panel-heading">
 				<div class="panel-actions">
-				<a class="fa fa-times" data-dismiss="modal"></a>
+				<!--<a class="fa fa-times" data-dismiss="modal"></a>-->
 				</div>
 				<h2 class="panel-title">Gestión Actividades</h2>
 			</header>
 
-			<form  method="post"  action="" >
+			<form  method="post"  action=""  >
 
 				<div class="panel-body">
 					{% csrf_token %}
@@ -15,6 +15,10 @@
         					{{ error }}
      					 {% endfor %}
     				</div>
+					<div class="alert alert-warning" style="display:none;" id="mjeValidacion">
+
+										<p id="textValidacion"></p>
+								</div>
 
 
 
@@ -114,16 +118,31 @@
 </div>
 </div>
 			</div>
+				</form>
 			<div class="modal-footer">
-				<button class="btn btn-primary" type="submit" id="confirmar" >Confirmar</button>
-				<button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
+
+				<button class="btn btn-primary" type="button" id="confirmar" >Confirmar</button>
+
+				<button class="btn btn-default" type="button" onclick="window.location.reload();" data-dismiss="modal">Cancelar</button>
 			</div>
 
 								<div class="alert alert-danger" style="display:none;" id="mjeError">
 
 										<p id="textError"></p>
 								</div>
-			</form>
+				<div class="alert alert-success" style="display:none;" id="mjeOk">
+
+										<p id="textOk"></p>
+								</div>
+				<div class="alert alert-warning" style="display:none;" id="mjeAdver">
+
+										<p id="textAdver"></p>
+									</div>
+
+				<div id="enviar" style="display:none; text-align:left; " class="alert alert-info" role="alert">
+            Guardando datos, favor espere...
+       		 </div>
+</form>
 <script>
 
 
@@ -134,11 +153,11 @@ fecha_termino = $("#fecha_termino_actividad").val();
 
 //////////////////////////////////////////////////ajax feriados/////////////////////////////////////////
 
-    $.ajax({
+     $.ajax({
         dataType : 'json',
         cache: false,
         type:'POST',
-        url:'{% url "ActividadesCrear"  %}',
+        url:'{% url "calculaferiadoscreate"  %}',
 
         data:{
             csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
@@ -153,6 +172,7 @@ fecha_termino = $("#fecha_termino_actividad").val();
 
           $("#total_feriados").val(json.feriados);
 
+
         },
 
         error : function(xhr,errmsg,err) {
@@ -163,16 +183,96 @@ fecha_termino = $("#fecha_termino_actividad").val();
     });
 
 
-
-/////////////////////////////////////////////////// fin ajax feriados//////////////////////////////////////////////
 });
+/////////////////////////////////////////////////// fin ajax feriados//////////////////////////////////////////////
 
+
+$( "#fecha_termino_actividad, #fecha_inicio_actividad" )
+  .focusout(function() {
+  var anio_actual= 2021
+
+	fecha_inicio = $("#fecha_inicio_actividad").val();
+	fecha_termino = $("#fecha_termino_actividad").val();
+
+    var valuesStart = fecha_inicio.split("-");
+	var anio_inicio = valuesStart[0];
+
+    var valuesStart = fecha_termino.split("-");
+	var anio_termino = valuesStart[0];
+
+	if (anio_inicio!=anio_actual && anio_termino!=anio_actual){
+
+	$("#mjeAdver").css("display","block");
+	$("#textAdver").text("Advertencia : El sistema se encuentra habilitado para el periodo 2021.")
+	}
+	else
+	{$("#mjeAdver").css("display","none");}
+  });
+
+function  mensaje(texto){
+
+$("#mjeValidacion").css("display","block");
+	$("#textValidacion").text("Advertencia : Faltan datos por completar: " + texto + "." )
+
+}
+
+function limpiarform(){
+
+$("#id_descripcion_actividad").val("");
+$("#id_id_periodicidad").val("");
+$("#horas_actividad_id").val("");
+$("#volumen_id").val("");
+$("#personas_asignadas_id").val("");
+$("#id_id_familia_cargo").val("");
+$("#id_id_producto_estadistico").val("");
+$("#fecha_inicio_actividad").val("");
+$("#fecha_termino_actividad").val("");
+$("#total_horas_id").val("");
+
+}
 
 $("#confirmar").click(function(){
 
+if ($("#id_descripcion_actividad").val() == "") {
+	mensaje("Descripción Actividad")
+	return false;
+}
 
+if ($("#id_id_periodicidad").val() == "") {
+	mensaje("Periodicidad")
+	return false;
+}
+if ($("#horas_actividad_id").val() == "") {
+	mensaje("Horas Actividad")
+	return false;
+}
+if ($("#volumen_id").val() == "") {
+	mensaje("Volumen Actividad")
+	return false;
+}
+if ($("#personas_asignadas_id").val() == "") {
+	mensaje("Personas Asignadas Actividad")
+	return false;
+}
+if ($("#id_id_familia_cargo").val() == "") {
+	mensaje("Familia cargo Actividad")
+	return false;
+}
 
+if ($("#id_id_producto_estadistico").val() == "") {
+	//mensaje("Producto estadístico Actividad")
+	//return false;
+}
+if ($("#fecha_inicio_actividad").val() == "") {
+	mensaje("Fecha inicio Actividad")
+	return false;
+}
+if ($("#fecha_termino_actividad").val() == "") {
+	mensaje("Fecha término Actividad")
+	return false;
+}
 
+$("#mjeValidacion").css("display","none");
 
 var horas_actividad;
 var horas_disponibles;
@@ -183,11 +283,11 @@ horas_disponibles = $('#total_disponible_id').val()
 horas_actividad= parseInt(horas_actividad)
 horas_disponibles = parseInt(horas_disponibles)
 
-if (horas_actividad>horas_disponibles){
-	$("#mjeError").css("display","block");
-	$("#textError").text("Error : No cuenta con saldo de horas disponibles para asignar a la actividad.");
-return false
-}
+//if (horas_actividad>horas_disponibles){
+//	$("#mjeError").css("display","block");
+//	$("#textError").text("Error : No cuenta con saldo de horas disponibles para asignar a la actividad.");
+//return false
+//}
 
 if (horas_actividad<1){
 	$("#mjeError").css("display","block");
@@ -196,7 +296,8 @@ return false
 }
 
 
-var anio_actual= moment().year();
+//var anio_actual= moment().year();
+var anio_actual= 2021
 
 fecha_inicio = $("#fecha_inicio_actividad").val();
 fecha_termino = $("#fecha_termino_actividad").val();
@@ -208,15 +309,13 @@ var anio_inicio = valuesStart[0];
 var valuesStart = fecha_termino.split("-");
 var anio_termino = valuesStart[0];
 
-
 if (anio_inicio==anio_actual && anio_termino==anio_actual){
 	//alert('ok');
 }else{
 	$("#mjeError").css("display","block");
-	$("#textError").text("Error : Las fechas seleccionadas deben corresponder al año en curso.");
+	$("#textError").text("Error : Las fechas seleccionadas deben corresponder al año 2021.");
 return false
 }
-
 
 if (moment(fecha_inicio).isBefore(fecha_termino) || moment(fecha_inicio).isSameOrBefore(fecha_termino)){
 	//alert('ok');
@@ -229,15 +328,18 @@ return false
 
 var personas_asignadas = $("#personas_asignadas_id").val();
 var total_feriados = $("#total_feriados").val();
+
 var total_horas =$('#total_horas_id').val();
 var dias_habiles_brutos = calcBusinessDays(fecha_inicio,fecha_termino);
 dias_habiles_brutos_feriados = (+dias_habiles_brutos) - (+total_feriados);
+
 dias_habiles_brutos_feriados = dias_habiles_brutos_feriados * personas_asignadas;
 horas_dias_habiles_brutos_feriados= (+dias_habiles_brutos_feriados) * (8);
 
 
 //$("#total_feriados2").val(horas_dias_habiles_brutos_feriados);
-//alert(total_feriados);
+//alert(dias_habiles_brutos);
+//alert(horas_dias_habiles_brutos_feriados);
 
 
 if (total_horas > horas_dias_habiles_brutos_feriados){
@@ -246,8 +348,56 @@ if (total_horas > horas_dias_habiles_brutos_feriados){
 return false
 }
 
+$( '#enviar' ).fadeIn();
+$( '#confirmar' ).hide();
+ $("#mjeOk").css("display","none");
+////////////////////////////GUARDA ACTIVIDAD AJAX////////////////////////////////////////////////////////
+setTimeout(function(){
+
+    $.ajax({
+        dataType : 'json',
+        cache: false,
+        type:'POST',
+        async:false,
+        url:'{% url "nuevaActividadAjax"  %}',
+
+        data:{
+            csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+            Descripcion:$('#id_descripcion_actividad').val(),
+            Periocidad:$('#id_id_periodicidad').val(),
+            Horas:$('#horas_actividad_id').val(),
+            Volumen:$('#volumen_id').val(),
+            Personas:$('#personas_asignadas_id').val(),
+            Familia:$('#id_id_familia_cargo').val(),
+            Producto:$('#id_id_producto_estadistico').val(),
+            fecha_inicio_actividad:  $("#fecha_inicio_actividad").val(),
+            fecha_termino_actividad: $("#fecha_termino_actividad").val(),
+            Total_horas:$('#total_horas_id').val(),
+
+            action: 'post'
+
+        },
+        success:function(json){
+          $("#mjeOk").css("display","block");
+		$("#textOk").text("Los datos fueron creados correctamente!");
+		$( '#enviar' ).fadeOut();
+		$( '#confirmar' ).show();
+		limpiarform();
+        },
+
+        error : function(xhr,errmsg,err) {
+       // console.log(xhr.status + ": " + xhr.responseText); // provide a bit more info about the error to the console
+       $("#mjeError").css("display","block");
+		$("#textError").text("Error interno: No se ha creado el registro. Comuníquese con el administrador.");
+		$( '#enviar' ).fadeOut();
+		$( '#confirmar' ).show();
+    },
 
 
+    });
+    },3000);
+
+});
 
 ////////////////////////////CALCULA DÍAS LABORALES////////////////////////////////////////////////////////
     function calcBusinessDays(startDate, endDate) {
@@ -255,15 +405,17 @@ return false
       var businessDays = 0;
 
       while (day.isSameOrBefore(endDate,'day')) {
+
         if (day.day()!=0 && day.day()!=6) businessDays++;
         day.add(1,'d');
+
       }
       return businessDays;
     }
 //////////////////////////// fin CALCULA DÍAS LABORALES////////////////////////////////////////////////////////
 
 
-});
+
 
 $(document).ready(function() {
     $("#horas_actividad_id").keydown(function(event) {
@@ -332,11 +484,18 @@ Date.prototype.getWeekNumber = function(){
 
 function checkWeek($fecha) {
   var s = $fecha;
-  var m = moment(s, 'YYYY-MM-DD');
-  //alert(m.format('W'));
-  var $semana = m.toDate().getWeekNumber()
-  return $semana
+
+  //var m = moment(s, 'YYYY-MM-DD');
+  //var $semana = m.toDate().getWeekNumber()
+
+  s= new Date(s)
+  let onejan = new Date(s.getFullYear(), 0, 1);
+  let week = Math.ceil( (((s.getTime() - onejan.getTime()) / 86400000) + onejan.getDay() + 1) / 7 );
+  //return $semana
+  return week
 }
+
+
 
 $(function() {
      var total;
@@ -354,9 +513,14 @@ $(function() {
 
 		if(periocidad == "Semanal")
  		{
-			//var dia_semanas = semanadelano($('#fecha_inicio_actividad').val())
+			var inicio= $('#fecha_inicio_actividad').val()
+			var termino = $('#fecha_termino_actividad').val()
 			var dia_semana0 = checkWeek($('#fecha_inicio_actividad').val())
 			var dia_semana1 = checkWeek($('#fecha_termino_actividad').val())
+			if(inicio == "2021-01-01")
+			{dia_semana0 = 1 }
+			if(termino == "2021-01-01")
+			{dia_semana1 = 1 }
 			var num_semana = (dia_semana1- dia_semana0) + 1
  			total = parseInt((+horas) * (+volumen) * (+personas) * (+num_semana)) || 0;
 
@@ -364,7 +528,6 @@ $(function() {
 
  			if(periocidad == "Quincenal")
  		{
-
  			total = parseInt((+horas) * (+volumen) * (+personas) * (+calcularQuincena($('#fecha_inicio_actividad').val(), $('#fecha_termino_actividad').val()))) || 0;
 
  		}//fin condicion

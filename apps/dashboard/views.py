@@ -48,6 +48,8 @@ class InicioDashboard(TemplateView):
 
         Grupo = Group.objects.get(user=self.request.user)
 
+
+
         self.request.session['grupo'] = str(Grupo)
 
         try:
@@ -171,12 +173,29 @@ class InicioDashboard(TemplateView):
         if Grupo.id == 1: #Si pertenece a un usuario que formula
 
             id_jefatura = Ges_Jefatura.objects.get(id_user=id_usuario_actual)
-            try:
+
+
+
+            if Ges_Controlador.objects.filter(
+                Q(id_jefatura=id_jefatura.id) & Q(id_periodo=periodo_actual.id)).exists():
+
                 id_controlador = Ges_Controlador.objects.get(
-                    Q(id_jefatura=id_jefatura) & Q(id_periodo=periodo_actual.id))
-            except IndexError:
+                    Q(id_jefatura=id_jefatura.id) & Q(id_periodo=periodo_actual.id))
+            else:
                 id_controlador = 0
+
+
                 pass
+
+
+
+
+            # try:
+            #     id_controlador = Ges_Controlador.objects.get(
+            #         Q(id_jefatura=id_jefatura.id) & Q(id_periodo=periodo_actual.id))
+            # except Ges_Controlador.DoesNotExist:
+            #     id_controlador = 0
+            #     pass
 
 
             if id_controlador != 0:
