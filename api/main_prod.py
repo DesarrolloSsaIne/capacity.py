@@ -56,6 +56,26 @@ if __name__=='__main__':
     layout='<AgileSignerConfig><Application id=\"THIS-CONFIG\"><pdfPassword/><Signature><Visible active=\"true\" layer2=\"false\" label=\"true\" pos=\"1\"><llx>400</llx><lly>150</lly><urx>500</urx><ury>250</ury><page>LAST</page><image>BASE64</image><BASE64VALUE>'+str(jpg_file64)+'</BASE64VALUE></Visible></Signature></Application></AgileSignerConfig>'
 
 
+    #El doc_estampado nace al ejecutar main_pdf.py que toma el doc_original y le coloca una frase y un QR al final de la hoja
+
+    with open('doc_estampado.pdf', 'rb') as pdf_file: # Convierte a Base64 el documento pdf hasta 20 megas
+        pdfb64 = base64.b64encode(pdf_file.read()).decode('utf-8')
+
+
+    with open('doc_estampado.pdf', "rb") as f: # Genera el checksum desde el documento pdf hasta 20 megas
+        bytesConv = f.read()
+        readable_hash = hashlib.sha256(bytesConv).hexdigest()
+        checksum= readable_hash
+
+########  inicio Estructura para realizar los llamados a la firma #################
+
+    # Entity: Lo entrega Segpres
+    # Run: Rut del firmante
+    # Expiration: En caso de ser atendida es el tiempo que dura el token activo
+    # Purpose: Atentido / Desatendido
+    # a08253d568bf46f2a5ef8217dbb06da7 : Secreto entregado por Segpres para la aplicación que se solicita
+
+
     tokenDesatendido = jwt.encode({'entity': 'Instituto Nacional de Estadísticas',
                         'run':'10685080',
                         'expiration': exp,
@@ -69,17 +89,12 @@ if __name__=='__main__':
                         'a08253d568bf46f2a5ef8217dbb06da7', algorithm='HS256').decode('utf-8')
 
 
-    #El doc_estampado nace al ejecutar main_pdf.py que toma el doc_original y le coloca una frase y un QR al final de la hoja
-
-    with open('doc_estampado.pdf', 'rb') as pdf_file: # Convierte a Base64 el documento pdf hasta 20 megas
-        pdfb64 = base64.b64encode(pdf_file.read()).decode('utf-8')
-
-
-    with open('doc_estampado.pdf', "rb") as f: # Genera el checksum desde el documento pdf hasta 20 megas
-        bytesConv = f.read()
-        readable_hash = hashlib.sha256(bytesConv).hexdigest()
-        checksum= readable_hash
-
+    # api_token_key: Entregado por Segpres
+    # token: Arriba
+    # Content: Pdf transformado a base 64
+    # Description: "Str"
+    # Layout: String que incrusta información al pdf
+    # checksum : PDF transformado a hash256
 
     files ={'api_token_key':'99c3f6e0-24c9-4c58-a564-dfde158cb987',
             'token':tokenDesatendido, 'files': [{'content-type': 'application/pdf',
@@ -91,6 +106,7 @@ if __name__=='__main__':
 
     response = requests.post(url, data=json.dumps(files), headers=headers)
 
+    ########## fin Estructura para realizar los llamados a la firma #################
 
     if response.status_code==200:
 
