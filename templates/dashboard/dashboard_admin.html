@@ -52,7 +52,7 @@ var myChart1 = new Chart(ctx1, {
 						// max:plugin.settings.maxDataValue,
 						//maxTicksLimit: 5
 						suggestedMin:0,
-						stepSize: 5
+						stepSize: 250
 					  }
 					}]
 				},
@@ -147,48 +147,48 @@ var myChart3 = new Chart(ctx3, {
             data: [{% for item3 in UnidadesAsociadas %}{{ item3.CantidadPlan }}, {% endfor %}],
 			backgroundColor: poolColors(nElementos),
             borderWidth: 0,
-       },{
+      // },{
 
-			minBarLength: 1,
-			label: 'Actividades Finalizadas',
-       		 data: {{ valores.ValFinalizadas }},
-       		 borderWidth: 0,
-       		 backgroundColor: poolColors(nElementos),
+		// 	minBarLength: 1,
+		// 	label: 'Actividades Finalizadas',
+       	// 	 data: {{ valores.ValFinalizadas }},
+       	// 	 borderWidth: 0,
+       	// 	 backgroundColor: poolColors(nElementos),
 
-        },{
-			 minBarLength: 1,
-        	 label: 'Actividades En Curso',
-       		 data: {{ valores.ValEnCurso }},
-       		 borderWidth: 0,
-       		 backgroundColor: poolColors(nElementos),
+       //  },{
+			//  minBarLength: 1,
+        	//  label: 'Actividades En Curso',
+       	    // 	data: {{ valores.ValEnCurso }},
+       		//  borderWidth: 0,
+       		//  backgroundColor: poolColors(nElementos),
 
-        },{
-			minBarLength: 1,
-     	     label: 'Actividades No Iniciadas',
-       		 data: {{ valores.ValNoIniciado }},
-       		 borderWidth: 0,
-       		 backgroundColor: poolColors(nElementos),
+       //  },{
+			// minBarLength: 1,
+     	    //  label: 'Actividades No Iniciadas',
+       		//  data: {{ valores.ValNoIniciado }},
+       		//  borderWidth: 0,
+       		//  backgroundColor: poolColors(nElementos),
 
-        },{
-			 minBarLength: 1,
-     	     label: 'Actividades Con Retraso',
-       		 data: {{ valores.ValConRetraso }},
-       		 borderWidth: 0,
-       		 backgroundColor: poolColors(nElementos),
+       //  },{
+			//  minBarLength: 1,
+     	    //  label: 'Actividades Con Retraso',
+       		//  data: {{ valores.ValConRetraso }},
+       		//  borderWidth: 0,
+       		//  backgroundColor: poolColors(nElementos),
 
-        },{
-			 minBarLength: 1,
-     	     label: 'Actividades Sin Movimiento',
-       		 data: {{ valores.ValSinMovimiento }},
-       		 borderWidth: 0,
-       		 backgroundColor: poolColors(nElementos),
+       //  },{
+			//  minBarLength: 1,
+     	    //  label: 'Actividades Sin Movimiento',
+       		//  data: {{ valores.ValSinMovimiento }},
+       		//  borderWidth: 0,
+       		//  backgroundColor: poolColors(nElementos),
 
-        },{
-			 minBarLength: 1,
-             label: 'Actividades Eliminadas',
-       		 data: {{ valores.ValEliminadas }},
-       		 borderWidth: 0,
-       		 backgroundColor: poolColors(nElementos),
+       //  },{
+			//  minBarLength: 1,
+            //  label: 'Actividades Eliminadas',
+       		//  data: {{ valores.ValEliminadas }},
+       		//  borderWidth: 0,
+       		//  backgroundColor: poolColors(nElementos),
 
 
         }]
@@ -216,9 +216,10 @@ var myChart3 = new Chart(ctx3, {
 
 					  ticks: {
 						beginAtZero:false,
+						//suggestedMax: 800,
 						// max:plugin.settings.maxDataValue,
 						//maxTicksLimit: 5
-						stepSize: 5
+						stepSize: 50
 
 
 

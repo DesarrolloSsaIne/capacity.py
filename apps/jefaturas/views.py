@@ -109,15 +109,23 @@ class JefaturaUpdate(UpdateView):
         id_nivel = kwargs['pk']
         instancia_nivel = self.model.objects.get(id=id_nivel)
         form = self.form_class(request.POST, instance=instancia_nivel)
-        usuario_ingreso= request.POST['id_user']
+        usuario_ingreso= request.POST['id_user'] #Usuario que entra
         nivel_ingreso = request.POST['id_nivel']
         #usuario_registrado= Ges_Jefatura.objects.filter(id_user=usuario_ingreso)
         #nivel_ingreso=Ges_Jefatura.objects.filter(id_nivel=nivel_ingreso)
+
+
 
         try:
             usuario_id =  Ges_Jefatura.objects.values('id_user').get(id_user=usuario_ingreso)['id_user']
         except Ges_Jefatura.DoesNotExist:
             usuario_id = None
+
+
+        try:
+            usuario_id_sale =  Ges_Jefatura.objects.values('id_user').get(id=id_nivel)['id_user'] #Usuario que sale
+        except Ges_Jefatura.DoesNotExist:
+            usuario_id_sale = None
 
         try:
             nivel_id = Ges_Jefatura.objects.values('id_nivel').get(id_nivel=nivel_ingreso)['id_nivel']
@@ -135,7 +143,11 @@ class JefaturaUpdate(UpdateView):
                 return HttpResponseRedirect('/jefaturas/listar/')
             else:
 
+                CambioPerfilJefatura(usuario_id_sale,usuario_ingreso)
                 form.save()
+
+
+
                 request.session['message_class'] = "alert alert-success"
                 messages.success(self.request, "Los datos fueron actualizados correctamente!")
                 return HttpResponseRedirect('/jefaturas/listar/')
@@ -143,3 +155,12 @@ class JefaturaUpdate(UpdateView):
             request.session['message_class'] = "alert alert-danger"
             messages.error(self.request, "Error interno: No se ha actualizad el registro. Comuníquese con el administrador.")
             return HttpResponseRedirect('/jefaturas/listar/')
+
+
+def CambioPerfilJefatura(user_sale, user_entra):
+
+
+    g = Group.objects.get(user=user_sale)
+
+    g.user_set.add(user_entra)
+    g.user_set.remove(user_sale)

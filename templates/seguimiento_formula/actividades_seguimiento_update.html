@@ -472,7 +472,8 @@ var fecha_termino_corte = moment(fecha_termino_corte_str).format('YYYY-MM-DD');
   estado = $('#id_id_estado_actividad').val();
   periodicidad = $('#id_id_periodicidad').val();
    var tdate = new Date();
-   var anio_actual = tdate.getFullYear();
+   //var anio_actual = tdate.getFullYear(); // Se cambió para realizar pruebas por parte de planificación
+   var anio_actual=2021
 
 
 	 if (estado == 7){ // Finalizada - Validar
@@ -538,7 +539,7 @@ var fecha_termino_corte = moment(fecha_termino_corte_str).format('YYYY-MM-DD');
 			 if (anio_fecha_inicio != anio_actual){
 
 					$("#mjeError").css("display","block");
-					$("#textError").text("Error : La fecha debe estar contenida dentro del año en curso.");
+					$("#textError").text("Error : La fecha debe estar contenida dentro del año en curso 0.");
 					return false
 
 			 }
@@ -562,7 +563,7 @@ var fecha_termino_corte = moment(fecha_termino_corte_str).format('YYYY-MM-DD');
 			  if (anio_fecha_termino != anio_actual){
 
 					$("#mjeError").css("display","block");
-					$("#textError").text("Error : La fecha debe estar contenida dentro del año en curso.");
+					$("#textError").text("Error : La fecha debe estar contenida dentro del año en curso 1.");
 					return false
 
 			 }
@@ -661,13 +662,13 @@ var valuesStart = fecha_termino.split("-");
 var anio_termino = valuesStart[0];
 
 
-if (anio_inicio==anio_actual && anio_termino==anio_actual){
+//if (anio_inicio==anio_actual && anio_termino==anio_actual){
 	//alert('ok');
-}else{
-	$("#mjeError").css("display","block");
-	$("#textError").text("Error : Las fechas seleccionadas deben corresponder al año en curso.");
-return false
-}
+//}else{
+//	$("#mjeError").css("display","block");
+//	$("#textError").text("Error : Las fechas seleccionadas deben corresponder al año en curso 2.");
+//return false
+//}
 
 
 if (moment(fecha_inicio).isBefore(fecha_termino) || moment(fecha_inicio).isSameOrBefore(fecha_termino)){

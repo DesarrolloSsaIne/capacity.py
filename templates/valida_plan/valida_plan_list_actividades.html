@@ -26,7 +26,7 @@ Actividades Asociadas al Objetivo
 
 			</div>
 
-		<h2 class="panel-title" style="font-size:16px; margin-right:50px;">{{ nombre_objetivo.nombre }}</h2>
+		<h2 class="panel-title" style="font-size:16px; padding-right:28px;">{{ nombre_objetivo.nombre }}</h2>
 		</header>
 
 		<div class="panel-body">
@@ -34,39 +34,39 @@ Actividades Asociadas al Objetivo
 				<thead>
 					<tr>
 						<!--<th>id</th>-->
-						<th>N°</th>
-						<th>Actividad</th>
-						<th >Horas</th>
-						<th>Volumen</th>
-						<th>Personas Asignadas</th>
-						<th>Total Horas</th>
-						<th  title="Fecha Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Fecha Inicio Act.</th>
-						<th  title="Fecha de Término de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Fecha Término Act.</th>
-						<th>Familia Cargo</th>
-						<th>Periodicidad</th>
+						<th style="font-size:11px;">N°</th>
+						<th style="font-size:11px; "> <div style="color:white;">......................................</div> <br> Descripción Actividad </th>
+						<th style="font-size:11px;" >Horas</th>
+						<th style="font-size:11px;">Volumen</th>
+						<th style="font-size:11px;">Personas Asignadas</th>
+						<th style="font-size:11px;">Total Horas</th>
+						<th  style="font-size:11px;" title="Fecha Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Fecha Inicio Act.</th>
+						<th  style="font-size:11px;" title="Fecha de Término de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Fecha Término Act.</th>
+						<th style="font-size:11px;">Familia Cargo</th>
+						<th style="font-size:11px;">Periodicidad</th>
 						<th style="display:none;">count NV</th>
-                        <th title="Total Observaciones Asociadas a la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Obs. Totales</th>
-						<th>Obs.</th>
+<!--                        <th title="Total Observaciones Asociadas a la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Obs. Totales</th>-->
+						<th style="font-size:11px;">Obs.</th>
 
 					</tr>
 				</thead>
 				<tbody>
 					{%  for objetivo in object_list %}
 					<tr>
-						<td> {{ forloop.counter }}</td>
-						<td class="descripcion_actividad"  style="cursor:pointer; max-width: 100px; overflow: hidden;  display: table-cell;  text-overflow: ellipsis;  border: solid 1px #dddddd; white-space: nowrap;">{{ objetivo.descripcion_actividad }}</td>
-						<td >{{ objetivo.horas_actividad }}</td>
-						<td>{{ objetivo.volumen }}</td>
-						<td>{{ objetivo.personas_asignadas }}</td>
-						<td>{{ objetivo.total_horas }}</td>
-						<td style="width:170px;">{{ objetivo.fecha_inicio_actividad }}</td>
-						<td style="width:190px;">{{ objetivo.fecha_termino_actividad }}</td>
-						<td>{{ objetivo.id_familia_cargo }}</td>
+						<td style="font-size:11px;"> {{ forloop.counter }}</td>
+						<td class="Mitexto"  style="height:70px; width:100%; border-bottom:1px; border-left:0px; border-right:0px; font-size:11px; padding-top:-5px;" >{{ objetivo.descripcion_actividad }}</td>
+						<td style="font-size:11px;" >{{ objetivo.horas_actividad }}</td>
+						<td style="font-size:11px;">{{ objetivo.volumen }}</td>
+						<td style="font-size:11px;">{{ objetivo.personas_asignadas }}</td>
+						<td style="font-size:11px;">{{ objetivo.total_horas }}</td>
+						<td style="font-size:11px;">{{ objetivo.fecha_inicio_actividad }}</td>
+						<td style="font-size:11px;">{{ objetivo.fecha_termino_actividad }}</td>
+						<td style="font-size:11px;">{{ objetivo.id_familia_cargo }}</td>
 
-						<td>{{ objetivo.id_periodicidad }}</td>
+						<td style="font-size:11px; ">{{ objetivo.id_periodicidad }}</td>
 						<td style="display:none;>">{{ objetivo.count_no_vistos }}</td>
 
-						   <td> {% if objetivo.count_observaciones == none %} 0 {% else %} {{ objetivo.count_observaciones}} {%endif%}</td>
+<!--						   <td> {% if objetivo.count_observaciones == none %} 0 {% else %} {{ objetivo.count_observaciones}} {%endif%}</td>-->
 
 
 						 <td style="width:40px; text-align:center;">
@@ -166,7 +166,7 @@ Actividades Asociadas al Objetivo
 				$(this).remove();
 			});
 
-$('#datatable-default').on('click', '.descripcion_actividad', function () {
+$('#datatable-default').on('click', '.Mitexto', function () {
     $('#txt_obs_campo_expand').val($(this).parents('tr').find('td:nth-child(2)').text())
     $('#observacion_center').modal('toggle');
 
@@ -175,6 +175,7 @@ $('#datatable-default').on('click', '.descripcion_actividad', function () {
 
 
 $('#datatable-default').DataTable({
+stateSave: true,
 "ordering": false //desactiva el ordenamiento de la tabla para que el order_by del queryset funcione. ("order": [[ 3, "desc" ]]) para ordenar desde jquery.
 });
 

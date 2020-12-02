@@ -134,8 +134,8 @@ class ActividadesObjetivosList(ListView): #clase modificada por JR- sprint 8 - O
                         id_objetivo=OuterRef('pk')).annotate(
                         count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (~Q(user_observa = id_usuario_actual)) ))
 
-                    count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(
-                        id_objetivo=OuterRef('pk')).annotate(
+                    count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(Q(
+                         id_objetivo=OuterRef('pk')) & Q(id_controlador=id_controlador.id)).annotate(
                         count_id_actividad=Count('id'), filter=Q(id_periodo=periodo_actual.id))
 
                     count_observaciones_obj = Ges_Observaciones_sr.objects.values('id_objetivo_tactico').filter(
@@ -166,8 +166,8 @@ class ActividadesObjetivosList(ListView): #clase modificada por JR- sprint 8 - O
                         id_objetivo=OuterRef('pk')).annotate(
                         count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (~Q(user_observa = id_usuario_actual)) ))
 
-                    count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(
-                        id_objetivo=OuterRef('pk')).annotate(
+                    count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(Q(
+                         id_objetivo=OuterRef('pk')) & Q(id_controlador=id_controlador.id)).annotate(
                         count_id_actividad=Count('id'), filter=Q(id_periodo=periodo_actual.id))
 
                     count_observaciones_obj = Ges_Observaciones_sr.objects.values('id_objetivo_tacticotn').filter(
@@ -198,8 +198,8 @@ class ActividadesObjetivosList(ListView): #clase modificada por JR- sprint 8 - O
                         id_objetivo=OuterRef('pk')).annotate(
                         count_id_actividad=Count('id', filter=Q(observado=1)  & Q(id_periodo=periodo_actual.id) & (~Q(user_observa = id_usuario_actual)) ))
 
-                    count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(
-                        id_objetivo=OuterRef('pk')).annotate(
+                    count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(Q(
+                         id_objetivo=OuterRef('pk')) & Q(id_controlador=id_controlador.id)).annotate(
                         count_id_actividad=Count('id'), filter=Q(id_periodo=periodo_actual.id))
 
                     count_observaciones_obj = Ges_Observaciones_sr.objects.values('id_objetivo_operativo').filter(
@@ -250,65 +250,6 @@ class ActividadesDetail(ListView): #clase modificada por JR- sprint 8 - Ok
         except Glo_Periodos.DoesNotExist:
             return None
         nombre = ""
-        if self.request.session['id_orden']==2:
-            #lista_actividades = Ges_Actividad.objects.filter(Q(id_objetivo_tactico=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id))
-
-            count_no_vistos = Ges_Observaciones.objects.values('id_actividad_id').filter(
-                id_actividad=OuterRef('pk')).annotate(
-                count_id_actividad=Count('id', filter=Q(observado=1)  & Q(id_periodo=periodo_actual.id) & (~Q(user_observa = id_usuario_actual)) ))
-
-            count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(
-                id_actividad=OuterRef('pk')).annotate(
-                count_id_actividad=Count('id'))
-
-            lista_actividades = Ges_Actividad.objects.filter(
-                Q(id_objetivo_tactico=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)).annotate(
-                count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
-                count_observaciones=Subquery(count_observaciones.values('count_id_actividad')[0:1])).order_by(
-                '-count_no_vistos', '-count_observaciones')
-
-            nombre=  Ges_Objetivo_Tactico.objects.get(id=self.kwargs['pk'])
-        if self.request.session['id_orden']==3:
-           # lista_actividades = Ges_Actividad.objects.filter(Q(id_objetivo_tacticotn=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id))
-
-            count_no_vistos = Ges_Observaciones.objects.values('id_actividad_id').filter(
-                id_actividad=OuterRef('pk')).annotate(
-                count_id_actividad=Count('id', filter=Q(observado=1)  & Q(id_periodo=periodo_actual.id) & (~Q(user_observa = id_usuario_actual)) ))
-
-            count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(
-                id_actividad=OuterRef('pk')).annotate(
-                count_id_actividad=Count('id'))
-
-            lista_actividades = Ges_Actividad.objects.filter(
-                Q(id_objetivo_tacticotn=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)).annotate(
-                count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
-                count_observaciones=Subquery(count_observaciones.values('count_id_actividad')[0:1])).order_by(
-                '-count_no_vistos', '-count_observaciones')
-
-
-            nombre = Ges_Objetivo_TacticoTN.objects.get(id=self.kwargs['pk'])
-        if self.request.session['id_orden']==4:
-            #lista_actividades = Ges_Actividad.objects.filter(Q(id_objetivo_operativo=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id))
-
-            count_no_vistos = Ges_Observaciones.objects.values('id_actividad_id').filter(
-                id_actividad=OuterRef('pk')).annotate(
-                count_id_actividad=Count('id', filter=Q(observado=1)  & Q(id_periodo=periodo_actual.id) & (~Q(user_observa = id_usuario_actual)) ))
-
-            count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(
-                id_actividad=OuterRef('pk')).annotate(
-                count_id_actividad=Count('id'))
-
-            lista_actividades = Ges_Actividad.objects.filter(
-                Q(id_objetivo_operativo=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)).annotate(
-                count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
-                count_observaciones=Subquery(count_observaciones.values('count_id_actividad')[0:1])).order_by(
-                '-count_no_vistos', '-count_observaciones')
-
-
-            nombre = Ges_Objetivo_Operativo.objects.get(id=self.kwargs['pk'])
-
-        self.request.session['tv'] = nombre.transversal
-
 
         try:
             nivel_usuario = Ges_Jefatura.objects.get(Q(id_user=id_usuario_actual) & Q(id_periodo=periodo_actual.id))
@@ -353,6 +294,69 @@ class ActividadesDetail(ListView): #clase modificada por JR- sprint 8 - Ok
             consumidas = int(consumidas)
         except Ges_Registro_Horas.DoesNotExist:
             return None
+
+
+        if self.request.session['id_orden']==2:
+            #lista_actividades = Ges_Actividad.objects.filter(Q(id_objetivo_tactico=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id))
+
+            count_no_vistos = Ges_Observaciones.objects.values('id_actividad_id').filter(
+                id_actividad=OuterRef('pk')).annotate(
+                count_id_actividad=Count('id', filter=Q(observado=1)  & Q(id_periodo=periodo_actual.id) & (~Q(user_observa = id_usuario_actual)) ))
+
+            count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(Q(
+                id_actividad=OuterRef('pk')) ).annotate(
+                count_id_actividad=Count('id'))
+
+            lista_actividades = Ges_Actividad.objects.filter(
+                Q(id_objetivo_tactico=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)).annotate(
+                count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
+                count_observaciones=Subquery(count_observaciones.values('count_id_actividad')[0:1])).order_by(
+                '-count_no_vistos', '-count_observaciones')
+
+            nombre=  Ges_Objetivo_Tactico.objects.get(id=self.kwargs['pk'])
+        if self.request.session['id_orden']==3:
+           # lista_actividades = Ges_Actividad.objects.filter(Q(id_objetivo_tacticotn=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id))
+
+            count_no_vistos = Ges_Observaciones.objects.values('id_actividad_id').filter(
+                id_actividad=OuterRef('pk')).annotate(
+                count_id_actividad=Count('id', filter=Q(observado=1)  & Q(id_periodo=periodo_actual.id) & (~Q(user_observa = id_usuario_actual)) ))
+
+            count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(Q(
+                id_actividad=OuterRef('pk'))).annotate(
+                count_id_actividad=Count('id'))
+
+            lista_actividades = Ges_Actividad.objects.filter(
+                Q(id_objetivo_tacticotn=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)).annotate(
+                count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
+                count_observaciones=Subquery(count_observaciones.values('count_id_actividad')[0:1])).order_by(
+                '-count_no_vistos', '-count_observaciones')
+
+
+            nombre = Ges_Objetivo_TacticoTN.objects.get(id=self.kwargs['pk'])
+        if self.request.session['id_orden']==4:
+            #lista_actividades = Ges_Actividad.objects.filter(Q(id_objetivo_operativo=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id))
+
+            count_no_vistos = Ges_Observaciones.objects.values('id_actividad_id').filter(
+                id_actividad=OuterRef('pk')).annotate(
+                count_id_actividad=Count('id', filter=Q(observado=1)  & Q(id_periodo=periodo_actual.id) & (~Q(user_observa = id_usuario_actual)) ))
+
+            count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(Q(
+                id_actividad=OuterRef('pk')) ).annotate(
+                count_id_actividad=Count('id'))
+
+            lista_actividades = Ges_Actividad.objects.filter(
+                Q(id_objetivo_operativo=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)).annotate(
+                count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
+                count_observaciones=Subquery(count_observaciones.values('count_id_actividad')[0:1])).order_by(
+                '-count_no_vistos', '-count_observaciones')
+
+
+            nombre = Ges_Objetivo_Operativo.objects.get(id=self.kwargs['pk'])
+
+        self.request.session['tv'] = nombre.transversal
+
+
+
 
         context['object_list'] = lista_actividades
         context['nombre_objetivo'] = {'nombre': nombre}
@@ -586,8 +590,17 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
     form_class = GestionActividadesUpdateForm
     template_name = 'actividades/actividades_form_update.html'
 
+    def get_form_kwargs(self, **kwargs):
+        kwargs = super(ActividadEdit, self).get_form_kwargs()
+        kwargs['UpdateEsTransversal'] = self.request.session['tv']
+
+        return kwargs
+
+
+
+
     def post(self, request, *args, **kwargs):
-        form_class = self.get_form_class()
+
         self.object = self.get_object()
         id_nivel = kwargs['pk']
         instancia_nivel = self.model.objects.get(id=id_nivel)
@@ -638,6 +651,7 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
         total_horas_post = int(total_horas_post)
         #if dias_habiles_brutos_feriados == total_horas_post: #PASO A AJAX CONTROL TOLKIT
         if form.is_valid():
+
             # form.instance.total_horas= 1
             # form.instance.id_estado_actividad_id = 4
             form.instance.flag_reporta=0
@@ -655,6 +669,8 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
             if self.request.session['id_orden'] == 4:
                 id_objetivo = Ges_Objetivo_Operativo.objects.get(id=self.request.session['id_objetivo'])
                 form.instance.id_objetivo_operativo = id_objetivo
+
+
 
             form.save()
             request.session['message_class'] = "alert alert-success"

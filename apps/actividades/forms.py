@@ -1,6 +1,7 @@
 from django import forms
 from apps.actividades.models import Ges_Actividad
 from apps.familia_cargo.models import Glo_FamiliaCargo as Fc
+
 from apps.controlador.models import Ges_Controlador as Gc
 from apps.jefaturas.models import Ges_Jefatura as Gj
 from django.db.models import Subquery
@@ -49,6 +50,17 @@ class ActividadForm(forms.ModelForm):
         }
 class GestionActividadesUpdateForm(forms.ModelForm):
 
+    def __init__(self, *args, **kwargs):
+        self.UpdateEsTransversal = kwargs.pop('UpdateEsTransversal', None)
+        super(GestionActividadesUpdateForm, self).__init__(*args, **kwargs)
+
+
+        if self.UpdateEsTransversal == True:
+            self.fields['id_familia_cargo'].queryset = Fc.objects.filter(id__in=[2, 3])
+        else:
+            self.fields['id_familia_cargo'].queryset = Fc.objects.all()
+
+
     fecha_inicio_actividad = forms.DateField(
         widget=forms.DateInput(format='%Y-%m-%d'),
         input_formats=('%Y-%m-%d',)
@@ -62,7 +74,7 @@ class GestionActividadesUpdateForm(forms.ModelForm):
     class Meta:
         model = Ges_Actividad
         fields = [
-             'descripcion_actividad',
+            'descripcion_actividad',
             'id_periodicidad',
             'horas_actividad',
             'volumen',

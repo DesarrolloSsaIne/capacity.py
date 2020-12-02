@@ -26,7 +26,7 @@ Actividades Asociadas al Objetivo
 
 			</div>
 
-		<h2 class="panel-title" style="font-size:16px; margin-right:50px;">{{ nombre_objetivo.nombre }}</h2>
+		<h2 class="panel-title" style="font-size:16px; margin-right:30px;">{{ nombre_objetivo.nombre }}</h2>
 		</header>
 
 		<div class="panel-body">
@@ -35,7 +35,7 @@ Actividades Asociadas al Objetivo
 					<tr>
 						<!--<th>id</th>-->
 						<th>N°</th>
-						<th>Actividad</th>
+						<th style=" "> <div style="color:white;">........................................................................................</div> <br> Descripción Actividad </th>
 
 						<th  title="Fecha Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Fecha Inicio Actividad</th>
 						<th  title="Fecha de Término de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Fecha Término Actividad</th>
@@ -51,7 +51,7 @@ Actividades Asociadas al Objetivo
 					{%  for objetivo in object_list %}
 					<tr>
 						<td style="width:20px;"> {{ forloop.counter }}</td>
-						<td class="descripcion_actividad"  style="cursor:pointer;  overflow: hidden;  display: table-cell;  text-overflow: ellipsis;  border: solid 1px #dddddd; white-space: nowrap;">{{ objetivo.descripcion_actividad }}</td>
+						<td class="MitextoGrande"  style="height:65px; width:100%; border-bottom:1px; border-left:0px; border-right:0px;  padding-top:-5px; " >{{ objetivo.descripcion_actividad }}</td>
 
 						<td style="width:170px;">{{ objetivo.fecha_inicio_actividad }}</td>
 						<td style="width:190px;">{{ objetivo.fecha_termino_actividad }}</td>
@@ -158,10 +158,16 @@ $(".volver").click(function() {
 				$(this).modalForm({formURL: $(this).data('id'),  modalID: $("#modalUpdate")});
 			});
 
-$('#datatable-default').on('click', '.descripcion_actividad', function () {
+$('#datatable-default').on('click', '.MitextoGrande', function () {
     $('#txt_obs_campo_expand').val($(this).parents('tr').find('td:nth-child(2)').text())
     $('#observacion_center').modal('toggle');
     });
+
+
+$('#datatable-default').DataTable({
+stateSave: true,
+
+});
 </script>
 
 		{% endblock %}

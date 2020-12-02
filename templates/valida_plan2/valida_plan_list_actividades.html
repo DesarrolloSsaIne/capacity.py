@@ -23,7 +23,7 @@ Actividades Asociadas al Objetivo
 
 			</div>
 
-		<h2 class="panel-title" style="font-size:16px;">{{ nombre_objetivo.nombre }}</h2>
+		<h2 class="panel-title" style="font-size:16px; padding-right:28px;">{{ nombre_objetivo.nombre }}</h2>
 		</header>
 
 		<div class="panel-body">
@@ -46,7 +46,7 @@ Actividades Asociadas al Objetivo
 					{%  for objetivo in object_list %}
 					<tr>
 						<td> {{ forloop.counter }}</td>
-						<td class="descripcion_actividad"  style="cursor:pointer; max-width: 350px; overflow: hidden;  display: table-cell;  text-overflow: ellipsis;  border: solid 1px #dddddd; white-space: nowrap;">{{ objetivo.descripcion_actividad }}</td>
+						<td class="MitextoGrande"  style="height:65px; width:100%; border-bottom:1px; border-left:0px; border-right:0px;  padding-top:-5px;" >{{ objetivo.descripcion_actividad }}</td>
 
 
 						<td style="width:170px;">{{ objetivo.fecha_inicio_actividad }}</td>
@@ -159,7 +159,7 @@ Actividades Asociadas al Objetivo
 				$(this).remove();
 			});
 
-$('#datatable-default').on('click', '.descripcion_actividad', function () {
+$('#datatable-default').on('click', '.MitextoGrande', function () {
     $('#txt_obs_campo_expand').val($(this).parents('tr').find('td:nth-child(2)').text())
     $('#observacion_center').modal('toggle');
 
@@ -168,6 +168,7 @@ $('#datatable-default').on('click', '.descripcion_actividad', function () {
 
 
 $('#datatable-default').DataTable({
+stateSave: true,
 "ordering": false //desactiva el ordenamiento de la tabla para que el order_by del queryset funcione. ("order": [[ 3, "desc" ]]) para ordenar desde jquery.
 });
 

@@ -6,7 +6,7 @@ urlpatterns = [
 
     path(r'periodos/', include('apps.periodos.urls')),
 
-    path(r'', include('apps.registration.urls')),
+
     path(r'accounts/', include('apps.registration.urls')),
     path(r'admin/', admin.site.urls),
     path(r'dashboard/', include('apps.dashboard.urls')),

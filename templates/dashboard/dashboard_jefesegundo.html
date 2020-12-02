@@ -54,7 +54,7 @@ var myChart7 = new Chart(ctx7, {
 						beginAtZero:true,
 						// max:plugin.settings.maxDataValue,
 						//maxTicksLimit: 5
-						stepSize: 5,
+						stepSize: 250,
 						suggestedMin:0
 					  }
 					}]
@@ -247,21 +247,9 @@ $("#download_por_actividad_detalleSJ").click(function(){
 {% if GrupoDashboard == 'GrupoJefeSegunda' %}
 {% if PlanesPorArea %}
 
-<div class="col-md-6" >
-<section class="panel" >
-	<div class="panel-body"  >
-		<canvas id="chart_siete" height="200"></canvas>
-		<div style="text-align:right; position:relative; z-index:1; ">
-			<a id="download_por_actividad_sj" style="width:20px; height:20px; "  name="download_por_actividad_sj"  download="Avance_por_Actividad.jpg" href="" class="btn btn-sm btn-success" title="Descargar Gráfico" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
-				<span style="margin-left:-5px; " class="fa fa-download"></span>
-			</a>
-		</div>
-	</div>
-</section>
-</div>
 
 
-<div class="col-md-6">
+<div class="col-md-12">
 <section class="panel" >
 	<div class="panel-body" style="height:335px; overflow: auto; " >
 
@@ -301,6 +289,19 @@ $("#download_por_actividad_detalleSJ").click(function(){
 			<a id="download_por_actividad_detalleSJ" style="width:20px; height:20px;"  name="download_por_actividad_detalleSJ"  download="Avance_por_actividad_detalle.jpg" href="" class="btn btn-sm btn-success" title="Descargar Gráfico" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
 			<span style="margin-left:-5px; " class="fa fa-download"></span>
 		</a>
+		</div>
+	</div>
+</section>
+</div>
+
+<div class="col-md-12" >
+<section class="panel" >
+	<div class="panel-body"  >
+		<canvas id="chart_siete" height="200"></canvas>
+		<div style="text-align:right; position:relative; z-index:1; ">
+			<a id="download_por_actividad_sj" style="width:20px; height:20px; "  name="download_por_actividad_sj"  download="Avance_por_Actividad.jpg" href="" class="btn btn-sm btn-success" title="Descargar Gráfico" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
+				<span style="margin-left:-5px; " class="fa fa-download"></span>
+			</a>
 		</div>
 	</div>
 </section>

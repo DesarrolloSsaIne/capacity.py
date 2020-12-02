@@ -140,6 +140,11 @@ Listado de Planes
     $('#datatable-default_filter').find("input").trigger('keyup');
         });
 
+       $('#datatable-default').DataTable({
+stateSave: true,
+
+});
+
 </script>
 
 {% endblock %}

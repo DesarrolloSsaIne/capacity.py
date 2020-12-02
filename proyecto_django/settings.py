@@ -198,13 +198,24 @@ DATABASES = {
     }
 }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'mysql_cymysql',
+#         'NAME': 'DJANGO_DES',
+#         'USER': 'capacity_des',
+#         'PASSWORD': '2MOMO99L',
+#         'HOST': '10.91.160.53',
+#         'PORT': 3306,
+#     }
+# }
+
 
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'mysql_cymysql',
-#         'NAME': 'CAPACITY_DB_PRD',
-#         'USER': 'jason',
-#         'PASSWORD': '1SUMU79S',
+#         'NAME': 'CAPACITY_DB_PRDx',
+#         'USER': 'jasonx',
+#         'PASSWORD': '1SUMU79Sx',
 #         'HOST': '10.91.163.94',
 #         'PORT': 3306,
 #     }

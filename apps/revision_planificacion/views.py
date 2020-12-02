@@ -130,7 +130,7 @@ class UnidadesListarNoFinalizadas(ListView):
         try:
 
             id_controlador = Ges_Controlador.objects.filter(
-                Q(analista_asignado=id_usuario_actual) & Q(id_periodo=periodo_actual.id) & ~Q(estado_flujo__in= [6,7,2, 10]))
+                 Q(id_periodo=periodo_actual.id) & ~Q(estado_flujo__in= [6,7,2,10]))
 
         except Ges_Controlador.DoesNotExist:
             return None
@@ -210,20 +210,20 @@ class ObjetivosListar(ListView):
 
                 count_no_vistos_obj = Ges_Observaciones_sr.objects.values('id_objetivo_tactico').filter(
                     id_objetivo_tactico=OuterRef('pk')).annotate(
-                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (
+                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_controlador=controlador.id) & Q(id_periodo=periodo_actual.id) & (
                         ~Q(user_observa=id_usuario_actual))))
 
                 count_no_vistos = Ges_Observaciones.objects.values('id_objetivo').filter(
                     id_objetivo=OuterRef('pk')).annotate(
-                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (
+                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_controlador=controlador.id) & Q(id_periodo=periodo_actual.id) & (
                         ~Q(user_observa=id_usuario_actual))))
 
                 count_observaciones_obj = Ges_Observaciones_sr.objects.values('id_objetivo_tactico').filter(
                     id_objetivo_tactico=OuterRef('pk')).annotate(
                     count_id_actividad=Count('id'))
 
-                count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(
-                    id_objetivo=OuterRef('pk')).annotate(
+                count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(Q(
+                    id_objetivo=OuterRef('pk')) & Q(id_controlador=controlador.id)).annotate(
                     count_id_actividad=Count('id'))
 
                 replies2 = Ges_Objetivo_Tactico.objects.filter(
@@ -242,20 +242,20 @@ class ObjetivosListar(ListView):
 
                 count_no_vistos_obj = Ges_Observaciones_sr.objects.values('id_objetivo_tacticotn').filter(
                     id_objetivo_tacticotn=OuterRef('pk')).annotate(
-                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (
+                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_controlador=controlador.id) & Q(id_periodo=periodo_actual.id) & (
                         ~Q(user_observa=id_usuario_actual))))
 
                 count_no_vistos = Ges_Observaciones.objects.values('id_objetivo').filter(
                     id_objetivo=OuterRef('pk')).annotate(
-                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (
+                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_controlador=controlador.id) & Q(id_periodo=periodo_actual.id) & (
                         ~Q(user_observa=id_usuario_actual))))
 
                 count_observaciones_obj = Ges_Observaciones_sr.objects.values('id_objetivo_tacticotn').filter(
                     id_objetivo_tacticotn=OuterRef('pk')).annotate(
                     count_id_actividad=Count('id'))
 
-                count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(
-                    id_objetivo=OuterRef('pk')).annotate(
+                count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(Q(
+                    id_objetivo=OuterRef('pk')) & Q(id_controlador=controlador.id)).annotate(
                     count_id_actividad=Count('id'))
 
                 replies2 = Ges_Objetivo_TacticoTN.objects.filter(
@@ -274,20 +274,21 @@ class ObjetivosListar(ListView):
 
                 count_no_vistos_obj = Ges_Observaciones_sr.objects.values('id_objetivo_operativo').filter(
                     id_objetivo_operativo=OuterRef('pk')).annotate(
-                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (
+                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_controlador=controlador.id) & Q(id_periodo=periodo_actual.id) & (
                         ~Q(user_observa=id_usuario_actual))))
 
                 count_no_vistos = Ges_Observaciones.objects.values('id_objetivo').filter(
                     id_objetivo=OuterRef('pk')).annotate(
-                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (
+                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_controlador=controlador.id) & Q(id_periodo=periodo_actual.id) & (
                         ~Q(user_observa=id_usuario_actual))))
 
-                count_observaciones_obj = Ges_Observaciones_sr.objects.values('id_objetivo_operativo').filter(
-                    id_objetivo_operativo=OuterRef('pk')).annotate(
+
+                count_observaciones_obj = Ges_Observaciones_sr.objects.values('id_objetivo_operativo').filter(Q(
+                    id_objetivo_operativo=OuterRef('pk'))).annotate(
                     count_id_actividad=Count('id'))
 
-                count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(
-                    id_objetivo=OuterRef('pk')).annotate(
+                count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(Q(
+                    id_objetivo=OuterRef('pk')) & Q(id_controlador=controlador.id) ).annotate(
                     count_id_actividad=Count('id'))
 
                 replies2 = Ges_Objetivo_Operativo.objects.filter(
@@ -781,8 +782,12 @@ class EnviarPlanAdministrador(UpdateView):
         estado = 10
         controladorPlan.estado_flujo_id = int(estado)
 
+
+
         try:
+
             controladorPlan.save()
+            QuitarAnalista(id_controlador)
 
             request.session['message_class'] = "alert alert-success"
             messages.error(self.request,
@@ -1153,7 +1158,11 @@ def GestionObservacionesObjetivosVp2(request, id):
 
     return render(request, template_name, args)
 
+def QuitarAnalista(id_controlador):
 
+    Ges_Controlador.objects.filter(id=id_controlador).update(
+        analista_asignado=None,
+    )
 
 def logEventosCreate(tipo_evento, metodo ,usuario_evento, jefatura_dirigida):
     logEventos.objects.create(
