@@ -34,25 +34,25 @@ Actividades Asociadas al Objetivo | Seguimiento
 				<thead>
 					<tr>
 						<!--<th>id</th>-->
-						<th>N°</th>
+						<th>ID</th>
 						<th>Actividad</th>
 						<th  title="Fecha Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Fecha Inicio</th>
 						<th  title="Fecha de Término de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Fecha Término</th>
 						<th>Estado Seguimiento</th>
-						<th style="">Obs.</th>
+						<th style="">Detalle Actividad</th>
 
 					</tr>
 				</thead>
 				<tbody>
 					{%  for objetivo in object_list %}
 					<tr>
-						<td> {{ forloop.counter }}</td>
+						<td> {{ objetivo.id}}</td>
 						<td class="descripcion_actividad"  style="cursor:pointer; max-width: 300px; overflow: hidden;  display: table-cell;  text-overflow: ellipsis;  border: solid 1px #dddddd; white-space: nowrap;">{{ objetivo.descripcion_actividad }}</td>
 
 
 
-						<td style="width:170px;">{{ objetivo.fecha_inicio_actividad }}</td>
-						<td style="width:190px;">{{ objetivo.fecha_termino_actividad }}</td>
+						<td style="width:170px;"><span style='display: none;'>{{objetivo.fecha_inicio_actividad|date:"Ymd"}}</span>{{ objetivo.fecha_inicio_actividad }}</td>
+						<td style="width:190px;"><span style='display: none;'>{{objetivo.fecha_termino_actividad|date:"Ymd"}}</span>{{ objetivo.fecha_termino_actividad }}</td>
 
 
 
@@ -176,7 +176,7 @@ $('#datatable-default').on('click', '.descripcion_actividad', function () {
 
 
 $('#datatable-default').DataTable({
-"ordering": false //desactiva el ordenamiento de la tabla para que el order_by del queryset funcione. ("order": [[ 3, "desc" ]]) para ordenar desde jquery.
+"ordering": true //desactiva el ordenamiento de la tabla para que el order_by del queryset funcione. ("order": [[ 3, "desc" ]]) para ordenar desde jquery.
 });
 
 		</script>

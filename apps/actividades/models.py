@@ -32,12 +32,14 @@ class Ges_Actividad (models.Model):
     id_objetivo_operativo = models.ForeignKey(Ges_Objetivo_Operativo, on_delete=models.PROTECT, blank=True, null=True)
     id_estado_actividad = models.ForeignKey(Glo_EstadoActividad, on_delete=models.PROTECT, blank=True, null=True)
 
+    fecha_real_inicio = models.DateField(blank=True, null=True) # Sprint 2 - CI- 10 - 15012021
     fecha_real_termino = models.DateField(blank=True, null=True)
     fecha_reprogramacion_termino = models.DateField(blank=True, null=True)
     fecha_reprogramacion_inicio = models.DateField(blank=True, null=True)
     justificacion = models.CharField(max_length=2000, blank=True, null=True)
     validada = models.IntegerField(blank=True, null=True)
     flag_reporta = models.IntegerField(null=True, blank=True)
+    flag_tmp = models.IntegerField(null=True, blank=True)  # Sprint 1 - CI-2 - 11012021
 
 class Ges_Observaciones_valida (models.Model):
     descripcion_observacion = models.CharField(max_length=2000)
@@ -64,6 +66,8 @@ class Ges_Actividad_Historia(models.Model):
     fecha_registro = models.DateTimeField(auto_now=True)
     fecha_reprogramacion_inicio = models.DateTimeField(blank=True, null=True)
     fecha_reprogramacion_termino = models.DateTimeField(blank=True, null=True)
+
+    fecha_real_inicio = models.DateTimeField(blank=True, null=True)  # Sprint 2 - CI- 10 - 15012021
     fecha_real_termino = models.DateTimeField(blank=True, null=True)
     id_estado_actividad = models.ForeignKey(Glo_EstadoActividad, on_delete=models.PROTECT, null=True, blank=True)
     id_periodo = models.ForeignKey(Glo_Periodos, on_delete=models.PROTECT, blank=True, null=True)

@@ -23,7 +23,7 @@ Actividades Asociadas al Objetivo
 
 	<section class="panel">
 							<header class="panel-heading">
-								<div class="panel-actions">
+								<div class="panel-actions" >
 									<div  >
 								    <button  type="button" class="volver btn btn-sm btn-info"  name="button" title="Volver"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
       								<span class="fa fa-reply"></span></button>
@@ -32,7 +32,7 @@ Actividades Asociadas al Objetivo
 									</div>
 								</div>
 
-									<h2  class="panel-title" style="font-size:16px; margin-right:35px;"> {{nombre_objetivo.nombre}} </h2>
+									<h2  class="panel-title" style="font-size:16px; padding-right:45px;"> {{nombre_objetivo.nombre}} </h2>
 
 							</header>
 							<div class="panel-body">
@@ -61,7 +61,7 @@ Actividades Asociadas al Objetivo
 
                                                 <tr>
 
-													<td style="font-size:11px;"> {{ forloop.counter }}</td>
+													<td style="font-size:11px;"> {{ objetivo.id }}</td>
 													<td class="Mitexto"  style="height:70px; width:100%; border-bottom:1px; border-left:0px; border-right:0px; font-size:11px; padding-top:-5px;"  >{{ objetivo.descripcion_actividad}}</td>
 													<td style="font-size:11px; "> {{ objetivo.id_periodicidad}}</td>
 													<td style=" font-size:11px;"> {{ objetivo.horas_actividad}}</td>
@@ -258,8 +258,11 @@ $('#datatable-default').on('click', '.descripcion_producto', function () {
 
 
 $('#datatable-default').DataTable( {
+
 	stateSave: true,
-   "order":  [ 10, "asc" ]
+   "order":  [ 10, "asc" ],
+
+   "pageLength": 50 // cambio a 50 sprint 1 - CI-11 - 070121
 } );
 
 

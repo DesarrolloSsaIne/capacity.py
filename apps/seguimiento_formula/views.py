@@ -15,11 +15,14 @@ from django.contrib.messages.views import SuccessMessageMixin
 from apps.estado_actividad.models import Glo_EstadoActividad
 from apps.estado_plan.models import Glo_EstadoPlan
 from apps.registration.models import logEventos
-from apps.seguimiento_formula.forms import  GestionActividadesUpdateForm, PlanUpdateForm,PlanUpdateFormAcepta
+from apps.seguimiento_formula.forms import  GestionActividadesUpdateForm, PlanUpdateForm,PlanUpdateFormAcepta, GestionActividadesUpdateFormVer
 from django.contrib import messages
 from django.core.mail import EmailMessage,send_mass_mail
 from django.contrib.auth.models import User, Group
 from datetime import datetime
+from django.http import HttpResponseRedirect, JsonResponse
+from openpyxl import Workbook
+from django.http import HttpResponse
 
 
 class ActividadesObjetivosList(ListView): #clase modificada por JR- sprint 8 - Ok
@@ -36,7 +39,9 @@ class ActividadesObjetivosList(ListView): #clase modificada por JR- sprint 8 - O
         except Glo_Periodos.DoesNotExist:
             return None
         try:
-            periodo_seguimiento = Glo_Seguimiento.objects.get(Q(id_estado_seguimiento=1) & Q(id_periodo=periodo_actual.id))
+            #periodo_seguimiento = Glo_Seguimiento.objects.get(Q(id_estado_seguimiento=1) & Q(id_periodo=periodo_actual.id))
+            periodo_seguimiento = Glo_Seguimiento.objects.filter(
+                Q(id_periodo=periodo_actual.id)).latest('fecha_inicio')
         except:
             periodo_seguimiento=None
             pass
@@ -121,15 +126,17 @@ class ActividadesObjetivosList(ListView): #clase modificada por JR- sprint 8 - O
                 context['niveles'] = replies2
 
                 context['orden'] = {'orden_nivel': id_orden}
-
+                estado_seguimiento_id= periodo_seguimiento.id_estado_seguimiento_id
                 context['total_disponible'] = {
                                                 'id_jefatura': id_jefatura,
-                                               'id_controlador': id_controlador
+                                               'id_controlador': id_controlador,
+                                                'estado_seguimiento_id': estado_seguimiento_id
                                                }
 
                 context['nivel_usuario'] = replies
 
                 self.request.session['id_orden'] = id_orden
+                self.request.session['estado_seguimiento_id'] = estado_seguimiento_id
                 return context
         else:
             self.request.session['message_class'] = "alert alert-warning"
@@ -145,7 +152,9 @@ class ActividadesDetail(ListView): #clase modificada por JR- sprint 8 - Ok
 
     def get_context_data(self,  **kwargs):
         context = super(ActividadesDetail, self).get_context_data(**kwargs)
+
         id_usuario_actual = self.request.user.id  # obtiene id usuario actual
+
         try:
             periodo_actual = Glo_Periodos.objects.get(id_estado=1)
         except Glo_Periodos.DoesNotExist:
@@ -193,10 +202,16 @@ class ActividadesDetail(ListView): #clase modificada por JR- sprint 8 - Ok
         except Ges_Controlador.DoesNotExist:
             return None
 
+        estado_seguimiento_id = self.request.session['estado_seguimiento_id']
         context['object_list'] = lista_actividades
         context['nombre_objetivo'] = {'nombre': nombre}
         context['total_disponible'] = {'id_nivel':id_nivel,
-                                       'id_controlador':id_controlador}
+                                       'id_controlador':id_controlador,
+                                       'estado_seguimiento_id': estado_seguimiento_id
+                                       }
+
+
+
         self.request.session['id_objetivo']=self.kwargs['pk']
         return context
 
@@ -211,15 +226,21 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
         context = super(ActividadEdit, self).get_context_data(**kwargs)
 
         fechas_corte= Glo_Seguimiento.objects.order_by('-id')[0]
+        flag_tmp= Ges_Actividad.objects.get(id=self.kwargs['pk'])
+
+
 
 
         context['fechas'] = {'fecha_inicio_corte_str':str(fechas_corte.fecha_inicio_corte)  ,
                              'fecha_termino_corte_str':str(fechas_corte.fecha_termino_corte),
                              'fecha_inicio_corte': fechas_corte.fecha_inicio_corte,
                              'fecha_termino_corte': fechas_corte.fecha_termino_corte,
-
+                             'flag_tmp': flag_tmp.flag_tmp,
+                             'fecha_real_inicio': flag_tmp.fecha_real_inicio,# sprint 3 - CI-21 -25012021
                              }
         return context
+
+
 
     def post(self, request, *args, **kwargs):
         form_class = self.get_form_class()
@@ -248,6 +269,7 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
             usuario_controlador = Ges_Controlador.objects.get(id_jefatura=id_jefatura.id)
         except Ges_Controlador.DoesNotExist:
             return None
+        fecha_real_inicio = request.POST['fecha_real_inicio'] #sprint 2 - CI -10 - 180120201
         fecha_real_termino = request.POST['fecha_real_termino']
         fecha_inicio_reprogramacion = request.POST['fecha_reprogramacion_inicio']
         fecha_termino_reprogramacion = request.POST['fecha_reprogramacion_termino']
@@ -255,16 +277,31 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
 
         id_estado_actividad = request.POST['id_estado_actividad']
 
+
+
         try:
             id_actividad_instancia = Ges_Actividad.objects.get(Q(id=id_actividad) & Q(id_periodo=periodo_actual.id))
         except id_actividad_instancia.DoesNotExist:
             return None
 
         try:
+            actualiza_tmp = Ges_Actividad.objects.filter(Q(id=id_actividad) & Q(id_periodo=periodo_actual.id) & Q(id_estado_actividad=3) & Q(flag_tmp=0) & (~Q(fecha_real_inicio__isnull=True)))
+        except id_actividad_instancia.DoesNotExist:
+            return None
+
+        if actualiza_tmp:
+            form.instance.flag_tmp=0
+        else:
+            form.instance.flag_tmp=1
+
+        try:
             id_estado_actividad_instancia = Glo_EstadoActividad.objects.get(id=id_estado_actividad)
         except id_estado_actividad_instancia.DoesNotExist:
             return None
 
+        if fecha_real_inicio == '': #sprint 2 - CI -10 - 180120201
+            form.instance.fecha_real_inicio = None
+            fecha_real_inicio = None
         if fecha_real_termino == '':
             form.instance.fecha_real_termino = None
             fecha_real_termino = None
@@ -288,7 +325,11 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
             if self.request.session['id_orden'] == 4:
                 id_objetivo = Ges_Objetivo_Operativo.objects.get(id=self.request.session['id_objetivo'])
                 form.instance.id_objetivo_operativo = id_objetivo
+
             form.instance.flag_reporta = 1
+
+
+            #form.instance.flag_tmp = 1 # Sprint 1 - CI-2 - 11012021
 
 
 
@@ -299,7 +340,7 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
                 actualiza = 0
 
 
-            ActividadesHistoria(id_periodo_seguimiento, id_actividad_instancia, fecha_inicio_reprogramacion ,fecha_termino_reprogramacion, fecha_real_termino,
+            ActividadesHistoria(id_periodo_seguimiento, id_actividad_instancia, fecha_inicio_reprogramacion ,fecha_termino_reprogramacion, fecha_real_inicio, fecha_real_termino,
                                   id_estado_actividad_instancia, periodo_actual, justificacion, actualiza)
 
             form.save()
@@ -311,6 +352,18 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
             messages.error(self.request,
                            "Error interno: No se ha creado el registro. Comuníquese con el administrador.")
             return HttpResponseRedirect('/seguimiento_formula/detalle/' + str(self.request.session['id_objetivo']))
+
+
+class ActividadDetallesVer(SuccessMessageMixin, UpdateView):
+    model = Ges_Actividad
+    form_class = GestionActividadesUpdateFormVer
+    template_name = 'seguimiento_formula/seguimiento_formula_ver_detalle.html'
+
+
+
+
+
+
 
 
 class iniciaSeguimiento(UpdateView):
@@ -408,12 +461,27 @@ class cierraSeguimiento(UpdateView):
         email_jefatura= email_jefatura_primera
         emails_destino_analistas=analistas
 
+        fechas_corte= Glo_Seguimiento.objects.order_by('-id')[0] # Sprint 1 - CI-3 - 12012021
+
+        fecha_inicio_corte=fechas_corte.fecha_inicio_corte # Sprint 1 - CI-3 - 12012021
+        fecha_termino_corte=fechas_corte.fecha_termino_corte # Sprint 1 - CI-3 - 12012021
+
 
         area_plan = controladorPlan.id_jefatura.id_nivel
 
         total_actividades_reportadas = Ges_Actividad.objects.filter(
-            Q(id_controlador=id_controlador) & Q(id_periodo=periodo_actual) & Q(flag_reporta=0) & (
-                        ~Q(id_estado_actividad=7) & ~Q(id_estado_actividad=9))).count()
+            Q(id_controlador=id_controlador) & Q(fecha_real_inicio__isnull=True) & Q(id_periodo=periodo_actual) & Q(fecha_inicio_actividad__range=(fecha_inicio_corte, fecha_termino_corte)) & Q(flag_reporta=0) & (
+                        ~Q(id_estado_actividad=7) & ~Q(id_estado_actividad=8) & ~Q(id_estado_actividad=9))).count()
+
+        # try:
+        #
+        #     total_actividades_reportadas = total_actividades_reportadas.get(
+        #         Q(fecha_real_inicio__isnull=True) & ~Q(id_estado_actividad=8)).count()  # Sprint 2 - CI-18 - 20012021 nuevo
+        # except total_actividades_reportadas.DoesNotExist:
+        #     return 0
+
+
+
 
         estado = 3
         controladorPlan.id_estado_plan_id = int(estado)
@@ -439,7 +507,7 @@ class cierraSeguimiento(UpdateView):
 
             request.session['message_class'] = "alert alert-danger"
             messages.error(self.request,
-                           "Estimado Usuario: Para cerrar el proceso de seguimiento debe actualizar todas las actividades.")
+                           "Estimado Usuario: Para cerrar el proceso de seguimiento debe actualizar todas las actividades que tengan fecha de inicio dentro de las fechas de corte.") # Sprint 1 - CI-3 - 12012021
             return HttpResponseRedirect('/seguimiento_formula/listar')
 
 
@@ -470,7 +538,7 @@ def logEventosCreate(tipo_evento, metodo ,usuario_evento, jefatura_dirigida):
     )
     return None
 
-def ActividadesHistoria(id_periodo_seguimiento, id_actividad,fecha_reprogramacion_inicio, fecha_reprogramacion_termino, fecha_real_termino, id_estado_actividad,id_periodo, justificacion, actualiza):
+def ActividadesHistoria(id_periodo_seguimiento, id_actividad,fecha_reprogramacion_inicio, fecha_reprogramacion_termino, fecha_real_inicio,fecha_real_termino, id_estado_actividad,id_periodo, justificacion, actualiza):
 
 
     if actualiza == 0:
@@ -479,6 +547,7 @@ def ActividadesHistoria(id_periodo_seguimiento, id_actividad,fecha_reprogramacio
             id_actividad=id_actividad,
             fecha_reprogramacion_inicio=fecha_reprogramacion_inicio,
             fecha_reprogramacion_termino=fecha_reprogramacion_termino,
+            fecha_real_inicio=fecha_real_inicio, #sprint 2 - CI -10 - 180120201
             fecha_real_termino=fecha_real_termino,
             id_estado_actividad=id_estado_actividad,
             id_periodo=id_periodo,
@@ -492,6 +561,7 @@ def ActividadesHistoria(id_periodo_seguimiento, id_actividad,fecha_reprogramacio
         Ges_Actividad_Historia.objects.filter(id=Id.id).update(
             fecha_reprogramacion_inicio=fecha_reprogramacion_inicio,
             fecha_reprogramacion_termino=fecha_reprogramacion_termino,
+            fecha_real_inicio=fecha_real_inicio, #sprint 2 - CI -10 - 180120201
             fecha_real_termino=fecha_real_termino,
             id_estado_actividad=id_estado_actividad,
             justificacion=justificacion,
@@ -537,7 +607,7 @@ def UpdateFlag(id_controlador,periodo_actual):
 
 
     Ges_Actividad.objects.filter(Q(id_controlador=id_controlador) & Q(id_periodo=periodo_actual) & (~Q(id_estado_actividad=7) & ~Q(id_estado_actividad=9))).update(flag_reporta=0)
-
+    Ges_Actividad.objects.filter(Q(id_controlador=id_controlador) & Q(id_periodo=periodo_actual)).update(flag_tmp=0) # Sprint 1 - CI-2 - 11012021
 
 def EnviarCorreoInicioSeguimiento(emails_destino_analista, email_jefatura,area_plan):
 
@@ -569,3 +639,166 @@ def EnviarCorreoCierreSeguimiento(emails_destino_analista, email_jefatura, area_
     email.content_subtype='html'
     email.send()
 
+def export_users_xls_seguimiento(request, *args, **kwargs):
+    try:
+        periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+    except Glo_Periodos.DoesNotExist:
+        return None
+
+    id_controlador = kwargs['pk']
+
+
+    nivel=Ges_Controlador.objects.get(Q(id=id_controlador) & Q(id_periodo=periodo_actual))
+
+    nivel= nivel.nivel_inicial
+
+
+    actividades = Ges_Actividad.objects.filter(Q(id_controlador=id_controlador) &
+                                                            Q(id_periodo=periodo_actual))
+
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
+    response['Content-Disposition'] = 'attachment; filename={date}-Plan_de_Gestion.xlsx'.format(
+        date=datetime.now().strftime('%d/%m/%Y'),
+    )
+    workbook = Workbook()
+
+
+    # Get active worksheet/tab
+    worksheet = workbook.active
+    worksheet.title = 'reporte_seguimiento'
+
+    # Define the titles for columns
+
+    columns = ['Actividad',
+               'Objetivo Vinculado',
+               'Periodicidad',
+               'Producto Estadístico',
+               'Hora x Actividad',
+               'Volumen',
+               'N° Personas Asignadas',
+               'Total Horas',
+               'Cargo',
+               'Fecha Incio Actividad',
+               'Fecha Término Actividad',
+               'Estado Actividad',
+               'Fecha Real Inicio',
+               'Fecha Real Finalización',
+               'Reprogramación Fecha Inicio',
+               'Reprogramación Fecha Término',
+               'Justificación Desviación'
+
+               ]
+
+    row_num = 1
+
+    # Assign the titles for each cell of the header
+    for col_num, column_title in enumerate(columns, 1):
+        cell = worksheet.cell(row=row_num, column=col_num)
+        cell.value = column_title
+
+    # Iterate through all movies
+    for actividad in actividades:
+        row_num += 1
+
+        row =''
+
+        if nivel==4:
+
+            row = [
+
+                actividad.descripcion_actividad,
+                str(actividad.id_objetivo_operativo) ,
+                str(actividad.id_periodicidad),
+                str(actividad.id_producto_estadistico),
+                actividad.horas_actividad,
+                actividad.volumen,
+                actividad.personas_asignadas,
+                actividad.total_horas,
+                str(actividad.id_familia_cargo),
+                actividad.fecha_inicio_actividad,
+                actividad.fecha_termino_actividad,
+                str(actividad.id_estado_actividad),
+                actividad.fecha_real_inicio,
+                actividad.fecha_real_termino,
+                actividad.fecha_reprogramacion_inicio,
+                actividad.fecha_reprogramacion_termino,
+                actividad.justificacion,
+
+
+            ]
+
+        if nivel==3:
+
+            row = [
+
+                actividad.descripcion_actividad,
+                str(actividad.id_objetivo_tacticotn) ,
+                str(actividad.id_periodicidad),
+                str(actividad.id_producto_estadistico),
+                actividad.horas_actividad,
+                actividad.volumen,
+                actividad.personas_asignadas,
+                actividad.total_horas,
+                str(actividad.id_familia_cargo),
+                actividad.fecha_inicio_actividad,
+                actividad.fecha_termino_actividad,
+                str(actividad.id_estado_actividad),
+                actividad.fecha_real_inicio,
+                actividad.fecha_real_termino,
+                actividad.fecha_reprogramacion_inicio,
+                actividad.fecha_reprogramacion_termino,
+                actividad.justificacion,
+
+
+
+            ]
+
+
+
+        if nivel==2:
+
+            row = [
+
+                actividad.descripcion_actividad,
+                str(actividad.id_objetivo_tactico) ,
+                str(actividad.id_periodicidad),
+                str(actividad.id_producto_estadistico),
+                actividad.horas_actividad,
+                actividad.volumen,
+                actividad.personas_asignadas,
+                actividad.total_horas,
+                str(actividad.id_familia_cargo),
+                actividad.fecha_inicio_actividad,
+                actividad.fecha_termino_actividad,
+                str(actividad.id_estado_actividad),
+                actividad.fecha_real_inicio,
+                actividad.fecha_real_termino,
+                actividad.fecha_reprogramacion_inicio,
+                actividad.fecha_reprogramacion_termino,
+                actividad.justificacion,
+
+            ]
+
+        # Assign the data for each cell of the row
+        for col_num, cell_value in enumerate(row, 1):
+            cell = worksheet.cell(row=row_num, column=col_num)
+            cell.value = cell_value
+
+
+            if col_num == 10:
+                cell.number_format = 'dd/mm/yyyy'
+            if col_num == 11:
+                cell.number_format = 'dd/mm/yyyy'
+            if col_num == 13:
+                cell.number_format = 'dd/mm/yyyy'
+            if col_num == 14:
+                cell.number_format = 'dd/mm/yyyy'
+            if col_num == 15:
+                cell.number_format = 'dd/mm/yyyy'
+
+    workbook.save(response)
+
+
+    return response

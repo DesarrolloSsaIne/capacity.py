@@ -427,23 +427,22 @@ class Objetivos(ListView): #Modificado por JR- sprint 8 - OK
                    id_objetivo_tacticotn=OuterRef('pk')).annotate(
                    count_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id)))
 
-                count_no_vistos_general = Ges_Observaciones_sr.objects.values('id_objetivo_tacticotn').filter(
-                    id_objetivo_tacticotn=OuterRef('pk')).annotate(
-                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (~Q(user_observa=id_usuario_actual))))
+                count_no_vistos_general = Ges_Observaciones_sr.objects.values('id_objetivo_tacticotn').filter(Q(
+                    id_objetivo_tacticotn=OuterRef('pk'))).annotate(
+                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_controlador=controlador.id) & Q(id_periodo=periodo_actual.id) & (~Q(user_observa=id_usuario_actual))))
 
-                count_no_vistos = Ges_Observaciones.objects.values('id_objetivo').filter(
-                    id_objetivo=OuterRef('pk')).annotate(
-                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (
+                count_no_vistos = Ges_Observaciones.objects.values('id_objetivo').filter(Q(
+                    id_objetivo=OuterRef('pk')) ).annotate(
+                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_controlador=controlador.id) & Q(id_periodo=periodo_actual.id) & (
                         ~Q(user_observa=id_usuario_actual))))
 
-                count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(
-                    id_objetivo=OuterRef('pk')).annotate(
-                    count_id_actividad=Count('id'))
+                count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(Q(
+                    id_objetivo=OuterRef('pk')) & Q(id_controlador=controlador.id)).annotate(
+                    count_id_actividad=Count('id' , filter=Q(id_periodo=periodo_actual.id)  & Q(id_controlador=controlador.id)))
 
-
-                count_observaciones_general = Ges_Observaciones_sr.objects.values('id_objetivo_tacticotn').filter(
-                    id_objetivo_tacticotn=OuterRef('pk')).annotate(
-                    count_id_actividad=Count('id'))
+                count_observaciones_general = Ges_Observaciones_sr.objects.values('id_objetivo_tacticotn').filter(Q(
+                    id_objetivo_tacticotn=OuterRef('pk'))).annotate(
+                    count_id_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id)  & Q(id_controlador=controlador.id)))
 
                 replies2 = Ges_Objetivo_TacticoTN.objects.filter(
                     Q(id_tercer_nivel_id=id_nivel.id_tercer_nivel_id) & Q(id_periodo=periodo_actual.id)).annotate(
@@ -462,24 +461,23 @@ class Objetivos(ListView): #Modificado por JR- sprint 8 - OK
                    id_objetivo_tactico=OuterRef('pk')).annotate(
                    count_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id)))
 
-                count_no_vistos_general = Ges_Observaciones_sr.objects.values('id_objetivo_tactico').filter(
-                    id_objetivo_tactico=OuterRef('pk')).annotate(
-                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (~Q(user_observa=id_usuario_actual))))
+                count_no_vistos_general = Ges_Observaciones_sr.objects.values('id_objetivo_tactico').filter(Q(
+                    id_objetivo_tactico=OuterRef('pk')) ).annotate(
+                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_controlador=controlador.id) & Q(id_periodo=periodo_actual.id) & (~Q(user_observa=id_usuario_actual))))
 
-                count_no_vistos = Ges_Observaciones.objects.values('id_objetivo').filter(
-                    id_objetivo=OuterRef('pk')).annotate(
-                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (
+                count_no_vistos = Ges_Observaciones.objects.values('id_objetivo').filter(Q(
+                    id_objetivo=OuterRef('pk')) ).annotate(
+                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_controlador=controlador.id) & Q(id_periodo=periodo_actual.id) & (
                         ~Q(user_observa=id_usuario_actual))))
 
-                count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(
-                    id_objetivo=OuterRef('pk')).annotate(
-                    count_id_actividad=Count('id'))
+                count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(Q(
+                    id_objetivo=OuterRef('pk')) ).annotate(
+                    count_id_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id) & Q(id_controlador=controlador.id)))
 
+                count_observaciones_general = Ges_Observaciones_sr.objects.values('id_objetivo_tactico').filter(Q(
+                    id_objetivo_tactico=OuterRef('pk')) ).annotate(
+                    count_id_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id) & Q(id_controlador=controlador.id)))
 
-
-                count_observaciones_general = Ges_Observaciones_sr.objects.values('id_objetivo_tactico').filter(
-                    id_objetivo_tactico=OuterRef('pk')).annotate(
-                    count_id_actividad=Count('id'))
 
                 replies2 = Ges_Objetivo_Tactico.objects.filter(
                     Q(id_segundo_nivel_id=id_nivel.id_segundo_nivel_id) & Q(id_periodo=periodo_actual.id)).annotate(
@@ -498,23 +496,23 @@ class Objetivos(ListView): #Modificado por JR- sprint 8 - OK
                    id_objetivo_operativo=OuterRef('pk')).annotate(
                    count_id_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id)))
 
-                count_no_vistos_general = Ges_Observaciones_sr.objects.values('id_objetivo_operativo').filter(
-                    id_objetivo_operativo=OuterRef('pk')).annotate(
-                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (~Q(user_observa=id_usuario_actual))))
+                count_no_vistos_general = Ges_Observaciones_sr.objects.values('id_objetivo_operativo').filter(Q(
+                    id_objetivo_operativo=OuterRef('pk')) ).annotate(
+                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_controlador=controlador.id) & Q(id_periodo=periodo_actual.id) & (~Q(user_observa=id_usuario_actual))))
 
-                count_no_vistos = Ges_Observaciones.objects.values('id_objetivo').filter(
-                    id_objetivo=OuterRef('pk')).annotate(
-                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (
+                count_no_vistos = Ges_Observaciones.objects.values('id_objetivo').filter(Q(
+                    id_objetivo=OuterRef('pk')) ).annotate(
+                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_controlador=controlador.id) & Q(id_periodo=periodo_actual.id) & (
                         ~Q(user_observa=id_usuario_actual))))
 
-                count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(
-                    id_objetivo=OuterRef('pk')).annotate(
-                    count_id_actividad=Count('id'))
+                count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(Q(
+                    id_objetivo=OuterRef('pk')) ).annotate(
+                    count_id_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id ) & Q(id_controlador=controlador.id)))
 
 
-                count_observaciones_general = Ges_Observaciones_sr.objects.values('id_objetivo_operativo').filter(
-                    id_objetivo_operativo=OuterRef('pk')).annotate(
-                    count_id_actividad=Count('id'))
+                count_observaciones_general = Ges_Observaciones_sr.objects.values('id_objetivo_operativo').filter(Q(
+                    id_objetivo_operativo=OuterRef('pk')) ).annotate(
+                    count_id_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id) & Q(id_controlador=controlador.id)))
 
                 replies2 = Ges_Objetivo_Operativo.objects.filter(
                     Q(id_cuarto_nivel_id=id_nivel.id_cuarto_nivel_id) & Q(id_periodo=periodo_actual.id)).annotate(

@@ -169,7 +169,8 @@ $('#datatable-default').on('click', '.MitextoGrande', function () {
 
 $('#datatable-default').DataTable({
 stateSave: true,
-"ordering": false //desactiva el ordenamiento de la tabla para que el order_by del queryset funcione. ("order": [[ 3, "desc" ]]) para ordenar desde jquery.
+"ordering": false, //desactiva el ordenamiento de la tabla para que el order_by del queryset funcione. ("order": [[ 3, "desc" ]]) para ordenar desde jquery.
+"pageLength": 50 // cambio a 50 sprint 1 - CI-11 - 070121
 });
 
 		</script>

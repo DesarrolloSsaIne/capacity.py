@@ -562,6 +562,7 @@ def nuevaActividadAjax(request):
 
             id_estado_actividad_id=4,
             flag_reporta=0,
+            flag_tmp=0, # Sprint 1 - CI-2 - 11012021
             estado=1,
             id_controlador=usuario_controlador,
             id_periodo=periodo_actual,
@@ -655,6 +656,7 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
             # form.instance.total_horas= 1
             # form.instance.id_estado_actividad_id = 4
             form.instance.flag_reporta=0
+            form.instance.flag_tmp = 0 # Sprint 1 - CI-2 - 11012021
             form.instance.estado = 1
             form.instance.id_controlador = usuario_controlador
             form.instance.id_periodo = periodo_actual

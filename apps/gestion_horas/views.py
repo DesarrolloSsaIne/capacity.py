@@ -375,7 +375,7 @@ class RegistroHorasCreate(SuccessMessageMixin, CreateView ):
 
         id_nivel =Ges_Niveles.objects.get(id=nivel_usuario)
 
-        anio_hoy=date.today().year + 1 #Se agrega el +1 cuando pidieron que el ingreso de dotación realizado el 2020 corresponda al 2021
+        anio_hoy=date.today().year
 
 
         fecha_inicio = request.POST['fecha_inicio']
@@ -497,7 +497,7 @@ class RegistroHorasUpdate(SuccessMessageMixin, UpdateView ):
         nivel_usuario =  Ges_Jefatura.objects.values('id_nivel').get(id_user=id_usuario_actual)['id_nivel']
         id_nivel =Ges_Niveles.objects.get(id=nivel_usuario)
 
-        anio_hoy=date.today().year + 1 #Se agrega el +1 cuando pidieron que el ingreso de dotación realizado el 2020 corresponda al 2021
+        anio_hoy=date.today().year
 
 
         fecha_inicio=request.POST['fecha_inicio']

@@ -1,0 +1,109 @@
+			<header class="panel-heading">
+				<div class="panel-actions">
+				<a class="fa fa-times" data-dismiss="modal"></a>
+				</div>
+				<h2 class="panel-title">Detalle Actividad </h2>
+			</header>
+
+			<form  method="post"  action="" >
+
+				<div class="panel-body">
+					{% csrf_token %}
+
+					 <div class="{% if form.non_field_errors %}invalid{% endif %} mb-2">
+    					  {% for error in form.non_field_errors %}
+        					{{ error }}
+     					 {% endfor %}
+    				</div>
+
+
+
+ <label >Descripción Actividad</label>
+ {{ form.descripcion_actividad}}
+                    <br>
+
+
+<div class="row show-grid">
+
+<div class="col-md-6">
+
+                <span class="show-grid-block">
+
+                    <div class="form-group">
+
+					<label >Periodicidad</label>
+		      	       {{ form.id_periodicidad}}
+
+				    </div>
+
+					<div class="form-group">
+					<label >Total Horas</label>
+		      	       {{ form.total_horas}}
+				    </div>
+
+                    				<div class="form-group">
+					<label >Personas Asignadas</label>
+		      	       {{ form.personas_asignadas}}
+				    </div>
+
+                </span>
+                </div>
+
+	<div class="col-md-6">
+
+                <span class="show-grid-block">
+
+                    <div class="form-group">
+					<label >Horas Asociadas</label>
+		      	       {{ form.horas_actividad}}
+				    </div>
+					<div class="form-group">
+					<label >Volumen</label>
+		      	       {{ form.volumen}}
+				    </div>
+
+
+
+
+
+
+
+
+
+
+                </span>
+                </div>
+
+
+
+
+	<div class="col-md-12">
+
+                <span class="show-grid-block">
+
+                    <br>
+                    				<div class="hide-justificacion">
+									<label >Justificación</label>
+										{{ form.justificacion }}
+								</div>
+
+                              </span>
+                </div>
+
+
+
+
+
+
+</div>
+
+</div>
+
+
+			<div class="modal-footer">
+
+				<button class="btn btn-default" type="button" data-dismiss="modal">Cerrar</button>
+			</div>
+
+
+			</form>

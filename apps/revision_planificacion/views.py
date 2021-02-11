@@ -818,8 +818,6 @@ def export_users_xls(request, *args, **kwargs):
     actividades = Ges_Actividad.objects.filter(Q(id_controlador=id_controlador) &
                                                             Q(id_periodo=periodo_actual))
 
-
-
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     )

@@ -278,12 +278,12 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
 # DEFAULT_FROM_EMAIL = 'jasonrd2@gmail.com'
 
 EMAIL_USE_TLS = False
-EMAIL_HOST = '192.168.1.235'
+EMAIL_HOST = '192.168.1.235x'
 EMAIL_PORT = 25
 # EMAIL_HOST_USER = 'capacity.planificacion@ine.cl'
 # EMAIL_HOST_PASSWORD = '(Morande_801)'
-EMAIL_HOST_USER = 'jason.rodriguez@ine.cl'
-EMAIL_HOST_PASSWORD = 'JR14202112-9'
+EMAIL_HOST_USER = 'jmrodriguezc@ine.gob.clx'
+EMAIL_HOST_PASSWORD = 'JR14202112-9x'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 EMAIL_USE_SSL = False

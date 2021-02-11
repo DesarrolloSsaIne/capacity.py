@@ -34,7 +34,7 @@ Actividades Asociadas al Objetivo
 				<thead>
 					<tr>
 						<!--<th>id</th>-->
-						<th>N°</th>
+						<th>ID</th>
 						<th style=" "> <div style="color:white;">........................................................................................</div> <br> Descripción Actividad </th>
 
 						<th  title="Fecha Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Fecha Inicio Actividad</th>
@@ -50,7 +50,7 @@ Actividades Asociadas al Objetivo
 				<tbody>
 					{%  for objetivo in object_list %}
 					<tr>
-						<td style="width:20px;"> {{ forloop.counter }}</td>
+						<td style="width:20px;"> {{ objetivo.id }}</td>
 						<td class="MitextoGrande"  style="height:65px; width:100%; border-bottom:1px; border-left:0px; border-right:0px;  padding-top:-5px; " >{{ objetivo.descripcion_actividad }}</td>
 
 						<td style="width:170px;">{{ objetivo.fecha_inicio_actividad }}</td>
@@ -165,9 +165,11 @@ $('#datatable-default').on('click', '.MitextoGrande', function () {
 
 
 $('#datatable-default').DataTable({
-stateSave: true,
+"pageLength": 50, // cambio a 50 sprint 1 - CI-11 - 070121
+stateSave: true
 
 });
+
 </script>
 
 		{% endblock %}

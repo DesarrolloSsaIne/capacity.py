@@ -438,8 +438,16 @@ def update_actividad(request):
         actividad.validada  = estado_validacion
         actividad.observacion_valida = observacion
         actividad.id_estado_actividad_id = int(estado_final)
-        if(fecha_inicio != ''):
+
+        if (fecha_inicio != ''):
             actividad.fecha_inicio_actividad = fecha_inicio
+            actividad.fecha_reprogramacion_inicio = None  # Sprint 1 - CI-18 - 20012021 nuevo
+            actividad.fecha_reprogramacion_termino = None  # Sprint 1 - CI-18 - 20012021 nuevo
+
+        if (fecha_termino != ''):
+            actividad.fecha_termino_actividad = fecha_termino
+            actividad.fecha_reprogramacion_inicio = None  # Sprint 2 - CI-18 - 20012021 nuevo
+            actividad.fecha_reprogramacion_termino = None  # Sprint 2 - CI-18- 20012021 nuevo
 
         if(fecha_termino != ''):
             actividad.fecha_termino_actividad = fecha_termino
@@ -500,7 +508,7 @@ def update_actividad_rechaza(request):
 
         try:
           actividad.save()
-          response_data['error'] = 'La actividad fue validada correctamente.'
+          response_data['error'] = 'La actividad fue rechazada correctamente.'
         except:
           response_data['error'] = 'Error al intentar validar la actividad, intente nuevamente o comuniquese con el administrador.'
 

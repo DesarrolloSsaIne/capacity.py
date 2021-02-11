@@ -23,6 +23,10 @@ Actividades Asociadas al Objetivo
 	<section class="panel">
 							<header class="panel-heading">
 								<div class="panel-actions">
+
+
+
+
 								    <button type="button" class="volver btn btn-sm btn-info"  name="button" title="Volver"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
       								<span class="fa fa-reply"></span></button>
 
@@ -39,13 +43,27 @@ Actividades Asociadas al Objetivo
 								<table class="table table-bordered table-striped mb-none" id="datatable-default">
 									<thead>
 										<tr>
-											<th>ID</th>
-											<th>Descripción Actividad</th>
+											<th style="font-size:11px;">ID</th>
+											<th style="font-size:11px; width:150px;">Descripción Actividad</th>
 
-											<th title="Fecha de Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Inicio Actividad</th>
-											<th title="Fecha de Término de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Termino Actividad</th>
-											<th>Estado Seguimiento</th>
-											<th>Reportar Avances</th>
+											<th style="font-size:11px; width:120px;" title="Fecha de Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Fecha Inicio</th>
+											<th style="font-size:11px; width:120px;" title="Fecha de Término de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Fecha Fin</th>
+											<th style="font-size:11px;">Prod. Estadístico</th>
+											<th style="font-size:11px;">Cargo</th>
+
+
+											<th style="font-size:11px;  width:100px;">Estado  </th>
+											<th style="font-size:11px; width:110px;">Inicio Real</th>
+											<th style="font-size:11px; width:110px;">Fin Real</th>
+											<th style="font-size:11px; width:110px;">Reprog. Inicio</th>
+											<th style="font-size:11px; width:110px;">Reprog. Fin</th>
+
+											{% if total_disponible.estado_seguimiento_id == 1 %}
+											<th style="font-size:11px;">Reportar</th>
+											{% endif %}
+<!--											<th>Justificación</th>-->
+<!--											<th>Detalle</th>-->
+
 
 										</tr>
 									</thead>
@@ -55,34 +73,47 @@ Actividades Asociadas al Objetivo
 
                                                 <tr>
 
-													<td style="width:10px;"> {{ forloop.counter }}</td>
-													<td class="descripcion_actividad"  style="cursor:pointer; max-width: 200px; overflow: hidden;  display: table-cell;  text-overflow: ellipsis;  border: solid 1px #dddddd; white-space: nowrap;">{{ objetivo.descripcion_actividad}}</td>
+													<td style="font-size:11px;"> {{ objetivo.id}}</td>
+<!--													<td class="Mitexto" title="Presione Para Ver el Detalle Actividad"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top"  style="height:70px; width:100%; border-bottom:1px; border-left:0px; border-right:0px; font-size:11px; padding-top:-5px;" >{{ objetivo.descripcion_actividad}}</td>-->
+													<td  style="font-size:11px;">
+													<a  type="button" title="Presione Para Ver el Detalle Actividad"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top"   class="update Mitexto" style="height:60px; width:100%; border-bottom:1px; border-left:0px; border-right:0px; font-size:11px; padding-top:-5px; text-decoration: none; color:#777777;"  data-id="{% url 'SeguimientoActividadesVer' objetivo.id %}">
+															{{ objetivo.descripcion_actividad}}
+<!--
+<span class="fa fa-search" ></span>-->
+<!--							 							<span class="badge" title="Nuevas Observaciones" >ok</span>-->
+														</a>
+													</td>
+													<td style="font-size:11px; width:110px;" > <span style='display: none;'>{{objetivo.fecha_inicio_actividad|date:"Ymd"}}</span>{{ objetivo.fecha_inicio_actividad|date:"d-m-Y"}}</td>
+													<td style="font-size:11px; width:110px;"> <span style='display: none;'>{{objetivo.fecha_termino_actividad|date:"Ymd"}}</span> {{ objetivo.fecha_termino_actividad|date:"d-m-Y"}}</td>
+													<td style="font-size:11px;"> {% if objetivo.id_producto_estadistico == none %} -  {%else%} {{ objetivo.id_producto_estadistico}} {%endif%}</td>
+													<td style="font-size:11px;"> {{ objetivo.id_familia_cargo}}</td>
 
-													<td style="width:150px;" > {{ objetivo.fecha_inicio_actividad}}</td>
-													<td style="width:150px;"> {{ objetivo.fecha_termino_actividad}}</td>
+
+
+
 													<td   {% if objetivo.id_estado_actividad_id == 1  %}
-														 style="color:#ff8000; width:140px; "
+														 style="color:#ff8000; width:140px; font-size:11px; width:80px;"
 														  {% elif objetivo.id_estado_actividad_id == 2  %}
-														 style="color:#ff8000; width:140px; "
+														 style="color:#ff8000; width:140px; font-size:11px; width:80px;"
 														  {% elif objetivo.id_estado_actividad_id == 3  %}
-														 style="color:#346cb0; width:140px; "
+														 style="color:#346cb0; width:140px; font-size:11px; width:80px;"
 														  {% elif objetivo.id_estado_actividad_id == 4  %}
-														 style="color:black; width:140px; "
+														 style="color:black; width:140px; font-size:11px; width:80px;"
 														   {% elif objetivo.id_estado_actividad_id == 5  %}
-														 style="color:#008080; width:140px; "
+														 style="color:#008080; width:140px; font-size:11px; width:80px;"
 														   {% elif objetivo.id_estado_actividad_id == 6  %}
-														 style="color:#008080; width:140px; "
+														 style="color:#008080; width:140px; font-size:11px; width:80px;"
 														   {% elif objetivo.id_estado_actividad_id == 7  %}
-														 style="color:#13a013; width:140px; "
+														 style="color:#13a013; width:140px; font-size:11px; width:80px;"
 
 														  {% elif objetivo.id_estado_actividad_id == 8  %}
-														 style="color:#1e7799; width:140px; "
+														 style="color:#1e7799; width:140px; font-size:11px; width:80px;"
 
 														     {% elif objetivo.id_estado_actividad_id == 9  %}
-														 style="color:#797963; width:140px; "
+														 style="color:#797963; width:140px; font-size:11px; width:80px;"
 
 														     {% elif objetivo.id_estado_actividad_id == 10  %}
-														 style="color:#797963; width:140px; "
+														 style="color:#797963; width:140px; font-size:11px; width:80px;"
 
 
 
@@ -91,12 +122,15 @@ Actividades Asociadas al Objetivo
 
 														{{ objetivo.id_estado_actividad}} {%endif%}</td>
 
+														<td style="font-size:11px; width:110px;"> <span style='display: none; '>{{objetivo.fecha_real_inicio|date:"Ymd"}}</span> {% if objetivo.fecha_real_inicio == none %} -  {%else%} {{ objetivo.fecha_real_inicio|date:"d-m-Y"}} {%endif%}</td>
+														<td style="font-size:11px; width:110px;"> <span style='display: none;'>{{objetivo.fecha_real_termino|date:"Ymd"}}</span> {% if objetivo.fecha_real_termino == none %} -  {%else%} {{ objetivo.fecha_real_termino|date:"d-m-Y"}} {%endif%}</td>
+														<td style="font-size:11px; width:110px;"> <span style='display: none;'>{{objetivo.fecha_reprogramacion_inicio|date:"Ymd"}}</span> {% if objetivo.fecha_reprogramacion_inicio == none %} -  {%else%} {{ objetivo.fecha_reprogramacion_inicio|date:"d-m-Y"}} {%endif%}</td>
+														<td style="font-size:11px; width:110px;"> <span style='display: none;'>{{objetivo.fecha_reprogramacion_termino|date:"Ymd"}}</span> {% if objetivo.fecha_reprogramacion_termino == none %} -  {%else%} {{ objetivo.fecha_reprogramacion_termino|date:"d-m-Y"}} {%endif%}</td>
+													  	{% if total_disponible.estado_seguimiento_id == 1 %}
+													<td  style="width:80px; text-align:center;  "   >
 
 
-                                                    <td  style="width:80px; text-align:center;  "   >
-
-
-														<button  {%if objetivo.id_estado_actividad_id == 7 or objetivo.id_estado_actividad_id == 9%} disabled="disabled" {%endif%} type="button" id="notification_ok" title="Reportar Avance de la Actividad" title="Fecha de Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" class="update btn btn-sm btn-primary" data-id="{% url 'RegistroActividadEditarSeguimiento' objetivo.id %}">
+														<button  {%if  objetivo.flag_tmp == 0 and objetivo.id_estado_actividad_id == 7   or objetivo.id_estado_actividad_id == 9%} disabled="disabled" {%endif%} type="button" id="notification_ok" title="Reportar Avance de la Actividad" title="Fecha de Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" class="update btn btn-sm btn-primary" data-id="{% url 'RegistroActividadEditarSeguimiento' objetivo.id %}">
 
                                                             <span class="fa fa-check-square-o" ></span>
                                                         {%if objetivo.flag_reporta == 1%}<span class="badge" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" title="Actividad Reportada!"  >&#x2713;</span>{%endif%}
@@ -104,14 +138,26 @@ Actividades Asociadas al Objetivo
                                                         </button>
 
 													</td>
-<!--													<td style="width:60px; align:center;" >-->
+	 {%endif%}
 
-<!--														<a  type="button" title="Observaciones Asociadas a la Actividad" id="notification" class="objetivos btn btn-sm btn-primary"  href="">-->
-<!--														<span class="fa fa-comments" ></span>-->
-<!--							 							<span class="badge" title="Nuevas Observaciones" >ok</span>-->
+
+													<!--													<td>{% if objetivo.justificacion == none %} -  {%else%} {{ objetivo.justificacion}} {%endif%}</td>-->
+
+
+<!--													<td style="width:60px; text-align:center; " >-->
+
+<!--														<a  type="button" title="Detalle Actividad" id="notification" class="objetivos btn btn-sm btn-primary"  href="">-->
+<!--														<span class="fa fa-search" ></span>-->
+<!--&lt;!&ndash;							 							<span class="badge" title="Nuevas Observaciones" >ok</span>&ndash;&gt;-->
 <!--														</a>-->
 
 <!--                                                    </td>-->
+
+
+
+
+
+
 
 
 
@@ -169,7 +215,7 @@ Actividades Asociadas al Objetivo
 				<div class="panel-actions">
 				<a class="fa fa-times" data-dismiss="modal"></a>
 				</div>
-				<h2 class="panel-title">Detalle Nota</h2>
+				<h2 class="panel-title">Detalle Actividad</h2>
 			</header>
 
               <div class="modal-body">
@@ -235,14 +281,17 @@ $(".volver").click(function() {
 
 
 
-$('#datatable-default').on('click', '.descripcion_actividad', function () {
+$('#datatable-default').on('click', '.Mitexto', function () {
 
     $('#txt_obs_campo_expand').val($(this).parents('tr').find('td:nth-child(2)').text())
-    $('#observacion_center').modal('toggle');
+    //$('#observacion_center').modal('toggle');
 });
 
 $('#datatable-default').DataTable({
-"ordering": false //desactiva el ordenamiento de la tabla para que el order_by del queryset funcione. ("order": [[ 3, "desc" ]]) para ordenar desde jquery.
+//"ordering": false, //# Sprint 1 - CI-6 - 12012021
+//"order": [[ 3, "desc" ]]
+
+"pageLength": 50 // cambio a 50 sprint 1 - CI-11 - 070121
 });
 
 

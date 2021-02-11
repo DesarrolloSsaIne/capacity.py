@@ -16,11 +16,19 @@
      					 {% endfor %}
     				</div>
 
+
+
+ <input id="flag_tmp" type="text" style="display:none;" value="{{fechas.flag_tmp}}">
+ <input id="fecha_real_inicio_bd" style="display:none;" type="text"  value="{% if fechas.fecha_real_inicio == none %}0{%else%}{{ fechas.fecha_real_inicio }}{% endif %}">
+
 		<div class="row show-grid">
+
 <div class="col-md-6">
+
 
 <div  id="xfecha_inicio_corte"  style="border-top: 1px solid #bbbbbb; border-bottom: 1px solid #bbbbbb; " > <b>Fecha Inicio Corte : </b>{{ fechas.fecha_inicio_corte }}</div>
 	<input style="display:none;" id="fecha_inicio_corte" type="text" value="{{ fechas.fecha_inicio_corte_str }}">
+
 	<br>
 </div>
 			<div class="col-md-6">
@@ -31,64 +39,19 @@
 			</div>
 		</div>
 
+<div style="display:none;">{{form.id_producto_estadistico}}</div>
+<div style="display:none;">{{form.id_periodicidad}}</div>
+<div style="display:none;">{{form.horas_actividad}}</div>
+<div style="display:none;">{{form.volumen}}</div>
+<div style="display:none;">{{form.personas_asignadas}}</div>
+<div style="display:none;">{{form.total_horas}}</div>
+
+<label >Descripción Actividad</label>
+ {{ form.descripcion_actividad}}
+
+
 <div class="row show-grid">
 
-<div class="col-md-6">
-
-                <span class="show-grid-block">
-
-                    <div class="form-group">
-
-
-					<label >Periodicidad</label>
-
-		      	       {{ form.id_periodicidad}}
-
-
-
-
-				    </div>
-
-
-					   <div class="form-group">
-					<label >Producto Estadístico</label>
-					{{ form.id_producto_estadistico}}
-				</div>
-
-											<div class="form-group">
-					<label >Total Horas</label>
-		      	       {{ form.total_horas}}
-				    </div>
-
-
-                </span>
-                </div>
-
-
-	<div class="col-md-6">
-
-                <span class="show-grid-block">
-
-                    <div class="form-group">
-					<label >Horas Asociadas</label>
-		      	       {{ form.horas_actividad}}
-				    </div>
-					<div class="form-group">
-					<label >Volumen</label>
-		      	       {{ form.volumen}}
-				    </div>
-					<div class="form-group">
-					<label >Personas Asignadas</label>
-		      	       {{ form.personas_asignadas}}
-				    </div>
-
-
-
-
-
-
-                </span>
-                </div>
 
 
 		<div class="col-md-6">
@@ -134,80 +97,81 @@
 
 </div>
 
-<div class="row show-grid">
+	<div class="row show-grid">
 
-                    <div class="col-md-12">
-                        <span class="show-grid-block">
+				<div class="col-md-6">
 
-						   <div class="form-group">
-					<label >Reportar Estado</label>
-					{{ form.id_estado_actividad}}
+							   <div class="form-group">
+								<label >Reportar Estado</label>
+									{{ form.id_estado_actividad}}
+							   </div>
+
+
+
+
+
+								<div class="hide-reprogramacion_inicio">
+									<label >Reprogramacion Fecha Inicio  </label>
+										<div class="input-group">
+											<span class="input-group-addon">
+												<i class="fa fa-calendar"></i>
+											</span>
+									<input id="fecha_reprogramacion_inicio"  type="date"  class="form-control" aria-valuetext="{{ form.fecha_reprogramacion_inicio }} <!--">-->
+										</div>
+								</div>
+
+
+								<div class="hide-reprogramacion_termino">
+									<label >Reprogramación Fecha Término </label>
+										<div class="input-group">
+											<span class="input-group-addon">
+												<i class="fa fa-calendar"></i>
+											</span>
+										<input id="fecha_reprogramacion_termino"  type="date"  class="form-control" aria-valuetext="{{ form.fecha_reprogramacion_termino }} <!--">-->
+										</div>
+								</div>
+
+								<div class="hide-real_inicio">
+									<label > Fecha Real Inicio </label>
+										<div class="input-group">
+											<span class="input-group-addon">
+												<i class="fa fa-calendar"></i>
+											</span>
+										<input id="fecha_real_inicio"  type="date"  class="form-control" aria-valuetext="{{ form.fecha_real_inicio }} <!--">-->
+										</div>
+								</div>
+
+								<div class="hide-real_termino">
+									<label > Fecha Real Término  </label>
+										<div class="input-group">
+											<span class="input-group-addon">
+												<i class="fa fa-calendar"></i>
+											</span>
+											<input id="fecha_real_termino"  type="date"  class="form-control" aria-valuetext="{{ form.fecha_real_termino }} <!--">-->
+										</div>
+								</div>
+
 				</div>
 
 
-					<div class="hide-reprogramacion_inicio">
-												    <label >Reprogramacion Fecha Inicio  </label>
-				<div class="input-group">
-				<span class="input-group-addon">
-					<i class="fa fa-calendar"></i>
-				</span>
-					<input id="fecha_reprogramacion_inicio"  type="date"  class="form-control" aria-valuetext="{{ form.fecha_reprogramacion_inicio }} <!--">-->
-
-				</div>
-					</div>
-						<div class="hide-reprogramacion_termino">
-											 <label >Reprogramación Fecha Término </label>
-				<div class="input-group">
-				<span class="input-group-addon">
-					<i class="fa fa-calendar"></i>
-				</span>
-				<input id="fecha_reprogramacion_termino"  type="date"  class="form-control" aria-valuetext="{{ form.fecha_reprogramacion_termino }} <!--">-->
-				</div>
-						</div>
-                   </span>
-					</div>
-
-    			 <div class="col-md-6">
-                        <span class="show-grid-block">
-					<div class="hide-real_termino">
-						<label > Fecha Real Término  </label>
-				<div class="input-group">
-				<span class="input-group-addon">
-					<i class="fa fa-calendar"></i>
-				</span>
-					<input id="fecha_real_termino"  type="date"  class="form-control" aria-valuetext="{{ form.fecha_real_termino }} <!--">-->
-
-				</div>
-					</div>
+							<div class="col-md-12">
+								<div class="hide-justificacion">
+									<label >Justificación</label>
+										{{ form.justificacion }}
+								</div>
+							</div>
 
 
-     </span>
+	</div>
 
-                    </div>
-	<div class="col-md-12">
-		<div class="hide-justificacion">
-					<label >Justificación</label>
-					{{ form.justificacion }}
-		</div>
-				</div>
-                <span class="show-grid-block">
 
-				</span>
+
+
 </div>
 
 
-
-
-
-
-
-</div>
-</div>
-			</div>
-
-												<div class="alert alert-danger" style="display:none;" id="mjeError">
-
-										<p id="textError"></p>
+								<div class="alert alert-danger" style="display:none;" id="mjeError">
+									<p id="textError"></p>
 								</div>
 
 			<div class="modal-footer">
@@ -228,10 +192,14 @@ $(function() {
 	periodicidad = $('#id_id_periodicidad').val();
 
 
+
+
+
 	if(estado == 4){ // No Iniciada
 
 	$(".hide-justificacion").css("display", "none");
     $(".hide-real_termino").css("display", "none");
+     $(".hide-real_inicio").css("display", "none"); // sprint 2 - CI-10 - 180120201
     $(".hide-reprogramacion_termino").css("display", "none");
     $(".hide-reprogramacion_inicio").css("display", "none");
     $("#confirmar").css("display", "none");
@@ -240,9 +208,18 @@ $(function() {
 
 
 
+
 	if(estado == 2){ // Con Retraso - Validar
-			$(".hide-justificacion").css("display", "block");
+
+	$('#fecha_real_inicio').val(''); // sprint 3 - CI-21 -25012021
+	$('#fecha_real_termino').val(''); // sprint 3 - CI-21 -25012021
+
+
+
+     $('#id_justificacion').prop('disabled', false);
+	$(".hide-justificacion").css("display", "block");
     $(".hide-real_termino").css("display", "none");
+    $(".hide-real_inicio").css("display", "none"); // sprint 2 - CI -10 - 180120201
     $(".hide-reprogramacion_termino").css("display", "block");
     $(".hide-reprogramacion_inicio").css("display", "block");
      $("#confirmar").css("display", "initial");
@@ -251,49 +228,114 @@ $(function() {
 
 
 	if(estado == 3){ // en curso
-	//	$(".hide-justificacion").css("display", "none");
-    $(".hide-real_termino").css("display", "none");
-  //  $(".hide-reprogramacion_termino").css("display", "none");
-    $(".hide-reprogramacion_inicio").css("display", "none");
-    $('#id_justificacion').prop('required',true);
-         $("#confirmar").css("display", "initial");
 
-	}
-	if(estado == 7){ // Finalizada - Validar
-	$(".hide-justificacion").css("display", "block");
-    $(".hide-real_termino").css("display", "block");
-    $(".hide-reprogramacion_termino").css("display", "none");
-    $(".hide-reprogramacion_inicio").css("display", "none");
+	 var fecha_real_inicio= $('#fecha_real_inicio_bd').val() // sprint 2 - CI-20 -21012021
+     var flag_tmp =  $('#flag_tmp').val() // sprint 2 - CI-20 -21012021
+
+
+     if (fecha_real_inicio != 0 && flag_tmp == 0){ //sprint 2 - CI-20 -21012021
+
+       	$(".hide-justificacion").css("display", "true"); //sprint 2 - CI-20 -21012021
+        $(".hide-real_termino").css("display", "none"); //sprint 2 - CI-20 -21012021
+        $(".hide-real_inicio").css("display", "true"); //sprint 2 - CI-20 -21012021
+        $('#fecha_real_inicio').prop('disabled', true); //sprint 2 - CI-20 -21012021
+        $(".hide-reprogramacion_termino").css("display", "true"); //sprint 2 - CI-20 -21012021
+        $(".hide-reprogramacion_inicio").css("display", "none"); //sprint 2 - CI-20 -21012021
+
+
+        //$("#confirmar").css("display", "none"); // sprint 2 - CI-20 -21012021
+        //$("#mjeError").css("display","block");
+        //$("#textError").text("Esta actividad ya fue actualizada en este estado durante el periodo anterior por lo cual no podrá volver a editarla.");
+
+         // return false
+
+                }else{
+
+
+		$('#fecha_real_termino').val(''); // sprint 3 - CI-21 -25012021
+		$('#fecha_reprogramacion_inicio').val(''); // sprint 3 - CI-21 -25012021
+
+
+        $('#id_justificacion').prop('disabled', false);
+        $(".hide-real_termino").css("display", "none");
+        $(".hide-real_inicio").css("display", "block"); // sprint 2 - CI -10 - 180120201
+        $(".hide-reprogramacion_inicio").css("display", "none");
+
+        $('#id_justificacion').prop('required', false); // cambio a false sprint 1 - CI-7 - 080121
+        $('#fecha_real_inicio').prop('required',true); // sprint 2 - CI -10 - 180120201
         $("#confirmar").css("display", "initial");
 
+ }
 	}
+
+
+
+	if(estado == 7){ // Finalizada - Validar
+
+	$('#fecha_real_inicio').val(''); // sprint 3 - CI-21 -25012021
+    $('#fecha_reprogramacion_inicio').val(''); // sprint 3 - CI-21 -25012021
+    $('#fecha_reprogramacion_termino').val(''); // sprint 3 - CI-21 -25012021
+
+
+	$('#id_justificacion').prop('disabled', false);
+	$('#fecha_real_termino').prop('required',true);
+	$(".hide-justificacion").css("display", "block");
+    $(".hide-real_termino").css("display", "block");
+    $(".hide-real_inicio").css("display", "none"); // sprint 2 - CI -10 - 180120201
+    $(".hide-reprogramacion_termino").css("display", "none");
+    $(".hide-reprogramacion_inicio").css("display", "none");
+    $("#confirmar").css("display", "initial");
+
+	}
+
+
 	if(estado == 10){ // Eliminada - Validar
 
-		$(".hide-justificacion").css("display", "block");
+	$('#fecha_real_inicio').val(''); // sprint 3 - CI-21 -25012021
+	$('#fecha_real_termino').val(''); // sprint 3 - CI-21 -25012021
+    $('#fecha_reprogramacion_inicio').val(''); // sprint 3 - CI-21 -25012021
+    $('#fecha_reprogramacion_termino').val(''); // sprint 3 - CI-21 -25012021
+
+    $('#id_justificacion').prop('disabled', false);
+	$(".hide-justificacion").css("display", "block");
     $(".hide-real_termino").css("display", "none");
+    $(".hide-real_inicio").css("display", "none"); // sprint 2 - CI -10 - 180120201
     $(".hide-reprogramacion_termino").css("display", "none");
     $(".hide-reprogramacion_inicio").css("display", "none");
      $("#confirmar").css("display", "initial");
 	}
 
+
+
+
+
 	if(estado == 5){ // Sin Movimiento
 
-		periodicidad = $('#id_id_periodicidad').val();
+	$('#fecha_real_inicio').val(''); // sprint 3 - CI-21 -25012021
+	$('#fecha_real_termino').val(''); // sprint 3 - CI-21 -25012021
+
+	periodicidad = $('#id_id_periodicidad').val();
 
 	if (periodicidad != 9  && periodicidad != 10 ){
 
+    $('#id_justificacion').prop('disabled', false);
   	$(".hide-justificacion").css("display", "block");
     $(".hide-real_termino").css("display", "none");
+     $(".hide-real_inicio").css("display", "none"); // sprint 2 - CI -10 - 180120201
     $(".hide-reprogramacion_termino").css("display", "block");
     $(".hide-reprogramacion_inicio").css("display", "block");
      $("#confirmar").css("display", "initial");
 
 	}else{
 
-	  	$(".hide-justificacion").css("display", "block");
+
+
+    $('#id_justificacion').prop('disabled', false);
+	$(".hide-justificacion").css("display", "block");
     $(".hide-real_termino").css("display", "none");
-    $(".hide-reprogramacion_termino").css("display", "none");
-    $(".hide-reprogramacion_inicio").css("display", "none");
+     $(".hide-real_inicio").css("display", "none"); // sprint 2 - CI -10 - 180120201
+    $(".hide-reprogramacion_termino").css("display", "block");
+    $(".hide-reprogramacion_inicio").css("display", "block");
      $("#confirmar").css("display", "initial");
 
 
@@ -304,12 +346,20 @@ $(function() {
 
 if(estado == 0 || estado == ''){
 
+	$('#fecha_real_inicio').val(''); // sprint 3 - CI-21 -25012021
+	$('#fecha_real_termino').val(''); // sprint 3 - CI-21 -25012021
+    $('#fecha_reprogramacion_inicio').val(''); // sprint 3 - CI-21 -25012021
+    $('#fecha_reprogramacion_termino').val(''); // sprint 3 - CI-21 -25012021
+    $('#id_justificacion').val(''); // sprint 3 - CI-21 -25012021
+
 	$(".hide-justificacion").css("display", "none");
     $(".hide-real_termino").css("display", "none");
+     $(".hide-real_inicio").css("display", "none"); // sprint 2 - CI -10 - 180120201
     $(".hide-reprogramacion_termino").css("display", "none");
     $(".hide-reprogramacion_inicio").css("display", "none");
      $("#confirmar").css("display", "none");
 
+	$('#fecha_real_inicio').removeAttr('required');
 	$('#fecha_real_termino').removeAttr('required');
     $('#fecha_reprogramacion_inicio').removeAttr('required');
     $('#fecha_reprogramacion_termino').removeAttr('required');
@@ -342,6 +392,7 @@ $( "#id_id_estado_actividad" ).change(function() {
          if (estado == 4) // No Iniciada
   {
   	$(".hide-justificacion").css("display", "none");
+  	$(".hide-real_inicio").css("display", "none");
     $(".hide-real_termino").css("display", "none");
     $(".hide-reprogramacion_termino").css("display", "none");
     $(".hide-reprogramacion_inicio").css("display", "none");
@@ -350,47 +401,131 @@ $( "#id_id_estado_actividad" ).change(function() {
 
 
   if (estado == 2) //habilita con restraso - Validar
+
  {
+    $('#fecha_real_inicio').val(''); // sprint 3 - CI-21 -25012021
+	$('#fecha_real_termino').val(''); // sprint 3 - CI-21 -25012021
+	$('#id_justificacion').val(''); // sprint 3 - CI-21 -25012021
+
+   	var fecha_real_inicio= $('#fecha_real_inicio_bd').val() // sprint 3 - CI-21 -25012021
+    var flag_tmp =  $('#flag_tmp').val() // sprint 3 - CI-21 -25012021
+
+    if (fecha_real_inicio != 0 && flag_tmp == 0){ // sprint 3 - CI-21 -25012021
+
+		$(".hide-justificacion").css("display", "none");
+		$(".hide-real_inicio").css("display", "none");
+		$(".hide-real_termino").css("display", "none");
+		$(".hide-reprogramacion_inicio").css("display", "none");
+		$(".hide-reprogramacion_termino").css("display", "none");
+		$("#confirmar").css("display", "none");
+
+		 $("#mjeError").css("display","block");
+		 $("#textError").text("Esta actividad posee fecha real de inicio ingresada en una periodo anterior por lo que no se puede dejar en estado con retraso.");
+		 return false
+    		}else{
+
+	if (moment(fecha_inicio).isSameOrBefore(fecha_termino_corte)) { // Sprint 1 - CI-8 - 13012021
 
 
-  	$(".hide-justificacion").css("display", "block");
-    $(".hide-real_termino").css("display", "none");
-    $(".hide-reprogramacion_termino").css("display", "block");
-    $(".hide-reprogramacion_inicio").css("display", "block");
-        $("#confirmar").css("display", "initial");
 
-    $('#fecha_real_termino').removeAttr('required').val('');
-    $('#fecha_reprogramacion_inicio').prop('required',false);
-    $('#fecha_reprogramacion_termino').prop('required',false);
-    $('#id_justificacion').prop('required',true);
+			$('#id_justificacion').prop('disabled', false);
+			$(".hide-justificacion").css("display", "block");
+			$(".hide-real_inicio").css("display", "none");
+			$(".hide-real_termino").css("display", "none");
+			$(".hide-reprogramacion_termino").css("display", "block");
+			$(".hide-reprogramacion_inicio").css("display", "block");
+			$("#confirmar").css("display", "initial");
 
+			$('#fecha_real_inicio').removeAttr('required').val('');
+			$('#fecha_real_termino').removeAttr('required').val('');
+			$('#fecha_reprogramacion_inicio').prop('required',false);
+			$('#fecha_reprogramacion_termino').prop('required',false);
+			$('#id_justificacion').prop('required',true);
+
+
+	}else{
+
+		$(".hide-justificacion").css("display", "none");
+		$(".hide-real_inicio").css("display", "none");
+		$(".hide-real_termino").css("display", "none");
+		$(".hide-reprogramacion_inicio").css("display", "none");
+		$(".hide-reprogramacion_termino").css("display", "none");
+		$("#confirmar").css("display", "none");
+
+		 $("#mjeError").css("display","block");
+		 $("#textError").text("El estado con retraso es solo para las actividades cuya fecha de inicio de actividad sea menor a la fecha de termino de corte.");
+		 return false
+
+	}
 
        }
-
+			}// sprint 3 - CI-21 -25012021
 
        if (estado == 3) //habilita en curso
-  {
-  	$(".hide-justificacion").css("display", "block");
-    $(".hide-real_termino").css("display", "none");
-    $(".hide-reprogramacion_termino").css("display", "block");
-    $(".hide-reprogramacion_inicio").css("display", "none");
-     $("#confirmar").css("display", "initial");
+       {
+  	    var fecha_real_inicio= $('#fecha_real_inicio_bd').val() // sprint 2 - CI-20 -21012021
+        var flag_tmp =  $('#flag_tmp').val() // sprint 2 - CI-20 -21012021
 
-    $('#fecha_real_termino').removeAttr('required').val('');
-    $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
-    $('#fecha_reprogramacion_termino').removeAttr('required').val('');
-    $('#id_justificacion').prop('required',true);
-   // $('#id_justificacion').removeAttr('required').val('');
 
-       }
+            if (fecha_real_inicio != 0 && flag_tmp == 0){ // sprint 2 - CI-20 -21012021
+
+
+            $(".hide-justificacion").css("display", "none"); // sprint 2 - CI-20 -21012021
+            $(".hide-real_inicio").css("display", "none"); // sprint 2 - CI-20 -21012021
+            $(".hide-real_termino").css("display", "none"); // sprint 2 - CI-20 -21012021
+            $(".hide-reprogramacion_termino").css("display", "none"); // sprint 2 - CI-20 -21012021
+            $(".hide-reprogramacion_inicio").css("display", "none"); // sprint 2 - CI-20 -21012021
+             $("#confirmar").css("display", "none"); // sprint 2 - CI-20 -21012021
+
+
+                 $("#mjeError").css("display","block"); // sprint 2 - CI-20 -21012021
+                 $("#textError").text("Esta actividad ya fue actualizada en este estado durante el periodo anterior por lo cual no podrá volver a editarla.");
+                 return false
+
+            }else{
+
+
+
+			$('#fecha_real_termino').val(''); // sprint 3 - CI-21 -25012021
+		    $('#fecha_reprogramacion_inicio').val(''); // sprint 3 - CI-21 -25012021
+		    $('#id_justificacion').val(''); // sprint 3 - CI-21 -25012021
+
+            $('#id_justificacion').prop('disabled', false);
+
+            $(".hide-justificacion").css("display", "block");
+            $(".hide-real_inicio").css("display", "block");
+            $(".hide-real_termino").css("display", "none");
+            $(".hide-reprogramacion_termino").css("display", "block");
+            $(".hide-reprogramacion_inicio").css("display", "none");
+             $("#confirmar").css("display", "initial");
+
+			$('#fecha_real_inicio').removeAttr('required').val('');
+            $('#fecha_real_termino').removeAttr('required').val('');
+            $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
+            $('#fecha_reprogramacion_termino').removeAttr('required').val('');
+            $('#id_justificacion').prop('required',false); // cambio a false sprint 1 - CI-7 - 080121
+            $('#fecha_real_inicio').prop('required',true).val(''); // sprint 2 - CI -10 - 180120201
+
+
+            }
+        }
    if (estado == 7) //habilita finalizada - Validar
   {
+
+    $('#fecha_real_inicio').val(''); // sprint 3 - CI-21 -25012021
+    $('#fecha_reprogramacion_inicio').val(''); // sprint 3 - CI-21 -25012021
+    $('#fecha_reprogramacion_termino').val(''); // sprint 3 - CI-21 -25012021
+    $('#id_justificacion').val(''); // sprint 3 - CI-21 -25012021
+
+    $('#id_justificacion').prop('disabled', false);
   	$(".hide-justificacion").css("display", "block");
+  	$(".hide-real_inicio").css("display", "none");
     $(".hide-real_termino").css("display", "block");
     $(".hide-reprogramacion_termino").css("display", "none");
     $(".hide-reprogramacion_inicio").css("display", "none");
      $("#confirmar").css("display", "initial");
 
+	$('#fecha_real_inicio').removeAttr('required').val('');
      $('#fecha_real_termino').prop('required',true);
     $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
     $('#fecha_reprogramacion_termino').removeAttr('required').val('');
@@ -399,59 +534,86 @@ $( "#id_id_estado_actividad" ).change(function() {
 
         if (estado == 10) //habilita eliminada - validar
   {
+  	$('#fecha_real_inicio').val(''); // sprint 3 - CI-21 -25012021
+	$('#fecha_real_termino').val(''); // sprint 3 - CI-21 -25012021
+    $('#fecha_reprogramacion_inicio').val(''); // sprint 3 - CI-21 -25012021
+    $('#fecha_reprogramacion_termino').val(''); // sprint 3 - CI-21 -25012021
+    $('#id_justificacion').val(''); // sprint 3 - CI-21 -25012021
+
+     $('#id_justificacion').prop('disabled', false);
   	$(".hide-justificacion").css("display", "block");
+  	$(".hide-real_inicio").css("display", "none");
     $(".hide-real_termino").css("display", "none");
     $(".hide-reprogramacion_termino").css("display", "none");
     $(".hide-reprogramacion_inicio").css("display", "none");
     $("#confirmar").css("display", "initial");
 
-
-     $('#fecha_real_termino').removeAttr('required').val('');
-    $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
-    $('#fecha_reprogramacion_termino').removeAttr('required').val('');
+	$('#fecha_real_inicio').removeAttr('required');
+    $('#fecha_real_termino').removeAttr('required');
+    $('#fecha_reprogramacion_inicio').removeAttr('required');
+    $('#fecha_reprogramacion_termino').removeAttr('required');
     $('#id_justificacion').prop('required',true);
        }
 
 
 
 
-        if (estado == 5){ //habilita sin movimiento
-		periodicidad = $('#id_id_periodicidad').val();
+  if (estado == 5){ //habilita sin movimiento
 
-	if (periodicidad != 9  && periodicidad != 10 ){
+	$('#fecha_real_inicio').val(''); // sprint 3 - CI-21 -25012021
+	$('#fecha_real_termino').val(''); // sprint 3 - CI-21 -25012021
+	$('#id_justificacion').val(''); // sprint 3 - CI-21 -25012021
 
-  	$(".hide-justificacion").css("display", "block");
-    $(".hide-real_termino").css("display", "none");
-    $(".hide-reprogramacion_termino").css("display", "block");
-    $(".hide-reprogramacion_inicio").css("display", "block");
-     $("#confirmar").css("display", "initial");
+	periodicidad = $('#id_id_periodicidad').val();
 
-    $('#fecha_real_termino').removeAttr('required').val('');
-    $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
-    $('#fecha_reprogramacion_termino').removeAttr('required').val('');
-    $('#id_justificacion').prop('required',true).val('');
+   	var fecha_real_inicio= $('#fecha_real_inicio_bd').val() // sprint 3 - CI-21 -25012021
+    var flag_tmp =  $('#flag_tmp').val() // sprint 3 - CI-21 -25012021
+
+    if (fecha_real_inicio != 0 && flag_tmp == 0){ // sprint 3 - CI-21 -25012021
+		 $("#mjeError").css("display","block");
+		 $("#textError").text("Esta actividad posee fecha real de inicio ingresada en una periodo anterior por lo que no se puede dejar en estado Sin Movimiento.");
+		 return false
+    		}else{
+
+		if (periodicidad != 9  && periodicidad != 10 ){
+
+             $('#id_justificacion').prop('disabled', false);
+			$(".hide-justificacion").css("display", "block");
+			$(".hide-real_inicio").css("display", "none");
+			$(".hide-real_termino").css("display", "none");
+			$(".hide-reprogramacion_termino").css("display", "block");
+			$(".hide-reprogramacion_inicio").css("display", "block");
+			$("#confirmar").css("display", "initial");
+
+			$('#fecha_real_inicio').removeAttr('required').val('');
+			$('#fecha_real_termino').removeAttr('required').val('');
+			$('#fecha_reprogramacion_inicio').prop('required', true).val('');
+			$('#fecha_reprogramacion_termino').prop('required', true).val('');
+			$('#id_justificacion').prop('required',true).val('');
+
+			}else{
 
 
+             $('#id_justificacion').prop('disabled', false);
+			$(".hide-justificacion").css("display", "block");
+			$(".hide-real_inicio").css("display", "none");
+			$(".hide-real_termino").css("display", "none");
+			$(".hide-reprogramacion_termino").css("display", "block");
+			$(".hide-reprogramacion_inicio").css("display", "block");
+			$("#confirmar").css("display", "initial");
 
-	}else{
+			$('#fecha_real_inicio').removeAttr('required').val('');
+			$('#fecha_real_termino').removeAttr('required').val('');
+			$('#fecha_reprogramacion_inicio').removeAttr('required').val('');
+			$('#fecha_reprogramacion_termino').removeAttr('required').val('');
+			$('#id_justificacion').prop('required',true).val('');
 
-	  	$(".hide-justificacion").css("display", "block");
-    $(".hide-real_termino").css("display", "none");
-    $(".hide-reprogramacion_termino").css("display", "none");
-    $(".hide-reprogramacion_inicio").css("display", "none");
-     $("#confirmar").css("display", "initial");
-
-    $('#fecha_real_termino').removeAttr('required').val('');
-    $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
-    $('#fecha_reprogramacion_termino').removeAttr('required').val('');
-    $('#id_justificacion').prop('required',true).val('');
+		}
 
 
-	}
+      		 }
 
-
-       }
-
+				}// sprint 3 - CI-21 -25012021
 
 });
 
@@ -460,6 +622,11 @@ $("#confirmar").click(function(){
 var horas_actividad;
 var horas_disponibles;
 
+if (estado == ''){ //// sprint 2 - CI -14 - 180120201
+
+return false
+
+}
 
 //////////////VALIDACIONES SPRINT 13 JR /////////////////
 
@@ -467,7 +634,7 @@ var fecha_inicio_corte_str = $('#fecha_inicio_corte').val();
 var fecha_termino_corte_str = $('#fecha_termino_corte').val();
 var fecha_inicio_corte = moment(fecha_inicio_corte_str).format('YYYY-MM-DD');
 var fecha_termino_corte = moment(fecha_termino_corte_str).format('YYYY-MM-DD');
-
+var flag_tmp =  $('#flag_tmp').val()
 
   estado = $('#id_id_estado_actividad').val();
   periodicidad = $('#id_id_periodicidad').val();
@@ -478,7 +645,10 @@ var fecha_termino_corte = moment(fecha_termino_corte_str).format('YYYY-MM-DD');
 
 	 if (estado == 7){ // Finalizada - Validar
 
+
+
 		var fecha_real_termino = $('#fecha_real_termino').val();
+		var anio_fecha_termino= moment(fecha_real_termino,"YYYY-MM-DD").year()
 
 			if (moment(fecha_real_termino).isAfter(fecha_termino_corte)) {
 				$("#mjeError").css("display","block");
@@ -487,23 +657,52 @@ var fecha_termino_corte = moment(fecha_termino_corte_str).format('YYYY-MM-DD');
 
 			}
 
+			if (anio_fecha_termino<anio_actual) {
+			$("#mjeError").css("display","block");
+			$("#textError").text("Error : La fecha real de témino no debe ser menor al año actual.");
+			return false
+
+			}
+
+
+
+
 	 }
 
 
 	  if (estado == 3){ // En Curso
 
 	  var fecha_reprogramacion_termino= $('#fecha_reprogramacion_termino').val()
+	  var fecha_real_inicio= $('#fecha_real_inicio').val()
+
+	  $('#fecha_real_inicio').prop('disabled', false);
+
+	  if(flag_tmp==0){
+	   $('#fecha_real_inicio').css("background-color", "#eeeeee");
+		}
+
+
+	   if (moment(fecha_real_inicio).isSameOrAfter(fecha_termino_corte)) {
+
+	  	  		$("#mjeError").css("display","block");
+				$("#textError").text("Error : La fecha real de inicio no puede ser mayor a la fecha de término de corte.");
+				return false
+
+		}else{
 
 	  	  if (fecha_reprogramacion_termino != ""){
 
 	  	  	 if (moment(fecha_reprogramacion_termino).isSameOrBefore(fecha_termino_corte)) {
 
 	  	  		$("#mjeError").css("display","block");
-				$("#textError").text("Error : La fecha de témino de reprogramación debe ser mayor a la fecha de termino de corte.");
+				$("#textError").text("Error : La fecha de témino de reprogramación debe ser mayor a la fecha de término de corte.");
 				return false
-			}
+			 }
 
 	  	  }
+
+	   }
+
 
 
 	  }

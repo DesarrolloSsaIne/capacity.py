@@ -79,6 +79,11 @@
             Enviando correos, favor espere...
             </div>
 
+
+      								<div class="alert alert-danger" style="display:none;" id="mjeError">
+									<p id="textError"></p>
+								</div>
+
      <button class="btn btn-danger" type="submit" id="confirmar"  >Abrir Periodo Validación</button>
      <button class="btn btn-default" type="button" id="cancelar"  data-dismiss="modal">Cerrar</button>
   </div>
@@ -93,16 +98,38 @@
 
 <script>
 
+
+
  $('#confirmar').click(function() {
+    var fecha_actual= moment();
+    var fecha_termino= $('#id_fecha_termino').val()
+
+    if (moment(fecha_termino).isSameOrBefore(fecha_actual)) {
+
+
+            $("#mjeError").css("display","block");
+            $("#textError").text("La Fecha de Término del Periodo de Validación debe ser mayor a la fecha actual.");
+            return false
+
+
+    }
+
+
+
     if ($('#id_descripcion_validacion').val() != "" && $('#id_id_periodo_seguimiento').val() != "" && $('#id_fecha_termino').val() != ""){
 
 
                 $( this ).hide();
                 $( '#cancelar' ).hide();
                  $( '#enviar' ).fadeIn();
+                 $("#mjeError").css("display","none");
                  $('#id_fecha_termino').prop( "readonly", true );
                  $('#id_id_periodo_seguimiento').prop( "readonly", true );
 
             }
+
+
+
+
  });
 </script>
