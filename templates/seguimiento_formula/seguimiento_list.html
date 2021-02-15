@@ -119,7 +119,7 @@
 								                        <td>{% if objetivos.count_actividad == None %}0{% else %}{{ objetivos.count_actividad }}{%endif%} </td>
                                                      <td style="width:60px; text-align:center;">
 
-                                                            <a  type="button" title="Actividades Asociadas al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom"  id="notification" class="objetivos btn btn-sm btn-success"  {% if total_disponible.id_controlador.id_estado_plan_id == 1  or total_disponible.id_controlador.id_estado_plan_id == 3%} disabled   {% endif %} href="{% url 'ActividadesDetailSeguimiento' objetivos.id %}"  >
+                                                            <a  type="button" title="Actividades Asociadas al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom"  id="notification" class="objetivos btn btn-sm btn-success"   href="{% url 'ActividadesDetailSeguimiento' objetivos.id %}"  >
                                                             <span class="fa fa-bars" ></span>
                                                              {% if objetivos.count_no_vistos != 0 and objetivos.count_no_vistos != none %} <span class="badge" title="Nuevas Observaciones" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top"  >{{ objetivos.count_no_vistos }}</span> {% endif %}
                                                             </a>
@@ -145,7 +145,7 @@
 
 
 
-                                                            <a  type="button" title="Actividades Asociadas al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom"  id="notification" class="objetivos btn btn-sm btn-success"  {% if total_disponible.id_controlador.id_estado_plan_id == 1 or total_disponible.id_controlador.id_estado_plan_id == 3 %} disabled   {% endif %} href="{% url 'ActividadesDetailSeguimiento' objetivos.id %}"  >
+                                                            <a  type="button" title="Actividades Asociadas al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom"  id="notification" class="objetivos btn btn-sm btn-success"   href="{% url 'ActividadesDetailSeguimiento' objetivos.id %}"  >
                                                             <span class="fa fa-bars" ></span>
                                                              {% if objetivos.count_no_vistos != 0 and objetivos.count_no_vistos != none %} <span class="badge" title="Nuevas Observaciones" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top"  >{{ objetivos.count_no_vistos }}</span> {% endif %}
                                                             </a>
@@ -170,7 +170,7 @@
 
 
 
-                                                            <a  type="button" title="Actividades Asociadas al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom"  id="notification" class="objetivos btn btn-sm btn-success"  href="{% url 'ActividadesDetailSeguimiento' objetivos.id %}" {% if total_disponible.id_controlador.id_estado_plan_id == 1 or total_disponible.id_controlador.id_estado_plan_id == 3 %} disabled   {% endif %}  >
+                                                            <a  type="button" title="Actividades Asociadas al Objetivo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom"  id="notification" class="objetivos btn btn-sm btn-success"  href="{% url 'ActividadesDetailSeguimiento' objetivos.id %}"   >
                                                             <span class="fa fa-bars" ></span>
                                                              {% if objetivos.count_no_vistos != 0 and objetivos.count_no_vistos != none %} <span class="badge" title="Nuevas Observaciones" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top"  >{{ objetivos.count_no_vistos }}</span> {% endif %}
                                                             </a>

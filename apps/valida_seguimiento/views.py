@@ -141,7 +141,7 @@ class Objetivos(ListView): #Modificado por JR- sprint 8 - OK
 
                 count_actividades = Ges_Actividad.objects.values('id_objetivo_tacticotn').filter(
                     id_objetivo_tacticotn=OuterRef('pk')).annotate(
-                    count_id_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id)& Q(id_estado_actividad__in=[2,3,5,10])))
+                    count_id_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id) & (Q(id_estado_actividad=3) & ~Q(fecha_reprogramacion_termino=None)) | (Q(id_estado_actividad=5) & ~Q(fecha_reprogramacion_inicio=None) & ~Q(fecha_reprogramacion_termino=None)) | (Q(id_estado_actividad=2)  | Q(id_estado_actividad=10))))
 
                 count_no_vistos_obj = Ges_Observaciones_sr.objects.values('id_objetivo_tacticotn').filter(
                     id_objetivo_tacticotn=OuterRef('pk')).annotate(
@@ -154,7 +154,7 @@ class Objetivos(ListView): #Modificado por JR- sprint 8 - OK
                     count_actividades=Subquery(count_actividades.values('count_id_actividad')),
                     count_no_vistos_obj=Subquery(count_no_vistos_obj.values('count_id_actividad')),
                     count_observaciones=Subquery(count_observaciones.values('count_id_actividad'))).order_by(
-                    '-count_no_vistos', '-count_observaciones')
+                    '-count_actividades', '-count_observaciones')
 
 
             if id_orden == 2:
@@ -169,7 +169,7 @@ class Objetivos(ListView): #Modificado por JR- sprint 8 - OK
 
                 count_actividades = Ges_Actividad.objects.values('id_objetivo_tactico').filter(
                     id_objetivo_tactico=OuterRef('pk')).annotate(
-                    count_id_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id)& Q(id_estado_actividad__in=[2,3,5,10])))
+                    count_id_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id) & (Q(id_estado_actividad=3) & ~Q(fecha_reprogramacion_termino=None)) | (Q(id_estado_actividad=5) & ~Q(fecha_reprogramacion_inicio=None) & ~Q(fecha_reprogramacion_termino=None)) | (Q(id_estado_actividad=2)  | Q(id_estado_actividad=10))))
 
                 count_no_vistos_obj = Ges_Observaciones_sr.objects.values('id_objetivo_tactico').filter(
                     id_objetivo_tactico=OuterRef('pk')).annotate(
@@ -182,7 +182,7 @@ class Objetivos(ListView): #Modificado por JR- sprint 8 - OK
                     count_actividades=Subquery(count_actividades.values('count_id_actividad')),
                     count_no_vistos_obj=Subquery(count_no_vistos_obj.values('count_id_actividad')),
                     count_observaciones=Subquery(count_observaciones.values('count_id_actividad'))).order_by(
-                    '-count_no_vistos', '-count_observaciones')
+                    '-count_actividades', '-count_observaciones')
 
 
             if id_orden == 4:
@@ -198,7 +198,7 @@ class Objetivos(ListView): #Modificado por JR- sprint 8 - OK
 
                 count_actividades = Ges_Actividad.objects.values('id_objetivo_operativo').filter(
                     id_objetivo_operativo=OuterRef('pk')).annotate(
-                    count_id_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id)& Q(id_estado_actividad__in=[2,3,5,10])))
+                    count_id_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id) & (Q(id_estado_actividad=3) & ~Q(fecha_reprogramacion_termino=None)) | (Q(id_estado_actividad=5) & ~Q(fecha_reprogramacion_inicio=None) & ~Q(fecha_reprogramacion_termino=None)) | (Q(id_estado_actividad=2)  | Q(id_estado_actividad=10))))
 
                 count_no_vistos_obj = Ges_Observaciones_sr.objects.values('id_objetivo_operativo').filter(
                     id_objetivo_operativo=OuterRef('pk')).annotate(
@@ -211,7 +211,7 @@ class Objetivos(ListView): #Modificado por JR- sprint 8 - OK
                     count_actividades=Subquery(count_actividades.values('count_id_actividad')),
                     count_no_vistos_obj=Subquery(count_no_vistos_obj.values('count_id_actividad')),
                     count_observaciones=Subquery(count_observaciones.values('count_id_actividad'))).order_by(
-                    '-count_no_vistos', '-count_observaciones')
+                    '-count_actividades', '-count_observaciones')
 
 
 
@@ -257,7 +257,7 @@ class Actividades(ListView): # Modificado por JR- sprint 8 - OK
             count_id_actividad=Count('id'))
 
             lista_actividades = Ges_Actividad.objects.filter(
-              Q(id_objetivo_tactico=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)& Q(id_estado_actividad__in=[2,3,5,10])).annotate(
+              Q(id_objetivo_tactico=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id) & (Q(id_estado_actividad=3) & ~Q(fecha_reprogramacion_termino=None)) | (Q(id_estado_actividad=5) & ~Q(fecha_reprogramacion_inicio=None) & ~Q(fecha_reprogramacion_termino=None)) | (Q(id_estado_actividad=2)  | Q(id_estado_actividad=10))).annotate(
               count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
 
                 count_observaciones=Subquery(count_observaciones.values('count_id_actividad'))).order_by('-count_no_vistos','-fecha_registro')
@@ -274,7 +274,7 @@ class Actividades(ListView): # Modificado por JR- sprint 8 - OK
 
 
             lista_actividades = Ges_Actividad.objects.filter(
-              Q(id_objetivo_tacticotn=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)& Q(id_estado_actividad__in=[2,3,5,10])).annotate(
+              Q(id_objetivo_tacticotn=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)  & Q(id_estado_actividad__in=[2,3,5,10]) ).annotate(
               count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
 
 
@@ -291,7 +291,7 @@ class Actividades(ListView): # Modificado por JR- sprint 8 - OK
             count_id_actividad=Count('id'))
 
             lista_actividades = Ges_Actividad.objects.filter(
-              Q(id_objetivo_operativo=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id) & Q(id_estado_actividad__in=[2,3,5,10])).annotate(
+              Q(id_objetivo_operativo=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id) & Q(id_estado_actividad__in=[2,3,5,10]) ).annotate(
               count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
 
                 count_observaciones=Subquery(count_observaciones.values('count_id_actividad'))).order_by('-count_no_vistos','-fecha_registro')
@@ -511,6 +511,9 @@ def update_actividad_rechaza(request):
           response_data['error'] = 'La actividad fue rechazada correctamente.'
         except:
           response_data['error'] = 'Error al intentar validar la actividad, intente nuevamente o comuniquese con el administrador.'
+
+        actividad.fecha_reprogramacion_inicio = None
+        actividad.fecha_reprogramacion_termino = None
 
         try:
             periodo_actual = Glo_Periodos.objects.get(id_estado=1)

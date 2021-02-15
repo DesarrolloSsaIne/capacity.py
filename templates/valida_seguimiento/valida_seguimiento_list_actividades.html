@@ -49,6 +49,11 @@ Actividades Asociadas al Objetivo
 				</thead>
 				<tbody>
 					{%  for objetivo in object_list %}
+					{%if objetivo.id_estado_actividad_id == 3 and objetivo.fecha_reprogramacion_termino == None%}
+
+					{% elif objetivo.id_estado_actividad_id == 5 and objetivo.fecha_reprogramacion_termino == None and objetivo.fecha_reprogramacion_inicio == None  %}
+
+					{%else%}
 					<tr>
 						<td> {{ objetivo.id }}</td>
 						<td class="descripcion_actividad"  style="cursor:pointer; max-width: 100px; overflow: hidden;  display: table-cell;  text-overflow: ellipsis;  border: solid 1px #dddddd; white-space: nowrap;">{{ objetivo.descripcion_actividad }}</td>
@@ -65,12 +70,9 @@ Actividades Asociadas al Objetivo
 
 				</td>
 
-
-
-
-
-
 					</tr>
+					{%endif%}
+
 					{% endfor %}
 				</tbody>
 			</table>
