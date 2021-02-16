@@ -361,11 +361,6 @@ class ActividadDetallesVer(SuccessMessageMixin, UpdateView):
 
 
 
-
-
-
-
-
 class iniciaSeguimiento(UpdateView):
     model = Ges_Controlador
     form_class = PlanUpdateFormAcepta

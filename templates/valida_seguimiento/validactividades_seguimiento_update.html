@@ -37,70 +37,25 @@
 			</div>
 		</div>
 
+<div style="display:none;">{{form.id_producto_estadistico}}</div>
+<div style="display:none;">{{form.id_periodicidad}}</div>
+<div style="display:none;">{{form.horas_actividad}}</div>
+<div style="display:none;">{{form.volumen}}</div>
+<div style="display:none;">{{form.personas_asignadas}}</div>
+<div style="display:none;">{{form.total_horas}}</div>
+
+<label >Descripción Actividad</label>
+ {{ form.descripcion_actividad}}
+
+
 <div class="row show-grid">
 
-<div class="col-md-6">
-
-                <span class="show-grid-block">
-
-                    <div class="form-group">
-
-
-					<label >Periodicidad</label>
-
-		      	       {{ form.id_periodicidad}}
-
-
-
-
-				    </div>
-
-
-					   <div class="form-group">
-					<label >Producto Estadístico</label>
-					{{ form.id_producto_estadistico}}
-				</div>
-
-											<div class="form-group">
-					<label >Total Horas</label>
-		      	       {{ form.total_horas}}
-				    </div>
-
-
-                </span>
-                </div>
-
-
-	<div class="col-md-6">
-
-                <span class="show-grid-block">
-
-                    <div class="form-group">
-					<label >Horas Asociadas</label>
-		      	       {{ form.horas_actividad}}
-				    </div>
-					<div class="form-group">
-					<label >Volumen</label>
-		      	       {{ form.volumen}}
-				    </div>
-					<div class="form-group">
-					<label >Personas Asignadas</label>
-		      	       {{ form.personas_asignadas}}
-				    </div>
-
-
-
-
-
-
-                </span>
-                </div>
 
 
 		<div class="col-md-6">
 
                 <span class="show-grid-block">
-<br>
+
 	 <label >Fecha Inicio Actividad </label>
 				<div class="input-group">
 				<span class="input-group-addon">
@@ -110,7 +65,7 @@
 
 				</div>
 
-<br>
+
 
 
 
@@ -122,7 +77,7 @@
 			<div class="col-md-6">
 
                 <span class="show-grid-block">
-<br>
+
 					 <label >Fecha Término Actividad </label>
 				<div class="input-group">
 				<span class="input-group-addon">
@@ -150,6 +105,16 @@
 					{{ form.id_estado_actividad}}
 				</div>
 
+				<div class="hide-real_inicio">
+				<label >Fecha Real Inicio </label>
+				<div class="input-group">
+				<span class="input-group-addon">
+					<i class="fa fa-calendar"></i>
+				</span>
+					<input id="fecha_real_inicio" readonly="readonly" type="date"  class="form-control" aria-valuetext="{{ form.fecha_real_inicio }} <!--">-->
+
+				</div>
+				</div>
 
 					<div class="hide-reprogramacion_inicio">
 												    <label >Reprogramacion Fecha Inicio  </label>
@@ -161,6 +126,7 @@
 
 				</div>
 					</div>
+
 						<div class="hide-reprogramacion_termino">
 											 <label >Reprogramación Fecha Término </label>
 				<div class="input-group">
@@ -189,11 +155,17 @@
 
      </span>
 
+
                     </div>
+
 	<div class="col-md-12">
+
 		<div class="hide-justificacion">
 					<label >Justificación</label>
+
 					{{ form.justificacion }}
+
+
 		</div>
 				</div>
                 <span class="show-grid-block">
@@ -214,15 +186,26 @@
 												<div class="alert alert-danger" style="display:none;" id="mjeError">
 
 										<p id="textError"></p>
-								</div>
+												</div>
+
 
 			<div class="modal-footer">
+
+
+{% if  fechas.estado_actividad == 2 or fechas.estado_actividad == 3 or fechas.estado_actividad == 5 or fechas.estado_actividad == 10 %}
 				<button type="button"  title="Aceptar cambios."  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" class="aceptar btn btn-sm btn-success" data-id="">
                             <span class="fa fa-check-circle"></span> Aceptar</button>
 				<button type="button"  title="Rechazar cambios."     data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" class="rechazar btn btn-sm btn-danger" data-id="">
                             <span class="fa fa-ban"></span> Rechazar</button>
 
 				<button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
+
+
+				{% else %}
+				<button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
+				{% endif %}
+
+
 			</div>
 
 
@@ -235,7 +218,7 @@
 				<div class="panel-actions">
 
 				</div>
-				<h2 class="panel-title">Validación actividad</h2>
+				<h2 class="panel-title">Aceptar Estado Actividad</h2>
 			</header>
       <div class="modal-body">
 
@@ -248,14 +231,14 @@
                 </div>
             <div class="modal-text">
                 <h4>Atención</h4>
-				<p>¿Está seguro que desea <strong>aceptar</strong> los cambios?. </p>
+				<p>¿Está seguro que desea <strong style="color:green;">ACEPTAR</strong> el estado de la actividad?. <br> <strong style="color:red;">Una vez aceptado no se podrá deshacer el cambio.</strong> </p>
 
 				<textarea id="id_observacion_acepta"  cols="40" rows="10" class="form-control" style="height:80px;display:none" maxlength="2000"  placeholder="Ingrese un observación a la validación"></textarea>
             </div>
         </div>
     </div>
   <div class="modal-footer">
-    <button class="btn btn-danger" type="submit" >Confirmar</button>
+    <button  class="btn btn-danger" type="submit" >Confirmar</button>
      <button class="btn btn-default" type="button"  onclick="$('#confirm-plan').hide();" >Cancelar</button>
   </div>
 
@@ -273,7 +256,7 @@
 				<div class="panel-actions">
 
 				</div>
-				<h2 class="panel-title">Validación actividad</h2>
+				<h2 class="panel-title">Rechazar Estado Actividad</h2>
 			</header>
       <div class="modal-body">
 
@@ -286,7 +269,7 @@
                 </div>
             <div class="modal-text">
                 <h4>Atención</h4>
-				<p>¿Está seguro que desea <strong>rechazar</strong> los cambios?. </p>
+				<p>¿Está seguro que desea <strong style="color:red;">RECHAZAR</strong> el estado de la actividad?. <br> <strong style="color:red;">Una vez rechazado no se podrá deshacer el cambio.</strong> </p>
 
             	<textarea  placeholder="Ingrese un observación a la validación"  cols="40" rows="10" class="form-control" style="height:80px;display:none" maxlength="2000" id="id_observacion_rechaza"></textarea>
 
@@ -324,6 +307,17 @@ estado = $('#id_id_estado_actividad').val();
 
 	if(estado == 2){ // Con Retraso - Validar
 	$(".hide-justificacion").css("display", "block");
+	$(".hide-real_inicio").css("display", "none");
+   $(".hide-real_termino").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "block");
+    $(".hide-reprogramacion_inicio").css("display", "block");
+     $("#confirmar").css("display", "initial");
+
+	}
+
+		if(estado == 1){ // Con Retraso - Validar
+	$(".hide-justificacion").css("display", "block");
+	$(".hide-real_inicio").css("display", "none");
    $(".hide-real_termino").css("display", "none");
     $(".hide-reprogramacion_termino").css("display", "block");
     $(".hide-reprogramacion_inicio").css("display", "block");
@@ -335,22 +329,67 @@ estado = $('#id_id_estado_actividad').val();
 	if(estado == 3){ // en curso - validar
 	//	$(".hide-justificacion").css("display", "none");
     $(".hide-real_termino").css("display", "none");
+       $(".hide-real_inicio").css("display", "true"); //sprint 2 - CI-20 -21012021
+       $(".hide-real_inicio").css("display", "block");
   //  $(".hide-reprogramacion_termino").css("display", "none");
     $(".hide-reprogramacion_inicio").css("display", "none");
     $('#id_justificacion').prop('required',true);
          $("#confirmar").css("display", "initial");
-
 	}
+
+		if(estado == 8){ // en curso
+	//	$(".hide-justificacion").css("display", "none");
+    $(".hide-real_termino").css("display", "none");
+    $(".hide-real_inicio").css("display", "block");
+
+  //  $(".hide-reprogramacion_termino").css("display", "none");
+    $(".hide-reprogramacion_inicio").css("display", "none");
+    $('#id_justificacion').prop('required',true);
+         $("#confirmar").css("display", "initial");
+	}
+
 
 	if(estado == 10){ // Eliminada - Validar
 
-		$(".hide-justificacion").css("display", "block");
+	$(".hide-justificacion").css("display", "block");
     $(".hide-real_termino").css("display", "none");
+    $(".hide-real_inicio").css("display", "none");
     $(".hide-reprogramacion_termino").css("display", "none");
     $(".hide-reprogramacion_inicio").css("display", "none");
      $("#confirmar").css("display", "initial");
 	}
 
+	if(estado == 9){ // Eliminada
+
+	$(".hide-justificacion").css("display", "block");
+    $(".hide-real_termino").css("display", "none");
+    $(".hide-real_inicio").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "none");
+    $(".hide-reprogramacion_inicio").css("display", "none");
+     $("#confirmar").css("display", "initial");
+	}
+
+	if (estado == 5){ // sin movimiento - Valida
+
+  	$(".hide-justificacion").css("display", "block");
+    $(".hide-real_termino").css("display", "none");
+    $(".hide-real_inicio").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "block");
+    $(".hide-reprogramacion_inicio").css("display", "block");
+     $("#confirmar").css("display", "initial");
+
+       }
+
+      	if (estado == 6){ // sin movimiento
+
+  	$(".hide-justificacion").css("display", "block");
+    $(".hide-real_termino").css("display", "none");
+    $(".hide-real_inicio").css("display", "none");
+    $(".hide-reprogramacion_termino").css("display", "block");
+    $(".hide-reprogramacion_inicio").css("display", "block");
+     $("#confirmar").css("display", "initial");
+
+       }
 
 if(estado == 0 || estado == ''){
 
@@ -358,23 +397,13 @@ if(estado == 0 || estado == ''){
     $(".hide-real_termino").css("display", "none");
     $(".hide-reprogramacion_termino").css("display", "none");
     $(".hide-reprogramacion_inicio").css("display", "none");
+    $(".hide-real_inicio").css("display", "none");
      $("#confirmar").css("display", "none");
 
 
 	}
 
-	if (estado == 5){ // sin movimiento
 
-
-
-
-  	$(".hide-justificacion").css("display", "block");
-    $(".hide-real_termino").css("display", "none");
-    $(".hide-reprogramacion_termino").css("display", "block");
-    $(".hide-reprogramacion_inicio").css("display", "block");
-     $("#confirmar").css("display", "initial");
-
-       }
 
 });
 
@@ -498,10 +527,10 @@ $(function() {
 		 $('#confirm-plan').hide();
 		setInterval(function() {
 			window.location.reload();
-		}, 3000);
+		}, 2000);
 
         },
-        error : function(xhr,errmsg,err) {
+        error : function(json, xhr,errmsg,err) {
         $('#confirm-plan').hide();
         $("#modalValidacion").removeClass( "alert-success" ).addClass("alert-danger");
 		$("#modalValidacion").css("display","block");
@@ -574,10 +603,13 @@ $(function() {
 		$(".aceptar, .rechazar").css("display", "none")
 		setInterval(function() {
 			window.location.reload();
-		}, 3000);
+		}, 2000);
 
         },
-        error : function(xhr,errmsg,err) {
+
+
+        error : function(json,xhr,errmsg,err) {
+
         $('#confirm-plan-rechaza').hide();
         $("#modalValidacion").removeClass( "alert-success" ).addClass("alert-danger");
 		$("#modalValidacion").css("display","block");
@@ -641,6 +673,9 @@ if(estado == 0 || estado == ''){
 	}
 
 	if (estado == 5){ // sin movimiento
+	
+
+
 
   	$(".hide-justificacion").css("display", "block");
     $(".hide-real_termino").css("display", "none");
@@ -648,7 +683,18 @@ if(estado == 0 || estado == ''){
     $(".hide-reprogramacion_inicio").css("display", "block");
      $("#confirmar").css("display", "initial");
 
+   
+
+
+
+	
+
+
        }
+
+
+
+
 
 
 });

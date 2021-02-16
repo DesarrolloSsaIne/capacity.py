@@ -176,7 +176,11 @@ $('#datatable-default').on('click', '.descripcion_actividad', function () {
 
 
 $('#datatable-default').DataTable({
-"ordering": true //desactiva el ordenamiento de la tabla para que el order_by del queryset funcione. ("order": [[ 3, "desc" ]]) para ordenar desde jquery.
+stateSave: true,
+//"ordering": false, //# Sprint 1 - CI-6 - 12012021
+//"order": [[ 3, "desc" ]]
+
+"pageLength": 50 // cambio a 50 sprint 1 - CI-11 - 070121
 });
 
 		</script>

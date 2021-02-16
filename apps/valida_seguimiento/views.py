@@ -15,7 +15,7 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from apps.valida_plan2.models import Ges_Observaciones_sr
-from apps.valida_seguimiento.forms import  ValidaActividadesUpdateForm,PlanUpdateForm
+from apps.valida_seguimiento.forms import  ValidaActividadesUpdateForm,PlanUpdateForm, ValidaSeguimientoUpdateFormVer
 
 class UnidadesList(ListView): #Modificado por JR- sprint 8 - OK
     model = Ges_Niveles
@@ -257,7 +257,7 @@ class Actividades(ListView): # Modificado por JR- sprint 8 - OK
             count_id_actividad=Count('id'))
 
             lista_actividades = Ges_Actividad.objects.filter(
-              Q(id_objetivo_tactico=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id) & (Q(id_estado_actividad=3) & ~Q(fecha_reprogramacion_termino=None)) | (Q(id_estado_actividad=5) & ~Q(fecha_reprogramacion_inicio=None) & ~Q(fecha_reprogramacion_termino=None)) | (Q(id_estado_actividad=2)  | Q(id_estado_actividad=10))).annotate(
+              Q(id_objetivo_tactico=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id) & Q(id_estado_actividad__in=[1,2,3,5,6,8,9,10])  ).annotate(
               count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
 
                 count_observaciones=Subquery(count_observaciones.values('count_id_actividad'))).order_by('-count_no_vistos','-fecha_registro')
@@ -274,7 +274,7 @@ class Actividades(ListView): # Modificado por JR- sprint 8 - OK
 
 
             lista_actividades = Ges_Actividad.objects.filter(
-              Q(id_objetivo_tacticotn=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)  & Q(id_estado_actividad__in=[2,3,5,10]) ).annotate(
+              Q(id_objetivo_tacticotn=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)  & Q(id_estado_actividad__in=[1,2,3,5,6,8,9,10]) ).annotate(
               count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
 
 
@@ -291,7 +291,7 @@ class Actividades(ListView): # Modificado por JR- sprint 8 - OK
             count_id_actividad=Count('id'))
 
             lista_actividades = Ges_Actividad.objects.filter(
-              Q(id_objetivo_operativo=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id) & Q(id_estado_actividad__in=[2,3,5,10]) ).annotate(
+              Q(id_objetivo_operativo=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id) & Q(id_estado_actividad__in=[1,2,3,5,6,8,9,10]) ).annotate(
               count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
 
                 count_observaciones=Subquery(count_observaciones.values('count_id_actividad'))).order_by('-count_no_vistos','-fecha_registro')
@@ -334,6 +334,9 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
 
     def get_context_data(self,  **kwargs):
         context = super(ActividadEdit, self).get_context_data(**kwargs)
+
+
+
         try:
             periodo_actual = Glo_Periodos.objects.get(id_estado=1)
         except Glo_Periodos.DoesNotExist:
@@ -355,7 +358,8 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
                              'fecha_termino_corte': fechas_corte.fecha_termino_corte,
                              'id_actividad': actividad.id,
                              'estado_valida': actividad.validada,
-                             'id_periodo_validacion': periodo_validacion.id
+                             'id_periodo_validacion': periodo_validacion.id,
+                             'estado_actividad':actividad.id_estado_actividad_id,
                              }
 
 
@@ -457,35 +461,42 @@ def update_actividad(request):
           response_data['error'] = 'La actividad fue validada correctamente.'
         except:
           response_data['error'] = 'Error al intentar validar la actividad, intente nuevamente o comuniquese con el administrador.'
-
+        #
         try:
             periodo_actual = Glo_Periodos.objects.get(id_estado=1)
         except Glo_Periodos.DoesNotExist:
             return None
         try:
-            id_periodo_seguimiento = Glo_Seguimiento.objects.get(id_estado_seguimiento=1)
+            id_periodo_seguimiento = Glo_Seguimiento.objects.filter(id_estado_seguimiento=2).order_by('-id')[0]
         except Glo_Seguimiento.DoesNotExist:
             return None
-
+        #
         try:
             id_estado_final_instancia = Glo_EstadoActividad.objects.get(id=int(estado_final))
         except id_estado_final_instancia.DoesNotExist:
             return None
-
+        #
         try:
             periodo_valida = Glo_validacion.objects.get(
                 Q(id_estado_periodo=1) & Q(id_periodo=periodo_actual.id))
         except:
             periodo_valida = None
             pass
+
+
         agregarObservacion(observacion, int(id_actividad), int(periodo_valida.id) )
         Log_valida(int(periodo_valida.id),  int(id_actividad),  fecha_inicio, fecha_termino, None, int(estado_final))
-
-        ActividadesHistoria(id_periodo_seguimiento, id_actividad, id_estado_final_instancia, periodo_actual)
+        #
+        ActividadesHistoria(id_periodo_seguimiento, id_actividad,  periodo_actual)
 
         return JsonResponse(response_data)
 
     return render(request, 'valida_seguimiento/listarActividades/' + str(id_actividad), {'success': 'true'})
+
+class ValidaSeguimientoActividadDetallesVer(SuccessMessageMixin, UpdateView):
+    model = Ges_Actividad
+    form_class = ValidaSeguimientoUpdateFormVer
+    template_name = 'valida_seguimiento/valida_seguimiento_ver_detalle.html'
 
 
 def update_actividad_rechaza(request):
@@ -520,8 +531,9 @@ def update_actividad_rechaza(request):
         except Glo_Periodos.DoesNotExist:
             return None
 
+
         try:
-            id_periodo_seguimiento = Glo_Seguimiento.objects.get(id_estado_seguimiento=1)
+            id_periodo_seguimiento = Glo_Seguimiento.objects.filter(id_estado_seguimiento=2).order_by('-id')[0]
         except Glo_Seguimiento.DoesNotExist:
             return None
 
@@ -539,8 +551,7 @@ def update_actividad_rechaza(request):
 
         agregarObservacion(observacion, int(id_actividad), int(periodo_valida.id))
         Log_valida(int(periodo_valida.id), int(id_actividad),  None, None, None, int(estado_final))
-
-        ActividadesHistoria(id_periodo_seguimiento, id_actividad, id_estado_final_instancia, periodo_actual)
+        ActividadesHistoria(int(id_periodo_seguimiento.id), id_actividad, periodo_actual)
 
 
         return JsonResponse(response_data)
@@ -579,12 +590,28 @@ def Log_valida(id_periodo_valida, id_actividad, fecha_inicio, fecha_termino, fec
     return None
 
 
-def ActividadesHistoria(id_periodo_seguimiento, id_actividad,id_estado_actividad,id_periodo):
+def ActividadesHistoria(id_periodo_seguimiento, id_actividad,id_periodo):
 
-    Id = Ges_Actividad_Historia.objects.get(Q(id_actividad=id_actividad) & Q(id_periodo_seguimiento=id_periodo_seguimiento) & Q(id_periodo=id_periodo))
+    Id = Ges_Actividad_Historia.objects.get(
+        Q(id_actividad=id_actividad) & Q(id_periodo_seguimiento=id_periodo_seguimiento) & Q(id_periodo=id_periodo))
 
-    Ges_Actividad_Historia.objects.filter(id=Id.id).update(
+    model = Ges_Actividad.objects.filter(Q(id=id_actividad) & Q(id_periodo=id_periodo))
 
-        id_estado_actividad=id_estado_actividad,
-    )
+    for actividad in model:
+        Ges_Actividad_Historia.objects.filter(id=Id.id).update(
+            fecha_reprogramacion_inicio=actividad.fecha_reprogramacion_inicio,
+            fecha_reprogramacion_termino=actividad.fecha_reprogramacion_termino,
+            fecha_real_inicio=actividad.fecha_real_inicio,
+            fecha_real_termino=actividad.fecha_real_termino,
+            id_estado_actividad=actividad.id_estado_actividad,
+            justificacion=actividad.justificacion,
+
+        )
+
+
+
     return None
+
+
+
+
