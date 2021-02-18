@@ -26,8 +26,13 @@ Listado de Planes
 
 {% else %}
 <section class="panel">
-    <header class="panel-heading">
-        <div class="panel-actions">
+    <header class="panel-heading" style="height:50px;">
+
+        <div class="panel-actions" >
+
+
+            <a  type="button" style="width:30px; height:30px; "  class="create btn btn-sm btn-success"  name="button" title="Descargar Planes Validados en MS Excel" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" href="{% url 'exporta_plan_valida_seguimiento_xls' jefatura_primerarevision.id %}">
+									 <span style="margin-left:-1px; " class="fa fa-file-excel-o"></span></a>
             <!--<a href="#" class="fa fa-times"></a>-->
         </div>
 

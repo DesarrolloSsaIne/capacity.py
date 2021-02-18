@@ -34,64 +34,66 @@ Actividades Asociadas al Objetivo
 				<thead>
 					<tr>
 						<!--<th>id</th>-->
-						<th>ID</th>
-						<th style=" "> <div style="color:white;">........................................................................................</div> <br> Descripción Actividad </th>
+						<th style="font-size:11px;">ID</th>
+						<th style="width:280px; font-size:11px;">Actividad</th>
 
-						<th  title="Fecha Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Fecha Inicio Actividad</th>
-						<th  title="Fecha de Término de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Fecha Término Actividad</th>
+						<th style="font-size:11px;" title="Fecha Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Fecha Inicio</th>
+						<th style="font-size:11px;"  title="Fecha de Término de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Fecha Fin</th>
+						<th style="font-size:11px;">Prod. Estadístico</th>
+						<th style="font-size:11px;">Cargo</th>
+						<th style="font-size:11px; width:110px;">Inicio Real</th>
+						<th style="font-size:11px; width:110px;">Fin Real</th>
+						<th style="font-size:11px; width:110px;">Reprog. Inicio</th>
+						<th style="font-size:11px; width:110px;">Reprog. Fin</th>
 
 						<th style="display:none;">count NV</th>
-						<th title="Estado Actividad Etapa Seguimiento" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Estado Seguimiento</th>
-                        <th title="Total Observaciones Asociadas a la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Obs. Totales</th>
-						<th>Opciones</th>
+						<th style="font-size:11px;" title="Estado Actividad Etapa Seguimiento" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Estado Seguimiento</th>
+						<th style="font-size:11px;">Respuesta</th>
+<!--                        <th style="font-size:11px;" title="Total Observaciones Asociadas a la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Obs. Totales</th>-->
+
+
+						<th style="font-size:11px; ">Obs.</th>
 
 					</tr>
 				</thead>
 				<tbody>
 					{%  for objetivo in object_list %}
 					<tr>
-						<td style="width:20px;"> {{ objetivo.id }}</td>
-						<td class="MitextoGrande"  style="height:65px; width:100%; border-bottom:1px; border-left:0px; border-right:0px;  padding-top:-5px; " >{{ objetivo.descripcion_actividad }}</td>
+								<td style="font-size:11px;"> {{ objetivo.id }}</td>
+						<td  style="font-size:11px;">
+						<a  type="button" title="Presione Para Ver el Detalle Actividad"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top"   class="update Mitexto" style="height:60px; width:100%; border-bottom:1px; border-left:0px; border-right:0px; font-size:11px; padding-top:-5px; text-decoration: none; color:#777777;"  data-id="{% url 'detalleactividadesrevisionplanificacion' objetivo.id %}">
+						{{ objetivo.descripcion_actividad}}
+						</a>
+						</td>
+						<td style="font-size:11px; width:110px;" > <span style='display: none;'>{{objetivo.fecha_inicio_actividad|date:"Ymd"}}</span>{{ objetivo.fecha_inicio_actividad|date:"d-m-Y"}}</td>
+						<td style="font-size:11px; width:110px;"> <span style='display: none;'>{{objetivo.fecha_termino_actividad|date:"Ymd"}}</span> {{ objetivo.fecha_termino_actividad|date:"d-m-Y"}}</td>
+						<td style="font-size:11px;"> {% if objetivo.id_producto_estadistico == none %} -  {%else%} {{ objetivo.id_producto_estadistico}} {%endif%}</td>
+						<td style="font-size:11px;"> {{ objetivo.id_familia_cargo}}</td>
+						<td style="font-size:11px; width:110px;"> <span style='display: none; '>{{objetivo.fecha_real_inicio|date:"Ymd"}}</span> {% if objetivo.fecha_real_inicio == none %} -  {%else%} {{ objetivo.fecha_real_inicio|date:"d-m-Y"}} {%endif%}</td>
+						<td style="font-size:11px; width:110px;"> <span style='display: none;'>{{objetivo.fecha_real_termino|date:"Ymd"}}</span> {% if objetivo.fecha_real_termino == none %} -  {%else%} {{ objetivo.fecha_real_termino|date:"d-m-Y"}} {%endif%}</td>
+						<td style="font-size:11px; width:110px;"> <span style='display: none;'>{{objetivo.fecha_reprogramacion_inicio|date:"Ymd"}}</span> {% if objetivo.fecha_reprogramacion_inicio == none %} -  {%else%} {{ objetivo.fecha_reprogramacion_inicio|date:"d-m-Y"}} {%endif%}</td>
+						<td style="font-size:11px; width:110px;"> <span style='display: none;'>{{objetivo.fecha_reprogramacion_termino|date:"Ymd"}}</span> {% if objetivo.fecha_reprogramacion_termino == none %} -  {%else%} {{ objetivo.fecha_reprogramacion_termino|date:"d-m-Y"}} {%endif%}</td>
+						<td style="width:190px; font-size:11px;">{{ objetivo.id_estado_actividad }}</td>
+						<td style="width:190px; font-size:11px;">{%if objetivo.validada == 0 %}-{%elif objetivo.validada == 1%}<span style='color: green;'>Aceptada</span>{%elif objetivo.validada == 2%}<span style='color: red;'>Rechazada</span>{%endif%}</td>
 
-						<td style="width:170px;">{{ objetivo.fecha_inicio_actividad }}</td>
-						<td style="width:190px;">{{ objetivo.fecha_termino_actividad }}</td>
-
-							<td style="width:150px;"   {% if objetivo.id_estado_actividad_id == 1  %}
-														 style="color:red; width:140px; "
-														  {% elif objetivo.id_estado_actividad_id == 2  %}
-														 style="color:#3688fc; width:140px; "
-														  {% elif objetivo.id_estado_actividad_id == 3  %}
-														 style="color:#47a447; width:140px; "
-														  {% elif objetivo.id_estado_actividad_id == 4  %}
-														 style="color:#47a447; width:140px; "
-														   {% elif objetivo.id_estado_actividad_id == 5  %}
-														 style="color:red; width:140px; "
-														   {% elif objetivo.id_estado_actividad_id == 6  %}
-														 style="color:red; width:140px; "
-														   {% elif objetivo.id_estado_actividad_id == 7  %}
-														 style="color:red; width:140px; "
-
-
-
-														 {%endif%} >{% if objetivo.id_estado_actividad == none %} -  {%else%}
-
-
-														{{ objetivo.id_estado_actividad}} {%endif%}</td>
-
-						<td style="display:none;">{{ objetivo.count_no_vistos }}</td>
-
-						   <td style="width:30px;"> {% if objetivo.count_observaciones == none %} 0 {% else %} {{ objetivo.count_observaciones}} {%endif%}</td>
+						   <td style="font-size:11px; display:none;">{{ objetivo.count_no_vistos }}</td>
+<!--						   <td style="font-size:11px; width:30px;"> {% if objetivo.count_observaciones == none %} 0 {% else %} {{ objetivo.count_observaciones}} {%endif%}</td>-->
 
 
 						 <td style="width:80px; text-align:center;">
-
-							 <button type="button"  title="Observaciones Asociadas a la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" id="notification"  class="update btn btn-sm btn-primary"  data-id="{% url 'gestionobservacionactividadesA' objetivo.id %}"  >
+<!--							 MUESTRA TODAS LAS OBSERVACIONES VISTAS O NO, LO ANTERIOR PARA QUITAR LA COLUMNA OBSERVACIONES-->
+							<button type="button"  title="Observaciones Asociadas a la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" id="notification_ok"  class="update btn btn-sm btn-primary"  data-id="{% url 'gestionobservacionactividadesA' objetivo.id %}"  >
 							<span class="fa fa-comments" ></span>
-							{% if objetivo.count_no_vistos != 0 and objetivo.count_no_vistos != none %} <span class="badge" title="Nuevas Observaciones a la actividad" >{{ objetivo.count_no_vistos }}</span> {% endif %}
+							{% if objetivo.count_observaciones != none %} <span class="badge" title="Observaciones Totales de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom">{{ objetivo.count_observaciones }}</span> {% endif %}
 							</button>
 
-							 <button type="button"  title="Detalle Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top"  class="update btn btn-sm btn-warning"  data-id="{% url 'detalleactividadesrevisionplanificacion' objetivo.id %}"  >
-							<span class="fa fa-search" ></span>
+<!--							 <button type="button"  title="Observaciones Asociadas a la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" id="notification"  class="update btn btn-sm btn-primary"  data-id="{% url 'gestionobservacionactividadesA' objetivo.id %}"  >-->
+<!--							<span class="fa fa-comments" ></span>-->
+<!--							{% if objetivo.count_no_vistos != 0 and objetivo.count_no_vistos != none %} <span class="badge" title="Nuevas Observaciones a la actividad" >{{ objetivo.count_no_vistos }}</span> {% endif %}-->
+<!--							</button>-->
+
+<!--							 <button type="button"  title="Detalle Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top"  class="update btn btn-sm btn-warning"  data-id="{% url 'detalleactividadesrevisionplanificacion' objetivo.id %}"  >-->
+<!--							<span class="fa fa-search" ></span>-->
 
 							</button>
 

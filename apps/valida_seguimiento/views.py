@@ -16,6 +16,11 @@ from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from apps.valida_plan2.models import Ges_Observaciones_sr
 from apps.valida_seguimiento.forms import  ValidaActividadesUpdateForm,PlanUpdateForm, ValidaSeguimientoUpdateFormVer
+from django.http import HttpResponseRedirect, JsonResponse
+from openpyxl import Workbook
+from django.http import HttpResponse
+from datetime import datetime
+
 
 class UnidadesList(ListView): #Modificado por JR- sprint 8 - OK
     model = Ges_Niveles
@@ -80,9 +85,12 @@ class UnidadesList(ListView): #Modificado por JR- sprint 8 - OK
 
                     id_controladorfiltrado = id_controlador.filter(count_actividad__gte=1)
 
-                    id_jefatura = Ges_Jefatura.objects.filter(id_user=id_usuario_actual)
+                    context['jefatura_primerarevision'] = {'id': id_jefatura.id}
+
+                    #id_jefatura = Ges_Jefatura.objects.filter(id_user=id_usuario_actual)
 
                     context['object_list'] = id_controladorfiltrado
+
                    # context['object_list3'] = id_jefatura
 
                     return context
@@ -257,7 +265,7 @@ class Actividades(ListView): # Modificado por JR- sprint 8 - OK
             count_id_actividad=Count('id'))
 
             lista_actividades = Ges_Actividad.objects.filter(
-              Q(id_objetivo_tactico=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id) & Q(id_estado_actividad__in=[1,2,3,5,6,8,9,10])  ).annotate(
+              Q(id_objetivo_tactico=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id) & Q(id_estado_actividad__in=[1,2,3,4,5,6,8,9,10])  ).annotate(
               count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
 
                 count_observaciones=Subquery(count_observaciones.values('count_id_actividad'))).order_by('-count_no_vistos','-fecha_registro')
@@ -274,7 +282,7 @@ class Actividades(ListView): # Modificado por JR- sprint 8 - OK
 
 
             lista_actividades = Ges_Actividad.objects.filter(
-              Q(id_objetivo_tacticotn=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)  & Q(id_estado_actividad__in=[1,2,3,5,6,8,9,10]) ).annotate(
+              Q(id_objetivo_tacticotn=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)  & Q(id_estado_actividad__in=[1,2,3,4,5,6,8,9,10]) ).annotate(
               count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
 
 
@@ -291,7 +299,7 @@ class Actividades(ListView): # Modificado por JR- sprint 8 - OK
             count_id_actividad=Count('id'))
 
             lista_actividades = Ges_Actividad.objects.filter(
-              Q(id_objetivo_operativo=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id) & Q(id_estado_actividad__in=[1,2,3,5,6,8,9,10]) ).annotate(
+              Q(id_objetivo_operativo=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id) & Q(id_estado_actividad__in=[1,2,3,4,5,6,8,9,10]) ).annotate(
               count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
 
                 count_observaciones=Subquery(count_observaciones.values('count_id_actividad'))).order_by('-count_no_vistos','-fecha_registro')
@@ -517,14 +525,16 @@ def update_actividad_rechaza(request):
         actividad.observacion_valida = observacion
         actividad.id_estado_actividad_id = estado_final
 
+        actividad.fecha_reprogramacion_inicio = None
+        actividad.fecha_reprogramacion_termino = None
+
         try:
           actividad.save()
           response_data['error'] = 'La actividad fue rechazada correctamente.'
         except:
           response_data['error'] = 'Error al intentar validar la actividad, intente nuevamente o comuniquese con el administrador.'
 
-        actividad.fecha_reprogramacion_inicio = None
-        actividad.fecha_reprogramacion_termino = None
+
 
         try:
             periodo_actual = Glo_Periodos.objects.get(id_estado=1)
@@ -613,5 +623,184 @@ def ActividadesHistoria(id_periodo_seguimiento, id_actividad,id_periodo):
     return None
 
 
+def export_users_xls_valida_seguimiento(request, *args, **kwargs):
+    try:
+        periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+    except Glo_Periodos.DoesNotExist:
+        return None
 
+    id_jefatura_primera = kwargs['pk']
+
+
+
+    nivel=Ges_Controlador.objects.filter(Q(jefatura_primerarevision=id_jefatura_primera) & Q(id_periodo=periodo_actual)).order_by('-id')[0]
+
+
+    nivel= nivel.nivel_inicial
+
+    controladores = Ges_Controlador.objects.filter(Q(jefatura_primerarevision=id_jefatura_primera) & Q(id_periodo=periodo_actual))
+
+
+    actividades = Ges_Actividad.objects.filter(Q(id_controlador__in=controladores) &
+                                                            Q(id_periodo=periodo_actual) & Q(validada__in =[1,2]))
+
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
+    response['Content-Disposition'] = 'attachment; filename={date}-Plan_de_Gestion.xlsx'.format(
+        date=datetime.now().strftime('%d/%m/%Y'),
+    )
+    workbook = Workbook()
+
+
+    # Get active worksheet/tab
+    worksheet = workbook.active
+    worksheet.title = 'reporte_seguimiento'
+
+    # Define the titles for columns
+
+    columns = ['Unidad',
+               'Objetivo Vinculado',
+               'Actividad',
+
+               'Periodicidad',
+               'Producto Estadístico',
+               'Hora x Actividad',
+               'Volumen',
+               'N° Personas Asignadas',
+               'Total Horas',
+               'Cargo',
+               'Fecha Incio Actividad',
+               'Fecha Término Actividad',
+               'Estado Actividad',
+               'Fecha Real Inicio',
+               'Fecha Real Finalización',
+               'Reprogramación Fecha Inicio',
+               'Reprogramación Fecha Término',
+               'Justificación Desviación',
+               'Resultado Validación',
+               'Fecha_Reg'
+
+
+
+               ]
+
+    row_num = 1
+
+    # Assign the titles for each cell of the header
+    for col_num, column_title in enumerate(columns, 1):
+        cell = worksheet.cell(row=row_num, column=col_num)
+        cell.value = column_title
+
+    # Iterate through all movies
+    for actividad in actividades:
+        row_num += 1
+
+        row =''
+
+        if nivel==4:
+
+            row = [
+                str(actividad.id_objetivo_operativo.id_cuarto_nivel),
+                str(actividad.id_objetivo_operativo),
+                actividad.descripcion_actividad,
+                str(actividad.id_periodicidad),
+                str(actividad.id_producto_estadistico),
+                actividad.horas_actividad,
+                actividad.volumen,
+                actividad.personas_asignadas,
+                actividad.total_horas,
+                str(actividad.id_familia_cargo),
+                actividad.fecha_inicio_actividad,
+                actividad.fecha_termino_actividad,
+                str(actividad.id_estado_actividad),
+                actividad.fecha_real_inicio,
+                actividad.fecha_real_termino,
+                actividad.fecha_reprogramacion_inicio,
+                actividad.fecha_reprogramacion_termino,
+                actividad.justificacion,
+                actividad.fecha_registro,
+                actividad.fecha_registro,
+
+
+
+            ]
+
+        if nivel==3:
+
+            row = [
+                str(actividad.id_objetivo_tacticotn.id_tercer_nivel),
+                str(actividad.id_objetivo_tacticotn),
+                actividad.descripcion_actividad,
+                str(actividad.id_periodicidad),
+                str(actividad.id_producto_estadistico),
+                actividad.horas_actividad,
+                actividad.volumen,
+                actividad.personas_asignadas,
+                actividad.total_horas,
+                str(actividad.id_familia_cargo),
+                actividad.fecha_inicio_actividad,
+                actividad.fecha_termino_actividad,
+                str(actividad.id_estado_actividad),
+                actividad.fecha_real_inicio,
+                actividad.fecha_real_termino,
+                actividad.fecha_reprogramacion_inicio,
+                actividad.fecha_reprogramacion_termino,
+                actividad.justificacion,
+                actividad.fecha_registro,
+
+
+
+            ]
+
+
+
+        if nivel==2:
+
+            row = [
+                str(actividad.id_objetivo_tactico.id_segundo_nivel),
+                str(actividad.id_objetivo_tactico),
+                actividad.descripcion_actividad,
+                str(actividad.id_periodicidad),
+                str(actividad.id_producto_estadistico),
+                actividad.horas_actividad,
+                actividad.volumen,
+                actividad.personas_asignadas,
+                actividad.total_horas,
+                str(actividad.id_familia_cargo),
+                actividad.fecha_inicio_actividad,
+                actividad.fecha_termino_actividad,
+                str(actividad.id_estado_actividad),
+                actividad.fecha_real_inicio,
+                actividad.fecha_real_termino,
+                actividad.fecha_reprogramacion_inicio,
+                actividad.fecha_reprogramacion_termino,
+                actividad.justificacion,
+                actividad.fecha_registro,
+
+            ]
+
+        # Assign the data for each cell of the row
+        for col_num, cell_value in enumerate(row, 1):
+            cell = worksheet.cell(row=row_num, column=col_num)
+            cell.value = cell_value
+
+
+            if col_num == 11:
+                cell.number_format = 'dd/mm/yyyy'
+            if col_num == 12:
+                cell.number_format = 'dd/mm/yyyy'
+            if col_num == 14:
+                cell.number_format = 'dd/mm/yyyy'
+            if col_num == 15:
+                cell.number_format = 'dd/mm/yyyy'
+            if col_num == 16:
+                cell.number_format = 'dd/mm/yyyy'
+            if col_num == 17:
+                cell.number_format = 'dd/mm/yyyy:HH:MM:SS'
+
+    workbook.save(response)
+
+
+    return response
 

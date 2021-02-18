@@ -45,7 +45,7 @@ Actividades Asociadas al Objetivo
 						<th style="font-size:11px; width:110px;">Fin Real</th>
 						<th style="font-size:11px; width:110px;">Reprog. Inicio</th>
 						<th style="font-size:11px; width:110px;">Reprog. Fin</th>
-						<th style="font-size:11px;">Estado de Validación</th>
+						<th style="font-size:11px;">Estado de Seguimiento</th>
 						<th style="display:none;">count NV</th>
 						<th style="font-size:11px;">Respuesta</th>
 						<th style="font-size:11px;">Validar</th>
@@ -59,18 +59,16 @@ Actividades Asociadas al Objetivo
 
 					{% elif objetivo.id_estado_actividad_id == 5 and objetivo.fecha_reprogramacion_termino == None and objetivo.fecha_reprogramacion_inicio == None  %} <!--c-43-->
 
+					{% elif objetivo.id_estado_actividad_id == 4 and  objetivo.validada == 0  %} <!--Para que aparezcan las que quedaron con estado no iniciadas despúes de la validación-->
+
 					{%else%}
 					<tr>
 						<td style="font-size:11px;"> {{ objetivo.id }}</td>
-									<td  style="font-size:11px;">
-													<a  type="button" title="Presione Para Ver el Detalle Actividad"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top"   class="update Mitexto" style="height:60px; width:100%; border-bottom:1px; border-left:0px; border-right:0px; font-size:11px; padding-top:-5px; text-decoration: none; color:#777777;"  data-id="{% url 'ValidaSeguimientoActividadesVer' objetivo.id %}">
-															{{ objetivo.descripcion_actividad}}
-<!--
-<span class="fa fa-search" ></span>-->
-<!--							 							<span class="badge" title="Nuevas Observaciones" >ok</span>-->
-														</a>
-													</td>
-
+						<td  style="font-size:11px;">
+						<a  type="button" title="Presione Para Ver el Detalle Actividad"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top"   class="update Mitexto" style="height:60px; width:100%; border-bottom:1px; border-left:0px; border-right:0px; font-size:11px; padding-top:-5px; text-decoration: none; color:#777777;"  data-id="{% url 'ValidaSeguimientoActividadesVer' objetivo.id %}">
+						{{ objetivo.descripcion_actividad}}
+						</a>
+						</td>
 						<td style="font-size:11px; width:110px;" > <span style='display: none;'>{{objetivo.fecha_inicio_actividad|date:"Ymd"}}</span>{{ objetivo.fecha_inicio_actividad|date:"d-m-Y"}}</td>
 						<td style="font-size:11px; width:110px;"> <span style='display: none;'>{{objetivo.fecha_termino_actividad|date:"Ymd"}}</span> {{ objetivo.fecha_termino_actividad|date:"d-m-Y"}}</td>
 						<td style="font-size:11px;"> {% if objetivo.id_producto_estadistico == none %} -  {%else%} {{ objetivo.id_producto_estadistico}} {%endif%}</td>
@@ -81,7 +79,7 @@ Actividades Asociadas al Objetivo
 						<td style="font-size:11px; width:110px;"> <span style='display: none;'>{{objetivo.fecha_reprogramacion_termino|date:"Ymd"}}</span> {% if objetivo.fecha_reprogramacion_termino == none %} -  {%else%} {{ objetivo.fecha_reprogramacion_termino|date:"d-m-Y"}} {%endif%}</td>
 						<td style="width:190px; font-size:11px;">{{ objetivo.id_estado_actividad }}</td>
 						<td style="display:none;>">{{ objetivo.count_no_vistos }}</td>
-						<td style="width:190px; font-size:11px;">{%if objetivo.validada == 0 %}-{%elif objetivo.validada == 1%}<span style='color: green;'>Aceptada<span>{%elif objetivo.validada == 2%}<span style='color: red;'>Rechazada<span>{%endif%}</td>
+						<td style="width:190px; font-size:11px;">{%if objetivo.validada == 0 %}-{%elif objetivo.validada == 1%}<span style='color: green;'>Aceptada</span>{%elif objetivo.validada == 2%}<span style='color: red;'>Rechazada</span>{%endif%}</td>
 
 						 <td  style="width:80px; text-align:center;"  >
 						<button type="button" title="Validar Avance de la Actividad"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" class="update btn btn-sm btn-primary" data-id="{% url 'RegistroActividadEditarSeguimientoValidar' objetivo.id %}">

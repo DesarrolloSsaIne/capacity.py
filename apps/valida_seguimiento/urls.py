@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.conf.urls import url
 from django.urls import path
-from apps.valida_seguimiento.views import UnidadesList, Objetivos, Actividades, ActividadEdit, update_actividad, update_actividad_rechaza, ValidaSeguimientoActividadDetallesVer
+from apps.valida_seguimiento.views import UnidadesList, Objetivos, Actividades, ActividadEdit, update_actividad, update_actividad_rechaza, ValidaSeguimientoActividadDetallesVer, export_users_xls_valida_seguimiento
 
 urlpatterns = [
 
@@ -14,4 +14,5 @@ urlpatterns = [
     url(r'update_actividad/', update_actividad, name='update_actividad'),
     url(r'update_actividad_rechaza/', update_actividad_rechaza, name='update_actividad_rechaza'),
 
+    path(r'ExportarPlanXlsValidaSeguimiento/<int:pk>', export_users_xls_valida_seguimiento, name='exporta_plan_valida_seguimiento_xls'),
 ]
