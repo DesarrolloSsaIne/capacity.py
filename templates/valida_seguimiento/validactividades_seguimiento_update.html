@@ -191,8 +191,10 @@
 
 			<div class="modal-footer">
 
+			{% if fechas.estado_actividad == 10 and fechas.estado_valida == 2  %}
+				<button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
 
-{% if  fechas.estado_actividad == 2 or fechas.estado_actividad == 3 or fechas.estado_actividad == 5 or fechas.estado_actividad == 10 %}
+         	 {% elif  fechas.estado_actividad == 2 or fechas.estado_actividad == 3 or fechas.estado_actividad == 5 or fechas.estado_actividad == 10  %}
 				<button type="button"  title="Aceptar cambios."  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" class="aceptar btn btn-sm btn-success" data-id="">
                             <span class="fa fa-check-circle"></span> Aceptar</button>
 				<button type="button"  title="Rechazar cambios."     data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" class="rechazar btn btn-sm btn-danger" data-id="">
@@ -200,8 +202,8 @@
 
 				<button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
 
-
 				{% else %}
+
 				<button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
 				{% endif %}
 

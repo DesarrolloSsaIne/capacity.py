@@ -36,75 +36,79 @@ class UnidadesList(ListView): #Modificado por JR- sprint 8 - OK
             return None
 
         try:
-            periodo_valida = Glo_validacion.objects.get(
-                Q(id_estado_periodo=1) & Q(id_periodo=periodo_actual.id))
+            periodo_valida = Glo_validacion.objects.filter(id_periodo=periodo_actual.id).order_by('-id')[0]
         except:
             periodo_valida = None
             pass
+        #
+        # if periodo_valida:
+        #     periodo_valida_activo=1
+        # else:
+        #     periodo_valida_activo=0
 
+        try:
 
+            id_controlador = Ges_Controlador.objects.filter(
+                Q(jefatura_primerarevision=id_jefatura) & Q(id_periodo=periodo_actual.id)
+                & Q(id_estado_plan__in=[1, 2, 3]))
 
+        except Ges_Controlador.DoesNotExist:
+            id_controlador = 0
+            pass
 
-        if periodo_valida:
+        if id_controlador == 0:
+            context['error'] = {'id': 1}
+            return context
+
+        else:
             try:
+                id_jefatura = Ges_Jefatura.objects.get(id_user=id_usuario_actual)
+
+                count_no_vistos = Ges_Observaciones.objects.values('id_controlador').filter(
+                    id_controlador=OuterRef('pk')).annotate(
+                    count_id_actividad=Count('id', filter=Q(observado=1) & Q(id_periodo=periodo_actual.id) & (
+                        ~Q(user_observa=id_usuario_actual))))
+
+                count_observaciones = Ges_Observaciones.objects.values('id_controlador').filter(
+                    id_controlador=OuterRef('pk')).annotate(
+                    count_id_actividad=Count('id'))
+
+                count_actividades = Ges_Actividad.objects.values('id_controlador').filter(Q(
+                    id_controlador=OuterRef('pk')) & Q(id_estado_actividad__in=[2, 3, 5, 10])).annotate(
+                    count_id_actividad_valida=Count('id'))
 
                 id_controlador = Ges_Controlador.objects.filter(
-                    Q(jefatura_primerarevision=id_jefatura) & Q(id_periodo=periodo_actual.id)
-                    & Q(id_estado_plan=3))
+                    Q(jefatura_primerarevision=id_jefatura.id) & Q(id_periodo=periodo_actual.id) & Q(
+                        id_estado_plan__in=[1,2,3])).annotate(
+                    count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
+                    count_actividad=Count(Subquery(count_actividades.values('count_id_actividad_valida'))),
+                    count_observaciones=Subquery(count_observaciones.values('count_id_actividad'))).order_by(
+                    '-count_no_vistos', '-count_observaciones')
 
-            except Ges_Controlador.DoesNotExist:
-                id_controlador = 0
-                pass
+                id_controladorfiltrado = id_controlador.filter(count_actividad__gte=1)
 
-            if id_controlador == 0:
-                context['error'] = {'id': 1}
+                context['jefatura_primerarevision'] = {'id': id_jefatura.id}
+
+                # id_jefatura = Ges_Jefatura.objects.filter(id_user=id_usuario_actual)
+
+                context['object_list'] = id_controladorfiltrado
+                context['periodo_validacion'] = {'estado':periodo_valida.id_estado_periodo}
+
+
+
+                # context['object_list3'] = id_jefatura
+
                 return context
 
-            else:
-                try:
-                    id_jefatura = Ges_Jefatura.objects.get(id_user=id_usuario_actual)
+            except Ges_Jefatura.DoesNotExist:
+                context['habilitado'] = {'mensaje': False}
+                return None
 
-                    count_no_vistos = Ges_Observaciones.objects.values('id_controlador').filter(
-                        id_controlador=OuterRef('pk')).annotate(
-                        count_id_actividad=Count('id', filter=Q(observado=1)  & Q(id_periodo=periodo_actual.id) & (~Q(user_observa=id_usuario_actual))))
 
-                    count_observaciones = Ges_Observaciones.objects.values('id_controlador').filter(
-                        id_controlador=OuterRef('pk')).annotate(
-                        count_id_actividad=Count('id'))
 
-                    count_actividades = Ges_Actividad.objects.values('id_controlador').filter(Q(
-                        id_controlador=OuterRef('pk')) & Q(id_estado_actividad__in=[2,3,5,10])).annotate(
-                        count_id_actividad_valida=Count('id'))
 
-                    id_controlador = Ges_Controlador.objects.filter(
-                        Q(jefatura_primerarevision=id_jefatura.id) & Q(id_periodo=periodo_actual.id) & Q(id_estado_plan=3)).annotate(
-                        count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
-                        count_actividad=Count(Subquery(count_actividades.values('count_id_actividad_valida'))),
-                        count_observaciones=Subquery(count_observaciones.values('count_id_actividad'))).order_by(
-                        '-count_no_vistos', '-count_observaciones')
 
-                    id_controladorfiltrado = id_controlador.filter(count_actividad__gte=1)
 
-                    context['jefatura_primerarevision'] = {'id': id_jefatura.id}
-
-                    #id_jefatura = Ges_Jefatura.objects.filter(id_user=id_usuario_actual)
-
-                    context['object_list'] = id_controladorfiltrado
-
-                   # context['object_list3'] = id_jefatura
-
-                    return context
-
-                except Ges_Jefatura.DoesNotExist:
-                    context['habilitado'] = {'mensaje': False}
-                    return None
-        else:
-            self.request.session['message_class'] = "alert alert-warning"
-            messages.error(self.request,
-                           "Estimado usuario no existe un periodo de seguimiento activo. Favor comuniquese con el administrador")
-
-            context['estado_seguimiento'] = 0
-            return context
 
 class Objetivos(ListView): #Modificado por JR- sprint 8 - OK
     model = Ges_Actividad
@@ -252,6 +256,18 @@ class Actividades(ListView): # Modificado por JR- sprint 8 - OK
         except Glo_Periodos.DoesNotExist:
             return None
 
+        try:
+            periodo_valida = Glo_validacion.objects.get(
+                Q(id_estado_periodo=1) & Q(id_periodo=periodo_actual.id))
+        except:
+            periodo_valida = None
+            pass
+
+        if periodo_valida:
+            periodo_valida_activo=1
+        else:
+            periodo_valida_activo=0
+
         self.request.session['id_objetivo']=self.kwargs['pk']#315
 
         nombre = ""
@@ -318,6 +334,7 @@ class Actividades(ListView): # Modificado por JR- sprint 8 - OK
         context['nombre_objetivo'] = {'nombre': nombre}
         context['id_orden'] = {'id_orden': self.request.session['id_orden']}
         context['id_nivel_controlador']={'id': self.request.session['id_nivel_controlador']}
+        context['periodo_valida'] = {'activo': periodo_valida_activo}
 
         #context['objetivo'] = id_nivel
 
@@ -700,6 +717,11 @@ def export_users_xls_valida_seguimiento(request, *args, **kwargs):
 
         if nivel==4:
 
+            if (actividad.validada == 1):
+                validadaStr= 'Aceptada'
+            else:
+                validadaStr='Rechazada'
+
             row = [
                 str(actividad.id_objetivo_operativo.id_cuarto_nivel),
                 str(actividad.id_objetivo_operativo),
@@ -719,7 +741,7 @@ def export_users_xls_valida_seguimiento(request, *args, **kwargs):
                 actividad.fecha_reprogramacion_inicio,
                 actividad.fecha_reprogramacion_termino,
                 actividad.justificacion,
-                actividad.fecha_registro,
+                validadaStr,
                 actividad.fecha_registro,
 
 
@@ -727,6 +749,11 @@ def export_users_xls_valida_seguimiento(request, *args, **kwargs):
             ]
 
         if nivel==3:
+
+            if (actividad.validada == 1):
+                validadaStr= 'Aceptada'
+            else:
+                validadaStr='Rechazada'
 
             row = [
                 str(actividad.id_objetivo_tacticotn.id_tercer_nivel),
@@ -747,6 +774,7 @@ def export_users_xls_valida_seguimiento(request, *args, **kwargs):
                 actividad.fecha_reprogramacion_inicio,
                 actividad.fecha_reprogramacion_termino,
                 actividad.justificacion,
+                actividad.validada,
                 actividad.fecha_registro,
 
 
@@ -756,6 +784,11 @@ def export_users_xls_valida_seguimiento(request, *args, **kwargs):
 
 
         if nivel==2:
+
+            if (actividad.validada == 1):
+                validadaStr= 'Aceptada'
+            else:
+                validadaStr='Rechazada'
 
             row = [
                 str(actividad.id_objetivo_tactico.id_segundo_nivel),
@@ -776,6 +809,7 @@ def export_users_xls_valida_seguimiento(request, *args, **kwargs):
                 actividad.fecha_reprogramacion_inicio,
                 actividad.fecha_reprogramacion_termino,
                 actividad.justificacion,
+                actividad.validada,
                 actividad.fecha_registro,
 
             ]

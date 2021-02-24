@@ -237,6 +237,9 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
                              'fecha_termino_corte': fechas_corte.fecha_termino_corte,
                              'flag_tmp': flag_tmp.flag_tmp,
                              'fecha_real_inicio': flag_tmp.fecha_real_inicio,# sprint 3 - CI-21 -25012021
+                             'fecha_real_inicio_str': str(flag_tmp.fecha_real_inicio),  # sprint 3 - CI-21 -25012021
+                             'validada': str(flag_tmp.validada),  # sprint 3 - CI-21 -25012021
+
                              }
         return context
 
@@ -269,7 +272,11 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
             usuario_controlador = Ges_Controlador.objects.get(id_jefatura=id_jefatura.id)
         except Ges_Controlador.DoesNotExist:
             return None
+
+
         fecha_real_inicio = request.POST['fecha_real_inicio'] #sprint 2 - CI -10 - 180120201
+
+
         fecha_real_termino = request.POST['fecha_real_termino']
         fecha_inicio_reprogramacion = request.POST['fecha_reprogramacion_inicio']
         fecha_termino_reprogramacion = request.POST['fecha_reprogramacion_termino']
@@ -331,17 +338,17 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
 
             #form.instance.flag_tmp = 1 # Sprint 1 - CI-2 - 11012021
 
-
+            id_controlador_id= id_actividad_instancia.id_controlador.id
 
             try:
-                actualiza= Ges_Actividad_Historia.objects.get(Q(id_actividad=id_actividad) & Q(id_periodo_seguimiento=id_periodo_seguimiento) & Q(id_periodo=periodo_actual.id))
+                actualiza= Ges_Actividad_Historia.objects.get(Q(id_actividad=id_actividad) & Q(id_periodo_seguimiento=id_periodo_seguimiento) & Q(id_periodo=periodo_actual.id) & Q(id_controlador=id_actividad_instancia.id_controlador.id))
 
             except Ges_Actividad_Historia.DoesNotExist:
                 actualiza = 0
 
 
             ActividadesHistoria(id_periodo_seguimiento, id_actividad_instancia, fecha_inicio_reprogramacion ,fecha_termino_reprogramacion, fecha_real_inicio, fecha_real_termino,
-                                  id_estado_actividad_instancia, periodo_actual, justificacion, actualiza)
+                                  id_estado_actividad_instancia, periodo_actual, justificacion, actualiza, id_controlador_id)
 
             form.save()
             request.session['message_class'] = "alert alert-success"
@@ -533,7 +540,7 @@ def logEventosCreate(tipo_evento, metodo ,usuario_evento, jefatura_dirigida):
     )
     return None
 
-def ActividadesHistoria(id_periodo_seguimiento, id_actividad,fecha_reprogramacion_inicio, fecha_reprogramacion_termino, fecha_real_inicio,fecha_real_termino, id_estado_actividad,id_periodo, justificacion, actualiza):
+def ActividadesHistoria(id_periodo_seguimiento, id_actividad,fecha_reprogramacion_inicio, fecha_reprogramacion_termino, fecha_real_inicio,fecha_real_termino, id_estado_actividad,id_periodo, justificacion, actualiza, id_controlador_id):
 
 
     if actualiza == 0:
@@ -551,7 +558,7 @@ def ActividadesHistoria(id_periodo_seguimiento, id_actividad,fecha_reprogramacio
         )
         return None
     else:
-        Id = Ges_Actividad_Historia.objects.get(Q(id_actividad=id_actividad) & Q(id_periodo_seguimiento=id_periodo_seguimiento) & Q(id_periodo=id_periodo))
+        Id = Ges_Actividad_Historia.objects.get(Q(id_actividad=id_actividad) & Q(id_periodo_seguimiento=id_periodo_seguimiento) & Q(id_periodo=id_periodo) & Q(id_controlador=id_controlador_id))
 
         Ges_Actividad_Historia.objects.filter(id=Id.id).update(
             fecha_reprogramacion_inicio=fecha_reprogramacion_inicio,

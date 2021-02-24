@@ -31,6 +31,17 @@ Listado de Planes
         <div class="panel-actions" >
 
 
+        {% if periodo_validacion.estado.id == 1 %}
+        <div style=" text-align:right; display:inline; background:green; padding-top:5px; padding-bottom:5px; padding-left:5px; padding-right:5px;  margin-top:-3px;  margin-right:3px; border-radius:3px;  vertical-align: middle; font-size:15px; color:white;"  title="" data-toggle="tooltip" data-original-title="Estado Actual del Periodo de Validación" data-placement="top"> {{ periodo_validacion.estado }} </div>
+
+             {% else %}
+                 <div style=" text-align:right; display:inline; background:red; padding-top:5px; padding-bottom:5px; padding-left:5px; padding-right:5px;  margin-top:-3px;  margin-right:3px; border-radius:3px;  vertical-align: middle; font-size:15px; color:white;"  title="" data-toggle="tooltip" data-original-title="Estado Actual del Periodo de Validación" data-placement="top"> {{ periodo_validacion.estado }} </div>
+
+            {% endif %}
+
+
+
+
             <a  type="button" style="width:30px; height:30px; "  class="create btn btn-sm btn-success"  name="button" title="Descargar Planes Validados en MS Excel" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" href="{% url 'exporta_plan_valida_seguimiento_xls' jefatura_primerarevision.id %}">
 									 <span style="margin-left:-1px; " class="fa fa-file-excel-o"></span></a>
             <!--<a href="#" class="fa fa-times"></a>-->

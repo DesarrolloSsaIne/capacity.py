@@ -81,10 +81,13 @@ Actividades Asociadas al Objetivo
 						<td style="display:none;>">{{ objetivo.count_no_vistos }}</td>
 						<td style="width:190px; font-size:11px;">{%if objetivo.validada == 0 %}-{%elif objetivo.validada == 1%}<span style='color: green;'>Aceptada</span>{%elif objetivo.validada == 2%}<span style='color: red;'>Rechazada</span>{%endif%}</td>
 
+
+
 						 <td  style="width:80px; text-align:center;"  >
-						<button type="button" title="Validar Avance de la Actividad"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" class="update btn btn-sm btn-primary" data-id="{% url 'RegistroActividadEditarSeguimientoValidar' objetivo.id %}">
+						<button {% if periodo_valida.activo == 0 %} disabled="disabled" class="update btn btn-sm btn-primary" {% else %} type="button"  title="Validar Avance de la Actividad"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" class="update btn btn-sm btn-primary" data-id="{% url 'RegistroActividadEditarSeguimientoValidar' objetivo.id %}" {% endif %}>
 						<span class="fa fa-check-square-o"></span></button>
 						</td>
+
 
 					</tr>
 					{%endif%}
