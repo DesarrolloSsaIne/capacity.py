@@ -16,7 +16,10 @@
      					 {% endfor %}
     				</div>
 
+ <label >Descripción Actividad</label>
 
+					<textarea type="text" class="form-control" readonly>{{ qs.descripcion_actividad}}</textarea>
+                    <br>
 
 <div class="row show-grid">
 
@@ -24,10 +27,10 @@
 
                 <span class="show-grid-block">
 
-                    <div class="form-group">
-					<label >Periodicidad</label>
-                    <input type="text" class="form-control" value="{{ qs.id_periodicidad }}" readonly>
-				    </div>
+<!--                    <div class="form-group">-->
+<!--					<label >Periodicidad</label>-->
+<!--                    <input type="text" class="form-control" value="{{ qs.id_periodicidad }}" readonly>-->
+<!--				    </div>-->
 
 
 					   <div class="form-group">
@@ -35,15 +38,21 @@
 					<input type="text" class="form-control" value="{{ qs.id_producto_estadistico}}" readonly>
 				</div>
 
-					<div class="form-group">
-					<label >Total Horas</label>
-		      	     <input type="text" class="form-control" value="{{ qs.total_horas}}" readonly>
+									<div class="form-group">
+					<label >Personas Asignadas</label>
+		      	     <input type="text" class="form-control" value="{{ qs.personas_asignadas}}" readonly>
 				    </div>
 
-                    					<div class="form-group">
-					<label >Fecha Inicio Actividad</label>
-		      	     <input type="text" class="form-control" value="{{ qs.fecha_inicio_actividad}}" readonly>
-				    </div>
+
+<!--					<div class="form-group">-->
+<!--					<label >Total Horas</label>-->
+<!--		      	     <input type="text" class="form-control" value="{{ qs.total_horas}}" readonly>-->
+<!--				    </div>-->
+
+<!--                    					<div class="form-group">-->
+<!--					<label >Fecha Inicio Actividad</label>-->
+<!--		      	     <input type="text" class="form-control" value="{{ qs.fecha_inicio_actividad}}" readonly>-->
+<!--				    </div>-->
 
                 </span>
                 </div>
@@ -62,24 +71,29 @@
 		      	      <input type="text" class="form-control" value="{{ qs.volumen}}" readonly>
 				    </div>
 
-					<div class="form-group">
-					<label >Personas Asignadas</label>
-		      	     <input type="text" class="form-control" value="{{ qs.personas_asignadas}}" readonly>
-				    </div>
 
-                                        					<div class="form-group">
-					<label >Fecha Término Actividad</label>
-		      	     <input type="text" class="form-control" value="{{ qs.fecha_termino_actividad}}" readonly>
-				    </div>
+<!--                                        					<div class="form-group">-->
+<!--					<label >Fecha Término Actividad</label>-->
+<!--		      	     <input type="text" class="form-control" value="{{ qs.fecha_termino_actividad}}" readonly>-->
+<!--				    </div>-->
 
                 </span>
                 </div>
 
 
+	<div class="col-md-12">
 
+                <span class="show-grid-block">
 
+                    <br>
+                    				<div class="hide-justificacion">
+									<label >Justificación</label>
 
+										<textarea type="text" class="form-control" readonly>{% if  qs.justificacion == None  %} {% else %} {{ qs.justificacion }} {% endif %} </textarea>
+								</div>
 
+                              </span>
+                </div>
 
 </div>
 

@@ -221,6 +221,8 @@ $(function() {
 
 
 	if(estado == 2){ // Con Retraso - Validar
+
+
 	 var fecha_real_inicio= $('#fecha_real_inicio_bd').val() // sprint 2 - CI-20 -21012021
      var flag_tmp =  $('#flag_tmp').val() // sprint 2 - CI-20 -21012021
 
@@ -228,42 +230,44 @@ $(function() {
 	$('#fecha_real_termino').val(''); // sprint 3 - CI-21 -25012021
 
 
-if (fecha_real_inicio != 0 && flag_tmp == 0){
+		if (fecha_real_inicio != 0 && flag_tmp == 0){
 
-       	var fecha_real_inicio_str = $('#fecha_real_inicio_str').val()
-		$('#fecha_real_inicio').prop('disabled', false);
-		var Mifecha_real_inicio= moment(fecha_real_inicio_str).format('YYYY-MM-DD'); // sprint 5 - 24022021
-		$("#fecha_real_inicio").val(Mifecha_real_inicio);
+			var fecha_real_inicio_str = $('#fecha_real_inicio_str').val()
+			$('#fecha_real_inicio').prop('disabled', false);
+			var Mifecha_real_inicio= moment(fecha_real_inicio_str).format('YYYY-MM-DD'); // sprint 5 - 24022021
+			$("#fecha_real_inicio").val(Mifecha_real_inicio);
 
-     $('#id_justificacion').prop('disabled', false);
-	$(".hide-justificacion").css("display", "block");
-    $(".hide-real_termino").css("display", "none");
-    $(".hide-real_inicio").css("display", "none"); // sprint 2 - CI -10 - 180120201
-    $(".hide-reprogramacion_termino").css("display", "block");
-    $(".hide-reprogramacion_inicio").css("display", "none");
-     $("#confirmar").css("display", "initial");
-
-
-
- }else{
+			$('#id_justificacion').prop('disabled', false);
+			$(".hide-justificacion").css("display", "block");
+			$(".hide-real_termino").css("display", "none");
+			$(".hide-real_inicio").css("display", "none"); // sprint 2 - CI -10 - 180120201
+			$(".hide-reprogramacion_termino").css("display", "block");
+			$(".hide-reprogramacion_inicio").css("display", "block");
+			 $("#confirmar").css("display", "initial");
 
 
-      	var fecha_real_inicio_str = $('#fecha_real_inicio_str').val()
-		$('#fecha_real_inicio').prop('disabled', false);
-		var Mifecha_real_inicio= moment(fecha_real_inicio_str).format('YYYY-MM-DD'); // sprint 5 - 24022021
-		$("#fecha_real_inicio").val(Mifecha_real_inicio);
 
-     $('#id_justificacion').prop('disabled', false);
-	$(".hide-justificacion").css("display", "block");
-    $(".hide-real_termino").css("display", "none");
-    $(".hide-real_inicio").css("display", "none"); // sprint 2 - CI -10 - 180120201
-    $(".hide-reprogramacion_termino").css("display", "block");
-    $(".hide-reprogramacion_inicio").css("display", "block");
-     $("#confirmar").css("display", "initial");
+		 }else{
 
-	}
 
-	}
+				var fecha_real_inicio_str = $('#fecha_real_inicio_str').val()
+				$('#fecha_real_inicio').prop('disabled', false);
+				var Mifecha_real_inicio= moment(fecha_real_inicio_str).format('YYYY-MM-DD'); // sprint 5 - 24022021
+				$("#fecha_real_inicio").val(Mifecha_real_inicio);
+
+			 $('#id_justificacion').prop('disabled', false);
+			$(".hide-justificacion").css("display", "block");
+			$(".hide-real_termino").css("display", "none");
+			$(".hide-real_inicio").css("display", "none"); // sprint 2 - CI -10 - 180120201
+			$(".hide-reprogramacion_termino").css("display", "block");
+			$(".hide-reprogramacion_inicio").css("display", "block");
+			 $("#confirmar").css("display", "initial");
+
+			}
+
+			}
+
+
 
 	if(estado == 3){ // en curso
 
@@ -273,7 +277,7 @@ if (fecha_real_inicio != 0 && flag_tmp == 0){
 
 
 
-     			if ((moment(fecha_termino).isSameOrBefore(fecha_termino_corte))){
+     			if ((moment(fecha_termino).isSameOrBefore(fecha_termino_corte) && moment(fecha_termino).isSameOrAfter(fecha_inicio_corte))){
 
 				$(".hide-real_inicio").css("display", "none");
 				$(".hide-real_termino").css("display", "none");
@@ -282,7 +286,7 @@ if (fecha_real_inicio != 0 && flag_tmp == 0){
 				$(".hide-justificacion").css("display", "none");
 
 			    $("#mjeError").css("display","block"); // sprint 2 - CI-20 -21012021
-                $("#textError").text("Esta actividad no puede ser actualizada ya que su fecha de término es menor a la fecha de término de corte.");
+                $("#textError").text("Esta actividad no puede ser declarada en curso ya que su fecha de término se encuentra dentro del periodo de corte.");
   				return false
 			}
 
@@ -303,7 +307,7 @@ if (fecha_real_inicio != 0 && flag_tmp == 0){
 
         //$("#confirmar").css("display", "none"); // sprint 2 - CI-20 -21012021
         //$("#mjeError").css("display","block");
-        //$("#textError").text("Esta actividad ya fue actualizada en este estado durante el periodo anterior por lo cual no podrá volver a editarla.");
+        //$("#textError").text("Esta actividad no puede ser declarada en curso ya que su fecha de término se encuentra dentro del periodo de corte.");
 
          // return false
 
@@ -512,30 +516,7 @@ $( "#id_id_estado_actividad" ).change(function() {
 
 	$("#fecha_real_inicio").val(Mifecha_real_inicio);
 
-    if (fecha_real_inicio != 0 && flag_tmp == 0){ // sprint 3 - CI-21 -25012021
 
-        var fecha_real_inicio_str = $('#fecha_real_inicio_str').val()
-		$('#fecha_real_inicio').prop('disabled', false);
-		var Mifecha_real_inicio= moment(fecha_real_inicio_str).format('YYYY-MM-DD'); // sprint 5 - 24022021
-		$("#fecha_real_inicio").val(Mifecha_real_inicio);
-
-
-
-		$(".hide-real_inicio").css("display", "none");
-		$(".hide-real_termino").css("display", "none");
-
-		$(".hide-reprogramacion_inicio").css("display", "none");
-		$(".hide-reprogramacion_termino").css("display", "block");
-		$(".hide-justificacion").css("display", "block");
-
-		$("#confirmar").css("display", "initial");
-
-		$('#fecha_reprogramacion_termino').prop('required',true);
-
-		// $("#mjeError").css("display","block");
-		// $("#textError").text("Esta actividad posee fecha real de inicio ingresada en una periodo anterior por lo que no se puede dejar en estado con retraso.");
-		// return false
-    		}else{
 
 	if (moment(fecha_inicio).isSameOrBefore(fecha_termino_corte)) { // Sprint 1 - CI-8 - 13012021
 
@@ -545,6 +526,39 @@ $( "#id_id_estado_actividad" ).change(function() {
 		var Mifecha_real_inicio= moment(fecha_real_inicio_str).format('YYYY-MM-DD'); // sprint 5 - 24022021
 		$("#fecha_real_inicio").val(Mifecha_real_inicio);
 
+
+
+
+			if (fecha_real_inicio != 0 && flag_tmp == 0){ // Mantiene la fecha real inicio cuando cambia el periodo
+			var Mifecha_real_inicio= moment(fecha_real_inicio_str).format('YYYY-MM-DD'); // sprint 5 - 24022021
+			$("#fecha_real_inicio").val(Mifecha_real_inicio);
+
+			//alert('1');
+
+
+			$('#id_justificacion').prop('disabled', false);
+			$(".hide-justificacion").css("display", "block");
+			$(".hide-real_inicio").css("display", "none");
+			$(".hide-real_termino").css("display", "none");
+			$(".hide-reprogramacion_termino").css("display", "block");
+			$(".hide-reprogramacion_inicio").css("display", "none");
+			$("#confirmar").css("display", "initial");
+			$('#fecha_reprogramacion_inicio').removeAttr('required');
+			$('#fecha_real_inicio').removeAttr('required');
+			$('#fecha_real_termino').removeAttr('required').val('');
+			//$('#fecha_reprogramacion_inicio').prop('required',true);
+			$('#fecha_reprogramacion_termino').prop('required',true).val('');
+			$('#id_justificacion').prop('required',true);
+
+
+
+			}
+
+			if (fecha_real_inicio != 0 && flag_tmp == 1){ // Mantiene la fecha real inicio cuando cambia el periodo
+
+			//alert('2');
+
+			$('#fecha_real_inicio').val('');
 			$('#id_justificacion').prop('disabled', false);
 			$(".hide-justificacion").css("display", "block");
 			$(".hide-real_inicio").css("display", "none");
@@ -552,12 +566,61 @@ $( "#id_id_estado_actividad" ).change(function() {
 			$(".hide-reprogramacion_termino").css("display", "block");
 			$(".hide-reprogramacion_inicio").css("display", "block");
 			$("#confirmar").css("display", "initial");
-
+			$('#fecha_reprogramacion_inicio').removeAttr('required');
 			$('#fecha_real_inicio').removeAttr('required');
 			$('#fecha_real_termino').removeAttr('required').val('');
-			$('#fecha_reprogramacion_inicio').prop('required',true);
+			//$('#fecha_reprogramacion_inicio').prop('required',true);
 			$('#fecha_reprogramacion_termino').prop('required',true).val('');
 			$('#id_justificacion').prop('required',true);
+
+			}
+
+
+			if (fecha_real_inicio == 0 && flag_tmp == 0){ // Mantiene la fecha real inicio cuando cambia el periodo
+
+
+			//alert('3');
+
+			$('#id_justificacion').prop('disabled', false);
+			$(".hide-justificacion").css("display", "block");
+			$(".hide-real_inicio").css("display", "none");
+			$(".hide-real_termino").css("display", "none");
+			$(".hide-reprogramacion_termino").css("display", "block");
+			$(".hide-reprogramacion_inicio").css("display", "block");
+			$("#confirmar").css("display", "initial");
+			$('#fecha_reprogramacion_inicio').removeAttr('required');
+			$('#fecha_real_inicio').removeAttr('required');
+			$('#fecha_real_termino').removeAttr('required').val('');
+			//$('#fecha_reprogramacion_inicio').prop('required',true);
+			$('#fecha_reprogramacion_termino').prop('required',true).val('');
+			$('#id_justificacion').prop('required',true);
+
+
+
+			}
+
+			if (fecha_real_inicio == 0 && flag_tmp == 1){ // Mantiene la fecha real inicio cuando cambia el periodo
+
+			//alert('4');
+
+			$('#fecha_real_inicio').val('');
+			$('#id_justificacion').prop('disabled', false);
+			$(".hide-justificacion").css("display", "block");
+			$(".hide-real_inicio").css("display", "none");
+			$(".hide-real_termino").css("display", "none");
+			$(".hide-reprogramacion_termino").css("display", "block");
+			$(".hide-reprogramacion_inicio").css("display", "none");
+			$("#confirmar").css("display", "initial");
+			$('#fecha_reprogramacion_inicio').removeAttr('required');
+			$('#fecha_real_inicio').removeAttr('required');
+			$('#fecha_real_termino').removeAttr('required').val('');
+			//$('#fecha_reprogramacion_inicio').prop('required',true);
+			$('#fecha_reprogramacion_termino').prop('required',true).val('');
+			$('#id_justificacion').prop('required',true);
+
+			}
+
+
 
 
 	}else{
@@ -567,21 +630,31 @@ $( "#id_id_estado_actividad" ).change(function() {
 		var Mifecha_real_inicio= moment(fecha_real_inicio_str).format('YYYY-MM-DD'); // sprint 5 - 24022021
 		$("#fecha_real_inicio").val(Mifecha_real_inicio);
 
+
+		$('#fecha_real_inicio').removeAttr('required');
 		$(".hide-justificacion").css("display", "none");
 		$(".hide-real_inicio").css("display", "none");
 		$(".hide-real_termino").css("display", "none");
 		$(".hide-reprogramacion_inicio").css("display", "none");
 		$(".hide-reprogramacion_termino").css("display", "none");
+		$('#fecha_reprogramacion_inicio').removeAttr('required');
 		$("#confirmar").css("display", "none");
+		$('#fecha_real_inicio').removeAttr('required');
 
 		 $("#mjeError").css("display","block");
 		 $("#textError").text("El estado con retraso es solo para las actividades cuya fecha de inicio de actividad sea menor a la fecha de termino de corte.");
 		 return false
 
 	}
+		}
 
-       }
-			}// sprint 3 - CI-21 -25012021
+
+
+
+
+
+
+
 
        if (estado == 3) //habilita en curso
        {
@@ -594,7 +667,7 @@ $( "#id_id_estado_actividad" ).change(function() {
 
         var validada= $('#validada').val()
 
-			if ((moment(fecha_termino).isSameOrBefore(fecha_termino_corte))){
+			if ((moment(fecha_termino).isSameOrBefore(fecha_termino_corte) )){
 
 			    $(".hide-justificacion").css("display", "none"); // sprint 2 - CI-20 -21012021
            		$(".hide-real_inicio").css("display", "none"); // sprint 2 - CI-20 -21012021
@@ -604,7 +677,7 @@ $( "#id_id_estado_actividad" ).change(function() {
        			$("#confirmar").css("display", "none"); // sprint 2 - CI-20 -21012021
 
 			    $("#mjeError").css("display","block"); // sprint 2 - CI-20 -21012021
-                $("#textError").text("Esta actividad no puede ser actualizada ya que su fecha de término es menor a la fecha de término de corte.");
+                $("#textError").text("Esta actividad no puede ser declarada en curso ya que su fecha de término se encuentra dentro del periodo de corte.");
   				return false
 			}
 
@@ -621,7 +694,7 @@ $( "#id_id_estado_actividad" ).change(function() {
 
 
                 // $("#mjeError").css("display","block"); // sprint 2 - CI-20 -21012021
-                // $("#textError").text("Esta actividad ya fue actualizada en este estado durante el periodo anterior por lo cual no podrá volver a editarla.");
+                // $("#textError").text("Esta actividad no puede ser declarada en curso ya que su fecha de término se encuentra dentro del periodo de corte.");
             //   $(".hide-real_inicio").css("display", "block");
 
               // $('#fecha_real_inicio').prop('disabled', true);
@@ -690,10 +763,21 @@ $( "#id_id_estado_actividad" ).change(function() {
 
   	var fecha_real_inicio_str = $('#fecha_real_inicio_str').val()
     $('#fecha_real_inicio').prop('disabled', false);
+
+    var fecha_real_inicio= $('#fecha_real_inicio_bd').val() //sprint 5 17032021
+    var flag_tmp =  $('#flag_tmp').val() //sprint 5 17032021
+
+	if (fecha_real_inicio != 0 && flag_tmp == 0){ // Mantiene la fecha real inicio cuando cambia el periodo
 	var Mifecha_real_inicio= moment(fecha_real_inicio_str).format('YYYY-MM-DD'); // sprint 5 - 24022021
 	$("#fecha_real_inicio").val(Mifecha_real_inicio);
+	}
 
-    //$('#fecha_real_inicio').val(''); // sprint 3 - CI-21 -25012021
+	if (fecha_real_inicio != 0 && flag_tmp == 1){ // Mantiene la fecha real inicio cuando cambia el periodo
+	$('#fecha_real_inicio').val('');
+	}
+
+
+
     $('#fecha_reprogramacion_inicio').val(''); // sprint 3 - CI-21 -25012021
     $('#fecha_reprogramacion_termino').val(''); // sprint 3 - CI-21 -25012021
     $('#id_justificacion').val(''); // sprint 3 - CI-21 -25012021
@@ -716,12 +800,20 @@ $( "#id_id_estado_actividad" ).change(function() {
 if (estado == 10) //habilita eliminada - validar
   {
 
-
-
     var fecha_real_inicio_str = $('#fecha_real_inicio_str').val()
-    $('#fecha_real_inicio').prop('disabled', false);
+
+	var fecha_real_inicio= $('#fecha_real_inicio_bd').val() //sprint 5 17032021
+    var flag_tmp =  $('#flag_tmp').val() //sprint 5 17032021
+
+	if (fecha_real_inicio != 0 && flag_tmp == 0){ // Mantiene la fecha real inicio cuando cambia el periodo
 	var Mifecha_real_inicio= moment(fecha_real_inicio_str).format('YYYY-MM-DD'); // sprint 5 - 24022021
 	$("#fecha_real_inicio").val(Mifecha_real_inicio);
+	}
+
+	if (fecha_real_inicio != 0 && flag_tmp == 1){ // Mantiene la fecha real inicio cuando cambia el periodo
+	$('#fecha_real_inicio').val('');
+	}
+
 
   //$('#fecha_real_inicio').val(''); // sprint 3 - CI-21 -25012021
 	$('#fecha_real_termino').val(''); // sprint 3 - CI-21 -25012021
@@ -737,7 +829,7 @@ if (estado == 10) //habilita eliminada - validar
     $(".hide-reprogramacion_inicio").css("display", "none");
     $("#confirmar").css("display", "initial");
 
-	//$('#fecha_real_inicio').removeAttr('required');
+	$('#fecha_real_inicio').removeAttr('required');
     $('#fecha_real_termino').removeAttr('required');
     $('#fecha_reprogramacion_inicio').removeAttr('required');
     $('#fecha_reprogramacion_termino').removeAttr('required');
@@ -758,15 +850,18 @@ if (estado == 10) //habilita eliminada - validar
 
 	periodicidad = $('#id_id_periodicidad').val();
 
-   	var fecha_real_inicio= $('#fecha_real_inicio_bd').val() // sprint 3 - CI-21 -25012021
-    var flag_tmp =  $('#flag_tmp').val() // sprint 3 - CI-21 -25012021
 
-    if (fecha_real_inicio != 0 && flag_tmp == 0){ // sprint 3 - CI-21 -25012021
 
-      	var fecha_real_inicio_str = $('#fecha_real_inicio_str').val()
-		$('#fecha_real_inicio').prop('disabled', false);
-		var Mifecha_real_inicio= moment(fecha_real_inicio_str).format('YYYY-MM-DD'); // sprint 5 - 24022021
-		$("#fecha_real_inicio").val(Mifecha_real_inicio);
+
+    var fecha_real_inicio_str = $('#fecha_real_inicio_str').val()
+
+	var fecha_real_inicio= $('#fecha_real_inicio_bd').val() //sprint 5 17032021
+    var flag_tmp =  $('#flag_tmp').val() //sprint 5 17032021
+
+
+
+    if (fecha_real_inicio != 0 && flag_tmp != 0){ // sprint 3 - CI-21 -25012021
+
 
 		$(".hide-real_inicio").css("display", "none");
 		$('#id_justificacion').prop('disabled', false);
@@ -775,39 +870,16 @@ if (estado == 10) //habilita eliminada - validar
 		$(".hide-reprogramacion_termino").css("display", "block");
 		$(".hide-reprogramacion_inicio").css("display", "none");
 		$("#confirmar").css("display", "initial");
+		$('#fecha_real_inicio').removeAttr('required').val('');
 
-		// $("#mjeError").css("display","block");
-		// $("#textError").text("Esta actividad posee fecha real de inicio ingresada en una periodo anterior por lo que no se puede dejar en estado Sin Movimiento.");
-		// return false
+
+
 
 
     		}else{
 
 		if (periodicidad != 9  && periodicidad != 10 ){
 
-		      var fecha_real_inicio_str = $('#fecha_real_inicio_str').val()
-			$('#fecha_real_inicio').prop('disabled', false);
-			var Mifecha_real_inicio= moment(fecha_real_inicio_str).format('YYYY-MM-DD'); // sprint 5 - 24022021
-			$("#fecha_real_inicio").val(Mifecha_real_inicio);
-
-             $('#id_justificacion').prop('disabled', false);
-			$(".hide-justificacion").css("display", "block");
-			$(".hide-real_inicio").css("display", "none");
-			$(".hide-real_termino").css("display", "none");
-			$(".hide-reprogramacion_termino").css("display", "block");
-			$(".hide-reprogramacion_inicio").css("display", "block");
-			$("#confirmar").css("display", "initial");
-
-			$('#fecha_real_inicio').removeAttr('required');
-			$('#fecha_real_termino').removeAttr('required').val('');
-			$('#fecha_reprogramacion_inicio').prop('required', true).val('');
-			$('#fecha_reprogramacion_termino').prop('required', true).val('');
-			$('#id_justificacion').prop('required',true).val('');
-
-			}else{
-
-      	var fecha_real_inicio_str = $('#fecha_real_inicio_str').val()
-		$('#fecha_real_inicio').prop('disabled', false);
 		var Mifecha_real_inicio= moment(fecha_real_inicio_str).format('YYYY-MM-DD'); // sprint 5 - 24022021
 		$("#fecha_real_inicio").val(Mifecha_real_inicio);
 
@@ -816,7 +888,28 @@ if (estado == 10) //habilita eliminada - validar
 			$(".hide-real_inicio").css("display", "none");
 			$(".hide-real_termino").css("display", "none");
 			$(".hide-reprogramacion_termino").css("display", "block");
-			$(".hide-reprogramacion_inicio").css("display", "block");
+			$(".hide-reprogramacion_inicio").css("display", "none");
+			$("#confirmar").css("display", "initial");
+
+			$('#fecha_real_inicio').removeAttr('required').val('');
+			$('#fecha_real_termino').removeAttr('required').val('');
+			$('#fecha_reprogramacion_inicio').prop('required', true).val('');
+			$('#fecha_reprogramacion_termino').prop('required', true).val('');
+			$('#id_justificacion').prop('required',true).val('');
+
+			}else{
+
+
+
+		var Mifecha_real_inicio= moment(fecha_real_inicio_str).format('YYYY-MM-DD'); // sprint 5 - 24022021
+		$("#fecha_real_inicio").val(Mifecha_real_inicio);
+
+             $('#id_justificacion').prop('disabled', false);
+			$(".hide-justificacion").css("display", "block");
+			$(".hide-real_inicio").css("display", "none");
+			$(".hide-real_termino").css("display", "none");
+			$(".hide-reprogramacion_termino").css("display", "block");
+			$(".hide-reprogramacion_inicio").css("display", "none");
 			$("#confirmar").css("display", "initial");
 
 			$('#fecha_real_inicio').removeAttr('required');

@@ -563,6 +563,7 @@ def nuevaActividadAjax(request):
             id_estado_actividad_id=4,
             flag_reporta=0,
             flag_tmp=0, # Sprint 1 - CI-2 - 11012021
+            validada=0,
             estado=1,
             id_controlador=usuario_controlador,
             id_periodo=periodo_actual,

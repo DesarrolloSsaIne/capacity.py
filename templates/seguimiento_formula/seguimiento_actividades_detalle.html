@@ -126,11 +126,16 @@ Actividades Asociadas al Objetivo
 														<td style="font-size:11px; width:110px;"> <span style='display: none;'>{{objetivo.fecha_real_termino|date:"Ymd"}}</span> {% if objetivo.fecha_real_termino == none %} -  {%else%} {{ objetivo.fecha_real_termino|date:"d-m-Y"}} {%endif%}</td>
 														<td style="font-size:11px; width:110px;"> <span style='display: none;'>{{objetivo.fecha_reprogramacion_inicio|date:"Ymd"}}</span> {% if objetivo.fecha_reprogramacion_inicio == none %} -  {%else%} {{ objetivo.fecha_reprogramacion_inicio|date:"d-m-Y"}} {%endif%}</td>
 														<td style="font-size:11px; width:110px;"> <span style='display: none;'>{{objetivo.fecha_reprogramacion_termino|date:"Ymd"}}</span> {% if objetivo.fecha_reprogramacion_termino == none %} -  {%else%} {{ objetivo.fecha_reprogramacion_termino|date:"d-m-Y"}} {%endif%}</td>
-													  	{% if total_disponible.estado_seguimiento_id == 1 %}
-													<td  style="width:80px; text-align:center;  "   >
 
 
-														<button  {%if  objetivo.flag_tmp == 0 and objetivo.id_estado_actividad_id == 7   or objetivo.id_estado_actividad_id == 9%} disabled="disabled" {%endif%} type="button" id="notification_ok" title="Reportar Avance de la Actividad" title="Fecha de Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" class="update btn btn-sm btn-primary" data-id="{% url 'RegistroActividadEditarSeguimiento' objetivo.id %}">
+
+
+														<td  style="width:80px; text-align:center;  "   >
+
+
+
+
+														<button  {%if  objetivo.flag_tmp == 0 and objetivo.id_estado_actividad_id == 7   or objetivo.id_estado_actividad_id == 9 or total_disponible.id_controlador.id_estado_plan_id == 1 or total_disponible.id_controlador.id_estado_plan_id == 3 %} disabled="disabled" {%endif%} type="button" id="notification_ok" title="Reportar Avance de la Actividad" title="Fecha de Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" class="update btn btn-sm btn-primary" data-id="{% url 'RegistroActividadEditarSeguimiento' objetivo.id %}">
 
                                                             <span class="fa fa-check-square-o" ></span>
                                                         {%if objetivo.flag_reporta == 1%}<span class="badge" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" title="Actividad Reportada!"  >&#x2713;</span>{%endif%}
@@ -138,7 +143,7 @@ Actividades Asociadas al Objetivo
                                                         </button>
 
 													</td>
-	 {%endif%}
+
 
 
 													<!--													<td>{% if objetivo.justificacion == none %} -  {%else%} {{ objetivo.justificacion}} {%endif%}</td>-->

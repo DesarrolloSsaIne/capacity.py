@@ -41,7 +41,7 @@ class ActividadesObjetivosList(ListView): #clase modificada por JR- sprint 8 - O
         try:
             #periodo_seguimiento = Glo_Seguimiento.objects.get(Q(id_estado_seguimiento=1) & Q(id_periodo=periodo_actual.id))
             periodo_seguimiento = Glo_Seguimiento.objects.filter(
-                Q(id_periodo=periodo_actual.id)).latest('fecha_inicio')
+                Q(id_periodo=periodo_actual.id)).order_by('-id')[0]
         except:
             periodo_seguimiento=None
             pass
@@ -159,6 +159,17 @@ class ActividadesDetail(ListView): #clase modificada por JR- sprint 8 - Ok
             periodo_actual = Glo_Periodos.objects.get(id_estado=1)
         except Glo_Periodos.DoesNotExist:
             return None
+
+
+        try:
+            #periodo_seguimiento = Glo_Seguimiento.objects.get(Q(id_estado_seguimiento=1) & Q(id_periodo=periodo_actual.id))
+            periodo_seguimiento = Glo_Seguimiento.objects.filter(
+                Q(id_periodo=periodo_actual.id)).order_by('-id')[0]
+        except:
+            periodo_seguimiento=None
+            pass
+
+
         nombre = ""
         if self.request.session['id_orden']==2:
             #lista_actividades = Ges_Actividad.objects.filter(Q(id_objetivo_tactico=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id))
@@ -202,12 +213,12 @@ class ActividadesDetail(ListView): #clase modificada por JR- sprint 8 - Ok
         except Ges_Controlador.DoesNotExist:
             return None
 
-        estado_seguimiento_id = self.request.session['estado_seguimiento_id']
+        #estado_seguimiento_id = self.request.session['estado_seguimiento_id']
         context['object_list'] = lista_actividades
         context['nombre_objetivo'] = {'nombre': nombre}
         context['total_disponible'] = {'id_nivel':id_nivel,
                                        'id_controlador':id_controlador,
-                                       'estado_seguimiento_id': estado_seguimiento_id
+                                       'estado_seguimiento_id': periodo_seguimiento.id_estado_seguimiento_id
                                        }
 
 
@@ -610,7 +621,7 @@ def UpdateFlag(id_controlador,periodo_actual):
 
     Ges_Actividad.objects.filter(Q(id_controlador=id_controlador) & Q(id_periodo=periodo_actual) & (~Q(id_estado_actividad=7) & ~Q(id_estado_actividad=9))).update(flag_reporta=0)
     Ges_Actividad.objects.filter(Q(id_controlador=id_controlador) & Q(id_periodo=periodo_actual)).update(flag_tmp=0) # Sprint 1 - CI-2 - 11012021
-
+    Ges_Actividad.objects.filter(Q(id_controlador=id_controlador) & Q(id_periodo=periodo_actual) & (~Q(id_estado_actividad=7) & ~Q(id_estado_actividad=9))).update(validada=0)
 def EnviarCorreoInicioSeguimiento(emails_destino_analista, email_jefatura,area_plan):
 
     ahora = datetime.now()

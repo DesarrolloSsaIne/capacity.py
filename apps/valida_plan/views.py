@@ -782,7 +782,7 @@ class SeguimientoUnidadesList(ListView): #Modificado por JR- sprint 10
             Q(jefatura_primerarevision=id_jefatura.id) & Q(id_periodo=periodo_actual.id))
 
         try:
-             estado= Glo_Seguimiento.objects.get(Q(id_estado_seguimiento=1) & Q(id_periodo=PeriodoActual()))
+             estado= Glo_Seguimiento.objects.filter(id_periodo=PeriodoActual()).order_by('-id')[0]
         except Glo_Seguimiento.DoesNotExist:
              estado = 0
 

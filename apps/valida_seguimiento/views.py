@@ -129,6 +129,14 @@ class Objetivos(ListView): #Modificado por JR- sprint 8 - OK
         except Ges_Controlador.DoesNotExist:
             return None
 
+
+        try:
+            periodo_valida = Glo_validacion.objects.get(
+                Q(id_estado_periodo=1) & Q(id_periodo=periodo_actual.id))
+        except:
+            periodo_valida = None
+            pass
+
         id_orden = controlador.nivel_inicial
         self.request.session['id_controlador_real'] = controlador.id
        # vaar= controlador.id_jefatura.id_nivel_id
@@ -153,7 +161,7 @@ class Objetivos(ListView): #Modificado por JR- sprint 8 - OK
 
                 count_actividades = Ges_Actividad.objects.values('id_objetivo_tacticotn').filter(
                     id_objetivo_tacticotn=OuterRef('pk')).annotate(
-                    count_id_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id) & (Q(id_estado_actividad=3) & ~Q(fecha_reprogramacion_termino=None)) | (Q(id_estado_actividad=5) & ~Q(fecha_reprogramacion_inicio=None) & ~Q(fecha_reprogramacion_termino=None)) | (Q(id_estado_actividad=2)  | Q(id_estado_actividad=10))))
+                    count_id_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id) & (Q(id_estado_actividad=3) & ~Q(fecha_reprogramacion_termino=None)) |  Q(id_estado_actividad=10) & Q(validada=0) | (Q(id_estado_actividad=5) & ~Q(fecha_reprogramacion_termino=None)) | (Q(id_estado_actividad=2) & ~Q(fecha_reprogramacion_termino=None))))
 
                 count_no_vistos_obj = Ges_Observaciones_sr.objects.values('id_objetivo_tacticotn').filter(
                     id_objetivo_tacticotn=OuterRef('pk')).annotate(
@@ -181,7 +189,7 @@ class Objetivos(ListView): #Modificado por JR- sprint 8 - OK
 
                 count_actividades = Ges_Actividad.objects.values('id_objetivo_tactico').filter(
                     id_objetivo_tactico=OuterRef('pk')).annotate(
-                    count_id_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id) & (Q(id_estado_actividad=3) & ~Q(fecha_reprogramacion_termino=None)) | (Q(id_estado_actividad=5) & ~Q(fecha_reprogramacion_inicio=None) & ~Q(fecha_reprogramacion_termino=None)) | (Q(id_estado_actividad=2)  | Q(id_estado_actividad=10))))
+                    count_id_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id) & (Q(id_estado_actividad=3) & ~Q(fecha_reprogramacion_termino=None)) |  Q(id_estado_actividad=10) & Q(validada=0) | (Q(id_estado_actividad=5) & ~Q(fecha_reprogramacion_termino=None)) | (Q(id_estado_actividad=2) & ~Q(fecha_reprogramacion_termino=None))))
 
                 count_no_vistos_obj = Ges_Observaciones_sr.objects.values('id_objetivo_tactico').filter(
                     id_objetivo_tactico=OuterRef('pk')).annotate(
@@ -210,7 +218,8 @@ class Objetivos(ListView): #Modificado por JR- sprint 8 - OK
 
                 count_actividades = Ges_Actividad.objects.values('id_objetivo_operativo').filter(
                     id_objetivo_operativo=OuterRef('pk')).annotate(
-                    count_id_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id) & (Q(id_estado_actividad=3) & ~Q(fecha_reprogramacion_termino=None)) | (Q(id_estado_actividad=5) & ~Q(fecha_reprogramacion_inicio=None) & ~Q(fecha_reprogramacion_termino=None)) | (Q(id_estado_actividad=2)  | Q(id_estado_actividad=10))))
+                    count_id_actividad=Count('id', filter=Q(id_periodo=periodo_actual.id) & (Q(id_estado_actividad=3) & ~Q(fecha_reprogramacion_termino=None)) |  Q(id_estado_actividad=10) & Q(validada=0) | (Q(id_estado_actividad=5) & ~Q(fecha_reprogramacion_termino=None)) | (Q(id_estado_actividad=2) & ~Q(fecha_reprogramacion_termino=None))))
+
 
                 count_no_vistos_obj = Ges_Observaciones_sr.objects.values('id_objetivo_operativo').filter(
                     id_objetivo_operativo=OuterRef('pk')).annotate(

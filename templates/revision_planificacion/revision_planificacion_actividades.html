@@ -41,6 +41,8 @@ Actividades Asociadas al Objetivo
 						<th style="font-size:11px;"  title="Fecha de Término de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Fecha Fin</th>
 						<th style="font-size:11px;">Prod. Estadístico</th>
 						<th style="font-size:11px;">Cargo</th>
+						<th style="font-size:11px;">Periodicidad</th>
+						<th style="font-size:11px;">Total Horas</th>
 						<th style="font-size:11px; width:110px;">Inicio Real</th>
 						<th style="font-size:11px; width:110px;">Fin Real</th>
 						<th style="font-size:11px; width:110px;">Reprog. Inicio</th>
@@ -69,6 +71,8 @@ Actividades Asociadas al Objetivo
 						<td style="font-size:11px; width:110px;"> <span style='display: none;'>{{objetivo.fecha_termino_actividad|date:"Ymd"}}</span> {{ objetivo.fecha_termino_actividad|date:"d-m-Y"}}</td>
 						<td style="font-size:11px;"> {% if objetivo.id_producto_estadistico == none %} -  {%else%} {{ objetivo.id_producto_estadistico}} {%endif%}</td>
 						<td style="font-size:11px;"> {{ objetivo.id_familia_cargo}}</td>
+						<td style="font-size:11px;"> {{ objetivo.id_periodicidad}}</td>
+						<td style="font-size:11px;"> {{ objetivo.total_horas}}</td>
 						<td style="font-size:11px; width:110px;"> <span style='display: none; '>{{objetivo.fecha_real_inicio|date:"Ymd"}}</span> {% if objetivo.fecha_real_inicio == none %} -  {%else%} {{ objetivo.fecha_real_inicio|date:"d-m-Y"}} {%endif%}</td>
 						<td style="font-size:11px; width:110px;"> <span style='display: none;'>{{objetivo.fecha_real_termino|date:"Ymd"}}</span> {% if objetivo.fecha_real_termino == none %} -  {%else%} {{ objetivo.fecha_real_termino|date:"d-m-Y"}} {%endif%}</td>
 						<td style="font-size:11px; width:110px;"> <span style='display: none;'>{{objetivo.fecha_reprogramacion_inicio|date:"Ymd"}}</span> {% if objetivo.fecha_reprogramacion_inicio == none %} -  {%else%} {{ objetivo.fecha_reprogramacion_inicio|date:"d-m-Y"}} {%endif%}</td>

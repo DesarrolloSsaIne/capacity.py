@@ -55,13 +55,15 @@ Actividades Asociadas al Objetivo
 				</thead>
 				<tbody>
 					{%  for objetivo in object_list %}
-					{%if objetivo.id_estado_actividad_id == 3 and objetivo.fecha_reprogramacion_termino == None%} <!--c-42-->
+					{% if objetivo.id_estado_actividad_id == 8 %} <!--c-42-->
+
+					{% elif objetivo.id_estado_actividad_id == 3 and objetivo.fecha_reprogramacion_termino == None %} <!--c-42-->
 
 					{% elif objetivo.id_estado_actividad_id == 5 and objetivo.fecha_reprogramacion_termino == None and objetivo.fecha_reprogramacion_inicio == None  %} <!--c-43-->
 
 					{% elif objetivo.id_estado_actividad_id == 4 and  objetivo.validada == 0  %} <!--Para que aparezcan las que quedaron con estado no iniciadas despúes de la validación-->
 
-					{%else%}
+					{% else %}
 					<tr>
 						<td style="font-size:11px;"> {{ objetivo.id }}</td>
 						<td  style="font-size:11px;">
@@ -90,7 +92,7 @@ Actividades Asociadas al Objetivo
 
 
 					</tr>
-					{%endif%}
+					{% endif %}
 
 					{% endfor %}
 				</tbody>
