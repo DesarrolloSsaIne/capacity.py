@@ -41,6 +41,7 @@ class Ges_Actividad (models.Model):
     flag_reporta = models.IntegerField(null=True, blank=True)
     flag_tmp = models.IntegerField(null=True, blank=True)  # Sprint 1 - CI-2 - 11012021
 
+
 class Ges_Observaciones_valida (models.Model):
     descripcion_observacion = models.CharField(max_length=2000)
     id_actividad = models.ForeignKey(Ges_Actividad, on_delete=models.PROTECT, null=True)

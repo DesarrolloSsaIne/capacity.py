@@ -40,11 +40,11 @@ class UnidadesList(ListView): #Modificado por JR- sprint 8 - OK
         except:
             periodo_valida = None
             pass
-        #
-        # if periodo_valida:
-        #     periodo_valida_activo=1
-        # else:
-        #     periodo_valida_activo=0
+
+        if periodo_valida:
+            periodo_valida_activo=1
+        else:
+            periodo_valida_activo=0
 
         try:
 
@@ -92,7 +92,7 @@ class UnidadesList(ListView): #Modificado por JR- sprint 8 - OK
                 # id_jefatura = Ges_Jefatura.objects.filter(id_user=id_usuario_actual)
 
                 context['object_list'] = id_controladorfiltrado
-                context['periodo_validacion'] = {'estado':periodo_valida.id_estado_periodo}
+                context['periodo_validacion'] = {'estado':periodo_valida_activo}
 
 
 

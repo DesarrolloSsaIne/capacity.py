@@ -301,16 +301,16 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
             id_actividad_instancia = Ges_Actividad.objects.get(Q(id=id_actividad) & Q(id_periodo=periodo_actual.id))
         except id_actividad_instancia.DoesNotExist:
             return None
-        #
-        # try:
-        #     actualiza_tmp = Ges_Actividad.objects.filter(Q(id=id_actividad) & Q(id_periodo=periodo_actual.id) & Q(id_estado_actividad=3) & Q(flag_tmp=0) & (~Q(fecha_real_inicio__isnull=True)))
-        # except id_actividad_instancia.DoesNotExist:
-        #     return None
-        #
-        # if actualiza_tmp:
-        #     form.instance.flag_tmp=0
-        # else:
-        #     form.instance.flag_tmp=1
+
+        try:
+            actualiza_tmp = Ges_Actividad.objects.filter(Q(id=id_actividad) & Q(id_periodo=periodo_actual.id) & Q(id_estado_actividad=3) & Q(flag_tmp=0) & (~Q(fecha_real_inicio__isnull=True)))
+        except id_actividad_instancia.DoesNotExist:
+            return None
+
+        if actualiza_tmp:
+            form.instance.flag_tmp=0
+        else:
+            form.instance.flag_tmp=1
 
         try:
             id_estado_actividad_instancia = Glo_EstadoActividad.objects.get(id=id_estado_actividad)
@@ -632,7 +632,7 @@ def UpdateFlag(id_controlador,periodo_actual):
 
 
     Ges_Actividad.objects.filter(Q(id_controlador=id_controlador) & Q(id_periodo=periodo_actual) & (~Q(id_estado_actividad=7) & ~Q(id_estado_actividad=9))).update(flag_reporta=0)
-    Ges_Actividad.objects.filter(Q(id_controlador=id_controlador) & Q(id_periodo=periodo_actual) & (~Q(fecha_real_inicio__isnull=True) | ~Q(id_estado_actividad=2) & ~Q(id_estado_actividad=3) & ~Q(id_estado_actividad=5) & ~Q(id_estado_actividad=10) & ~Q(id_estado_actividad=4))).update(flag_tmp=1) # Sprint 1 - CI-2 - 11012021
+    Ges_Actividad.objects.filter(Q(id_controlador=id_controlador) & Q(id_periodo=periodo_actual)).update(flag_tmp=0) # Sprint 1 - CI-2 - 11012021
     Ges_Actividad.objects.filter(Q(id_controlador=id_controlador) & Q(id_periodo=periodo_actual) & (~Q(id_estado_actividad=7) & ~Q(id_estado_actividad=9))).update(validada=0)
 def EnviarCorreoInicioSeguimiento(emails_destino_analista, email_jefatura,area_plan):
 

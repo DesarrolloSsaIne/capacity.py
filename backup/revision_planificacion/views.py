@@ -743,9 +743,7 @@ class AceptaPlan(UpdateView):
                 metodo = "Revisión - Planificación"
                 usuario_evento = self.request.user
                 jefatura_dirigida = None
-
                 logEventosCreate(tipo_evento, metodo, usuario_evento, jefatura_dirigida)
-
 
                 try:
 
@@ -805,7 +803,6 @@ class EnviarPlanAdministrador(UpdateView):
 
             controladorPlan.save()
             QuitarAnalista(id_controlador)
-            UpdateFlag(id_controlador,periodo_actual.id)
 
             request.session['message_class'] = "alert alert-success"
             messages.error(self.request,
@@ -1189,11 +1186,7 @@ def logEventosCreate(tipo_evento, metodo ,usuario_evento, jefatura_dirigida):
     )
     return None
 
-def UpdateFlag(id_controlador,periodo_actual):
-    Ges_Actividad.objects.filter(Q(id_controlador=id_controlador) & Q(id_periodo=periodo_actual) & (
-                ~Q(fecha_real_inicio__isnull=True) | ~Q(id_estado_actividad=2) & ~Q(id_estado_actividad=3) & ~Q(
-            id_estado_actividad=5) & ~Q(id_estado_actividad=10) & ~Q(id_estado_actividad=4))).update(
-        flag_tmp=1)  # Sprint 1 - CI-2 - 11012021
+
 
 
 

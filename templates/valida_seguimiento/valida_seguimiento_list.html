@@ -32,10 +32,10 @@ Listado de Planes
 
 
         {% if periodo_validacion.estado.id == 1 %}
-        <div style=" text-align:right; display:inline; background:green; padding-top:5px; padding-bottom:5px; padding-left:5px; padding-right:5px;  margin-top:-3px;  margin-right:3px; border-radius:3px;  vertical-align: middle; font-size:15px; color:white;"  title="" data-toggle="tooltip" data-original-title="Estado Actual del Periodo de Validación" data-placement="top"> {{ periodo_validacion.estado }} </div>
+        <div style=" text-align:right; display:inline; background:green; padding-top:5px; padding-bottom:5px; padding-left:5px; padding-right:5px;  margin-top:-3px;  margin-right:3px; border-radius:3px;  vertical-align: middle; font-size:15px; color:white;"  title="" data-toggle="tooltip" data-original-title="Estado Actual del Periodo de Validación" data-placement="top"> Abierto</div>
 
-             {% else %}
-                 <div style=" text-align:right; display:inline; background:red; padding-top:5px; padding-bottom:5px; padding-left:5px; padding-right:5px;  margin-top:-3px;  margin-right:3px; border-radius:3px;  vertical-align: middle; font-size:15px; color:white;"  title="" data-toggle="tooltip" data-original-title="Estado Actual del Periodo de Validación" data-placement="top"> {{ periodo_validacion.estado }} </div>
+             {% elif  periodo_validacion.estado.id == None or periodo_validacion.estado.id == 0%}
+                 <div style=" text-align:right; display:inline; background:red; padding-top:5px; padding-bottom:5px; padding-left:5px; padding-right:5px;  margin-top:-3px;  margin-right:3px; border-radius:3px;  vertical-align: middle; font-size:15px; color:white;"  title="" data-toggle="tooltip" data-original-title="Estado Actual del Periodo de Validación" data-placement="top"> Cerrado </div>
 
             {% endif %}
 
