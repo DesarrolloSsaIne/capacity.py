@@ -25,7 +25,7 @@
 
 
 
-					<div class="row show-grid">
+<div class="row show-grid">
 
 <div class="col-md-6">
 
@@ -268,17 +268,17 @@ if(estado == 2)// CON RETRASO - VALIDAR 1 ----------------------------------
 			var Mifecha_real_inicio= moment(fecha_real_inicio_str).format('YYYY-MM-DD'); // sprint 5 - 24022021
 			$("#fecha_real_inicio").val(Mifecha_real_inicio);
 
-			$("#fecha_reprogramacion_inicio").val('');
+
 
   			$('#id_justificacion').prop('disabled', false);
 			$(".hide-justificacion").css("display", "block");
 			$(".hide-real_inicio").css("display", "none");
 			$(".hide-real_termino").css("display", "none");
 
-			$(".hide-reprogramacion_inicio").css("display", "none");
+			$(".hide-reprogramacion_inicio").css("display", "block");
 			$(".hide-reprogramacion_termino").css("display", "block");
 
-
+			$('#fecha_reprogramacion_inicio').prop('disabled', true);
 			$('#fecha_reprogramacion_inicio').removeAttr('required');
 			$('#fecha_real_inicio').removeAttr('required');
 			$('#fecha_real_termino').removeAttr('required');
@@ -386,8 +386,14 @@ if ((moment(fecha_termino).isSameOrBefore(fecha_termino_corte) && moment(fecha_t
 
  if (fecha_real_inicio != 0 && flag_tmp == 1){ // OP 1 EXISTE FECHA DE INICIO REAL DESDE PERIODO ANTERIOR
 
-	var Mifecha_real_inicio= moment(fecha_real_inicio_str).format('YYYY-MM-DD'); // sprint 5 - 24022021
-	$("#fecha_real_inicio").val(Mifecha_real_inicio);
+
+	var fecha_real_inicio= $('#fecha_real_inicio_str').val()
+	var fecha_real_inicio= moment(fecha_real_inicio).format('YYYY-MM-DD'); // sprint 5 - 24022021
+
+
+
+
+	$("#fecha_real_inicio").val(fecha_real_inicio);
 
     $('#fecha_reprogramacion_inicio').val('');
     $('#fecha_reprogramacion_termino');
@@ -401,7 +407,7 @@ if ((moment(fecha_termino).isSameOrBefore(fecha_termino_corte) && moment(fecha_t
 
     $(".hide-reprogramacion_termino").css("display", "block");
     $(".hide-reprogramacion_inicio").css("display", "none");
-    $("#fecha_real_inicio").val(Mifecha_real_inicio);
+
 
     $("#confirmar").css("display", "initial");
 
@@ -497,7 +503,7 @@ if ((moment(fecha_termino).isSameOrBefore(fecha_termino_corte) && moment(fecha_t
 
 
 
-if (flag_tmp == 0){  // OP 2 SI ESTA EN EL PERIODO PRESENTE
+//if (flag_tmp == 0){  // OP 2 SI ESTA EN EL PERIODO PRESENTE
 
 
     $('#fecha_reprogramacion_inicio').val(''); // sprint 3 - CI-21 -25012021
@@ -520,7 +526,7 @@ if (flag_tmp == 0){  // OP 2 SI ESTA EN EL PERIODO PRESENTE
     $('#id_justificacion').removeAttr('required');
 
 
-} // FIN OP 2
+//} // FIN OP 2
 
 	}
 
@@ -733,7 +739,7 @@ $( "#id_id_estado_actividad" ).change(function() {
     }
 
 
-  if (estado == 2) //habilita con restraso - Validar 2
+  if (estado == 2) // HABILITA CON RETRASO - VALIDAR
 
  {
 
@@ -793,7 +799,7 @@ $( "#id_id_estado_actividad" ).change(function() {
 
 			$('#fecha_reprogramacion_termino').prop('required',true).val('');
 
-			$('#id_justificacion').prop('required',true);
+			$('#id_justificacion').prop('required',true).val('');
 			$("#confirmar").css("display", "initial");
 
 
@@ -839,7 +845,7 @@ $( "#id_id_estado_actividad" ).change(function() {
 
 
 
-			$('#fecha_real_inicio').removeAttr('required');
+			$('#fecha_real_inicio').removeAttr('required').val('');
 			$('#fecha_real_termino').removeAttr('required').val('');
 
 			$('#fecha_reprogramacion_inicio').prop('required',true).val('');
@@ -902,6 +908,8 @@ if (estado == 3) // HABILITA EN CURSO ----------------------------
 
   if (fecha_real_inicio != 0 && flag_tmp == 1){ // OP 1 EXISTE FECHA DE INICIO REAL DESDE PERIODO ANTERIOR
 
+
+
 	var Mifecha_real_inicio= moment(fecha_real_inicio_str).format('YYYY-MM-DD'); // sprint 5 - 24022021
 	$("#fecha_real_inicio").val(Mifecha_real_inicio);
 
@@ -921,8 +929,10 @@ if (estado == 3) // HABILITA EN CURSO ----------------------------
 
     $("#confirmar").css("display", "initial");
 
-    $('#fecha_real_termino').removeAttr('required');
+    $('#fecha_real_termino').removeAttr('required').val('');
     $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
+    $('#fecha_reprogramacion_termino').removeAttr('required').val('');
+    $('#fecha_reprogramacion_inicio').prop('disabled', false);
     $('#id_justificacion').prop('required',false);
 
 
@@ -947,7 +957,9 @@ if (estado == 3) // HABILITA EN CURSO ----------------------------
 
 	$('#fecha_real_inicio').prop('required',true).val('');
     $('#fecha_real_termino').removeAttr('required').val('');
+
     $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
+    $('#fecha_reprogramacion_termino').removeAttr('required').val('');
     $('#id_justificacion').prop('required',false);
 
 
@@ -974,6 +986,7 @@ if (estado == 3) // HABILITA EN CURSO ----------------------------
 	$('#fecha_real_inicio').prop('required',true).val('');
     $('#fecha_real_termino').removeAttr('required').val('');
     $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
+    $('#fecha_reprogramacion_termino').removeAttr('required').val('');
     $('#id_justificacion').prop('required',false);
 
 
@@ -1032,6 +1045,7 @@ if (flag_tmp == 1){  // OP 1 SI VIENE DESDE UN PERIODO ANTERIOR
     $('#fecha_real_termino').prop('required',true);
     $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
     $('#fecha_reprogramacion_termino').removeAttr('required').val('');
+      $('#fecha_reprogramacion_inicio').prop('disabled', false);
     $('#id_justificacion').removeAttr('required').val('');
 
 
@@ -1058,6 +1072,7 @@ if (flag_tmp == 0){  // OP 2 SI ESTA EN EL PERIODO PRESENTE
     $('#fecha_real_termino').prop('required',true);
     $('#fecha_reprogramacion_inicio').removeAttr('required').val('');
     $('#fecha_reprogramacion_termino').removeAttr('required').val('');
+      $('#fecha_reprogramacion_inicio').prop('disabled', false);
     $('#id_justificacion').removeAttr('required').val('');
 
 
@@ -1079,21 +1094,23 @@ if (estado == 10) //habilita eliminada - validar
   {
 
     var fecha_real_inicio_str = $('#fecha_real_inicio_str').val()
-
 	var fecha_real_inicio= $('#fecha_real_inicio_bd').val() //sprint 5 17032021
     var flag_tmp =  $('#flag_tmp').val() //sprint 5 17032021
 
-	if (fecha_real_inicio != 0 && flag_tmp == 0){ // Mantiene la fecha real inicio cuando cambia el periodo
+
+
+
+	if (fecha_real_inicio != 0 && flag_tmp == 1){ // Mantiene la fecha real inicio cuando cambia el periodo
 	var Mifecha_real_inicio= moment(fecha_real_inicio_str).format('YYYY-MM-DD'); // sprint 5 - 24022021
 	$("#fecha_real_inicio").val(Mifecha_real_inicio);
 	}
 
-	if (fecha_real_inicio != 0 && flag_tmp == 1){ // Mantiene la fecha real inicio cuando cambia el periodo
+	if (fecha_real_inicio != 0 && flag_tmp == 0){ // Mantiene la fecha real inicio cuando cambia el periodo
 	$('#fecha_real_inicio').val('');
 	}
 
 
-  //$('#fecha_real_inicio').val(''); // sprint 3 - CI-21 -25012021
+
 	$('#fecha_real_termino').val(''); // sprint 3 - CI-21 -25012021
     $('#fecha_reprogramacion_inicio').val(''); // sprint 3 - CI-21 -25012021
     $('#fecha_reprogramacion_termino').val(''); // sprint 3 - CI-21 -25012021
@@ -1111,6 +1128,7 @@ if (estado == 10) //habilita eliminada - validar
     $('#fecha_real_termino').removeAttr('required');
     $('#fecha_reprogramacion_inicio').removeAttr('required');
     $('#fecha_reprogramacion_termino').removeAttr('required');
+    $('#fecha_reprogramacion_inicio').prop('disabled', false);
     $('#id_justificacion').prop('required',true);
 
 
@@ -1120,7 +1138,7 @@ if (estado == 10) //habilita eliminada - validar
 
 
 
-  if (estado == 5){ // HABILITA EN CURSO
+  if (estado == 5){ // HABILITA SIN MOVIMIENTO
 
   	// Estado Inicial se limpia
 			$(".hide-justificacion").css("display", "none");
@@ -1139,6 +1157,8 @@ if (estado == 10) //habilita eliminada - validar
     var flag_tmp =  $('#flag_tmp').val() //sprint 5 17032021
 
 	if (flag_tmp == 0){ // OP1 Si es su primer periodo de seguimiento
+
+
 
 			$(".hide-justificacion").css("display", "block");
 			$(".hide-real_inicio").css("display", "none");
@@ -1173,6 +1193,7 @@ if (estado == 10) //habilita eliminada - validar
 
 	if (fecha_real_inicio != 0 && flag_tmp == 1){ // OP2 Si  tiene fecha real de inicio y es un periodo posterior
 
+
 			var Mifecha_real_inicio= moment(fecha_real_inicio_str).format('YYYY-MM-DD');
 			$("#fecha_real_inicio").val(Mifecha_real_inicio);
 
@@ -1186,6 +1207,8 @@ if (estado == 10) //habilita eliminada - validar
 			$('#fecha_real_inicio').removeAttr('required');
 			$('#fecha_real_termino').removeAttr('required').val('');
 
+			$('#fecha_reprogramacion_inicio').prop('disabled', false);
+
 			if (periodicidad != 9  && periodicidad != 10 && periodicidad != 11){ // si tiene periodicidad semanal (7), quincenal (8) o anual (12) la f.r.i y la f.r.t son obligatorias
 
 
@@ -1197,6 +1220,7 @@ if (estado == 10) //habilita eliminada - validar
 			$('#fecha_reprogramacion_termino').removeAttr('required').val('');
 
 			}
+
 
 
 			$('#id_justificacion').prop('disabled', false);
@@ -1268,11 +1292,14 @@ var flag_tmp =  $('#flag_tmp').val()
   estado = $('#id_id_estado_actividad').val();
   periodicidad = $('#id_id_periodicidad').val();
    var tdate = new Date();
-   //var anio_actual = tdate.getFullYear(); // Se cambió para realizar pruebas por parte de planificación
-   var anio_actual=2021
+   var anio_actual = tdate.getFullYear(); // Se cambió para realizar pruebas por parte de planificación
+   //var anio_actual=2021
 
+ if (estado == 10){ // eliminada - Validar
 
+$('#fecha_real_inicio').prop('disabled', false);
 
+}
 
 	 if (estado == 7){ // Finalizada - Validar
 
@@ -1306,14 +1333,32 @@ var flag_tmp =  $('#flag_tmp').val()
 	  var fecha_reprogramacion_termino= $('#fecha_reprogramacion_termino').val()
 	  var fecha_real_inicio= $('#fecha_real_inicio').val()
 
+	  var anio_fecha_real_inicio= moment(fecha_real_inicio,"YYYY-MM-DD").year()
+	  var anio_fecha_reprogramacion_termino= moment(fecha_reprogramacion_termino,"YYYY-MM-DD").year()
+
+
 	  $('#fecha_real_inicio').prop('disabled', false);
 
-	  if(flag_tmp==0){
-	   $('#fecha_real_inicio').css("background-color", "#eeeeee");
+	 if(flag_tmp==1){
+	  $('#fecha_real_inicio').css("background-color", "#eeeeee");
+		}
+
+		if (anio_fecha_real_inicio<anio_actual || anio_fecha_real_inicio>anio_actual) {
+			$("#mjeError").css("display","block");
+			$("#textError").text("Error : La fecha real de inicio debe estar contenida dentro del año en curso.");
+			return false
+
+		}
+
+		if (anio_fecha_reprogramacion_termino<anio_actual || anio_fecha_reprogramacion_termino>anio_actual) {
+			$("#mjeError").css("display","block");
+			$("#textError").text("Error : La fecha reprogramación término debe estar contenida dentro del año en curso.");
+			return false
+
 		}
 
 
-	   if (moment(fecha_real_inicio).isSameOrAfter(fecha_termino_corte)) {
+	   if (moment(fecha_real_inicio).isAfter(fecha_termino_corte)) {
 
 	  	  		$("#mjeError").css("display","block");
 				$("#textError").text("Error : La fecha real de inicio no puede ser mayor a la fecha de término de corte.");
@@ -1326,8 +1371,13 @@ var flag_tmp =  $('#flag_tmp').val()
 	  	  	 if (moment(fecha_reprogramacion_termino).isSameOrBefore(fecha_termino_corte)) {
 
 	  	  		$("#mjeError").css("display","block");
+				$('#fecha_real_inicio').prop('disabled', true);
 				$("#textError").text("Error : La fecha de témino de reprogramación debe ser mayor a la fecha de término de corte.");
 				return false
+			 }else{
+
+				 $('#fecha_real_inicio').prop('disabled', false);
+
 			 }
 
 	  	  }
@@ -1342,40 +1392,39 @@ var flag_tmp =  $('#flag_tmp').val()
 	  if (estado == 2){ // Con retraso - validar
 		var fecha_reprogramacion_inicio= $('#fecha_reprogramacion_inicio').val()
  		var fecha_reprogramacion_termino= $('#fecha_reprogramacion_termino').val()
+ 		var fecha_real_inicio= $('#fecha_real_inicio_bd').val()
+
+
 
  		anio_fecha_inicio= moment(fecha_reprogramacion_inicio,"YYYY-MM-DD").year()
  		anio_fecha_termino= moment(fecha_reprogramacion_termino,"YYYY-MM-DD").year()
 
 
-
- 		//if (fecha_reprogramacion_inicio == "" && fecha_reprogramacion_termino == ""){
-
- 		//$("#mjeError").css("display","block");
-	//			$("#textError").text("Error : Debe ingresar al menos 1 fecha de reprogramación.");
-		//		return false
-
- 	//	}
-
+ 		$('#fecha_real_inicio').prop('disabled', false);
+ 		$('#fecha_reprogramacion_inicio').prop('disabled', false);
 
  		 if (fecha_reprogramacion_inicio != ""){
 
 			 if (anio_fecha_inicio != anio_actual){
 
 					$("#mjeError").css("display","block");
-					$("#textError").text("Error : La fecha debe estar contenida dentro del año en curso 0.");
+					if (fecha_real_inicio!= "" &&  flag_tmp==1){
+					$('#fecha_reprogramacion_inicio').prop('disabled', true);
+					}
+					$("#textError").text("Error : La fecha debe estar contenida dentro del año en curso.");
 					return false
 
 			 }
 
-			//  if (moment(fecha_reprogramacion_inicio).isSameOrBefore(fecha_termino_corte)) {
-			//		$("#mjeError").css("display","block");
-			//		$("#textError").text("Error : El campo Reprogramacion Fecha Inicio debe ser mayor a la fecha de término de corte.");
-			//		return false
-			//  }
 
 			  if (moment(fecha_reprogramacion_termino).isBefore(fecha_reprogramacion_inicio)) {
 					$("#mjeError").css("display","block");
+
+					if (fecha_real_inicio!= "" &&  flag_tmp==1){
+					$('#fecha_reprogramacion_inicio').prop('disabled', true);
+					}
 					$("#textError").text("Error : La fecha de reprogramación inicio no debe ser superior a la de término.");
+
 					return false
 			  }
 
@@ -1386,13 +1435,20 @@ var flag_tmp =  $('#flag_tmp').val()
 			  if (anio_fecha_termino != anio_actual){
 
 					$("#mjeError").css("display","block");
+					if (fecha_real_inicio!= "" &&  flag_tmp==1){
+					$('#fecha_reprogramacion_inicio').prop('disabled', true);
+					}
 					$("#textError").text("Error : La fecha debe estar contenida dentro del año en curso 1.");
 					return false
 
 			 }
 
 			  if (moment(fecha_reprogramacion_termino).isSameOrBefore(fecha_termino_corte)) {
+
 					$("#mjeError").css("display","block");
+					if (fecha_real_inicio!= "" &&  flag_tmp==1){
+					$('#fecha_reprogramacion_inicio').prop('disabled', true);
+					}
 					$("#textError").text("Error : El campo Reprogramacion Fecha Término debe ser mayor a la fecha de término de corte.");
 					return false
 				  }
@@ -1408,6 +1464,26 @@ var flag_tmp =  $('#flag_tmp').val()
 	   var fecha_reprogramacion_inicio= $('#fecha_reprogramacion_inicio').val()
  		var fecha_reprogramacion_termino= $('#fecha_reprogramacion_termino').val()
  		 $('#fecha_real_inicio').prop('disabled', false);
+
+ 		anio_fecha_reprogramacion_inicio= moment(fecha_reprogramacion_inicio,"YYYY-MM-DD").year()
+ 		anio_fecha_reprogramacion_termino= moment(fecha_reprogramacion_termino,"YYYY-MM-DD").year()
+
+
+ 		 if (anio_fecha_reprogramacion_inicio<anio_actual || anio_fecha_reprogramacion_inicio>anio_actual) {
+			$("#mjeError").css("display","block");
+			$("#textError").text("Error : La fecha de reprogramación de inicio debe estar contenida dentro del año en curso.");
+			return false
+
+		}
+
+		if (anio_fecha_reprogramacion_termino<anio_actual || anio_fecha_reprogramacion_termino>anio_actual) {
+			$("#mjeError").css("display","block");
+			$("#textError").text("Error : La fecha reprogramación término debe estar contenida dentro del año en curso.");
+			return false
+
+		}
+
+
 
 		if (periodicidad != 9  && periodicidad != 10 ){
 
@@ -1428,6 +1504,19 @@ var flag_tmp =  $('#flag_tmp').val()
 		 }
 
 		  if (fecha_reprogramacion_termino != ""){
+
+ 		  if (moment(fecha_reprogramacion_termino).isSameOrBefore(fecha_termino_corte)) {
+ 		  	  	$("#mjeError").css("display","block");
+				$("#textError").text("Error : El campo Reprogramacion Fecha Término debe ser mayor a la fecha de término de corte.");
+				return false
+ 			  }
+
+ 		  }
+
+
+ 		}else{
+
+ 		 		 if (fecha_reprogramacion_termino != ""){
 
  		  if (moment(fecha_reprogramacion_termino).isSameOrBefore(fecha_termino_corte)) {
  		  	  	$("#mjeError").css("display","block");

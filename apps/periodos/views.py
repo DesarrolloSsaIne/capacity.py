@@ -143,7 +143,7 @@ class SeguimientoCerrarPeriodo(UpdateView):
 
             try:
 
-                EnviarCorreoCierre()
+                EnviarCorreoCierreSeguimiento()
 
                 request.session['message_class'] = "alert alert-success"  # Tipo mensaje
                 messages.success(request, "La etapa de seguimiento fue cerrada y se le ha enviado un correo a las jefaturas que formulan.!")  # mensaje
@@ -209,7 +209,7 @@ class SeguimientoAbrirPeriodo(SuccessMessageMixin, CreateView):
 
             try:
                 Ges_Controlador.objects.filter(id_periodo=PeriodoActual()).update(id_estado_plan=1)
-                EnviarCorreoAbrir()
+                EnviarCorreoAbrirSeguimiento()
 
                 request.session['message_class'] = "alert alert-success"  # Tipo mensaje
                 messages.success(request, "El periodo de seguimiento fue abierto correctamente! y se ha enviado un correo a las jefaturas que formulan!")  # mensaje
@@ -225,7 +225,7 @@ class SeguimientoAbrirPeriodo(SuccessMessageMixin, CreateView):
 
             request.session['message_class'] = "alert alert-danger"
             messages.error(self.request, "Error interno: No se ha abierto la etapa de seguimiento. Comuníquese con el administrador.")
-            return HttpResponseRedirect('/periodos/listar_seguimiento' + str(id_periodo))
+            return HttpResponseRedirect('/periodos/listar_seguimiento/' + str(id_periodo))
 
 class ValidacionCerrarPeriodo(UpdateView):
     model = Glo_validacion
@@ -252,6 +252,7 @@ class ValidacionCerrarPeriodo(UpdateView):
             try:
 
                 #EnviarCorreoCierre()
+                EnviarCorreoCierreValidacion()
 
                 request.session['message_class'] = "alert alert-success"  # Tipo mensaje
                 messages.success(request, "La etapa de validación fue cerrada y se le ha enviado un correo a las jefaturas que formulan.!")  # mensaje
@@ -267,7 +268,7 @@ class ValidacionCerrarPeriodo(UpdateView):
 
             request.session['message_class'] = "alert alert-danger"
             messages.error(self.request, "Error interno: No se ha cerrado la etapa de validación. Comuníquese con el administrador.")
-            return HttpResponseRedirect('/periodos/listar_validacion' + str(id_periodo))
+            return HttpResponseRedirect('/periodos/listar_validacion/' + str(id_periodo))
 
 
 class ValidacionList(ListView):
@@ -280,7 +281,7 @@ class ValidacionList(ListView):
         self.request.session['id_periodo']=self.kwargs['pk'] #guarda id  controlador
 
 
-        queryset= Glo_validacion.objects.filter(id_periodo=self.kwargs['pk'])
+        queryset= Glo_validacion.objects.filter(id_periodo=self.kwargs['pk']).order_by('-id')
 
 
         context['object_list'] = queryset
@@ -333,7 +334,7 @@ class ValidacionAbrirPeriodo(SuccessMessageMixin, CreateView):
 
             try:
 
-                EnviarCorreoAbrir()
+                EnviarCorreoAbrirValidacion()
 
                 request.session['message_class'] = "alert alert-success"  # Tipo mensaje
                 messages.success(request, "El periodo de validación fue abierto correctamente! y se ha enviado un correo a las jefaturas que formulan!")  # mensaje
@@ -348,8 +349,8 @@ class ValidacionAbrirPeriodo(SuccessMessageMixin, CreateView):
         else:
 
             request.session['message_class'] = "alert alert-danger"
-            messages.error(self.request, "Error interno: No se ha abierto la etapa de seguimiento. Comuníquese con el administrador.")
-            return HttpResponseRedirect('/periodos/listar_validacion' + str(id_periodo))
+            messages.error(self.request, "Error interno: No se ha abierto la etapa de validación. Comuníquese con el administrador.")
+            return HttpResponseRedirect('/periodos/listar_validacion/' + str(id_periodo))
 
 
 def PeriodoActual():
@@ -360,7 +361,25 @@ def PeriodoActual():
     return periodo_actual
 
 
-def EnviarCorreoCierre():
+def EnviarCorreoCierreValidacion():
+
+    controladorPlan = Ges_Jefatura.objects.values_list('id_user__email' , flat=True).filter(id_periodo=PeriodoActual())
+
+    ahora = datetime.now()
+    fecha = ahora.strftime("%d" + " de " + "%B" + " de " + "%Y" + " a las " + "%H:%M")
+
+    idcorreoJefatura=list(controladorPlan)
+
+    subject = 'Cierre etapa Validación'
+    messageHtml = '<b>Estimada(o) Usuaria(o) del Sistema Capacity Institucional</b> ,<br> Le informamos que con fecha  '+ str(fecha) +', el proceso de <b>Validación</B> ha sido cerrado. <br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
+
+    email = EmailMessage(subject, messageHtml ,to=idcorreoJefatura)
+    email.content_subtype='html'
+    email.send()
+
+
+def EnviarCorreoCierreSeguimiento():
+
     controladorPlan = Ges_Jefatura.objects.values_list('id_user__email' , flat=True).filter(id_periodo=PeriodoActual())
 
     ahora = datetime.now()
@@ -376,7 +395,31 @@ def EnviarCorreoCierre():
     email.send()
 
 
-def EnviarCorreoAbrir():
+
+def EnviarCorreoAbrirValidacion():
+
+
+
+    controladorPlan = Ges_Jefatura.objects.values_list('id_user__email', flat=True).filter(
+        id_periodo=PeriodoActual())
+
+    ahora = datetime.now()
+    fecha = ahora.strftime("%d" + " de " + "%B" + " de " + "%Y" + " a las " + "%H:%M")
+
+    idcorreoJefatura=list(controladorPlan)
+
+    subject = 'Apertura etapa Validación'
+    messageHtml = '<b>Estimada(o) Usuaria(o) del Sistema Capacity Institucional</b> ,<br> Le informamos que con fecha  '+ str(fecha) +', el proceso de <b>VALIDACIÓN</B> ha sido abierto para que valide las actividades reportadas por el equipo. <br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
+
+    email = EmailMessage(subject, messageHtml ,to=idcorreoJefatura)
+    email.content_subtype='html'
+    email.send()
+
+
+def EnviarCorreoAbrirSeguimiento():
+
+
+
     controladorPlan = Ges_Jefatura.objects.values_list('id_user__email', flat=True).filter(
         id_periodo=PeriodoActual())
 
@@ -386,12 +429,9 @@ def EnviarCorreoAbrir():
     idcorreoJefatura=list(controladorPlan)
 
     subject = 'Apertura etapa Seguimiento'
-    messageHtml = '<b>Estimada(o) Usuaria(o) del Sistema Capacity Institucional</b> ,<br> Le informamos que con fecha  '+ str(fecha) +', el proceso de <b>seguimiento</B> ha sido abierto para que ingrese el avance de sus actividades. <br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
+    messageHtml = '<b>Estimada(o) Usuaria(o) del Sistema Capacity Institucional</b> ,<br> Le informamos que con fecha  '+ str(fecha) +', el proceso de <b>Seguimiento</B> ha sido abierto para que reporte el avance de sus actividades. <br><p style="font-size:12px;color:red;">correo generado automaticamente favor no responder.'
 
     email = EmailMessage(subject, messageHtml ,to=idcorreoJefatura)
     email.content_subtype='html'
     email.send()
-
-
-
 

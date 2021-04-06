@@ -40,6 +40,7 @@ class Ges_Actividad (models.Model):
     validada = models.IntegerField(blank=True, null=True)
     flag_reporta = models.IntegerField(null=True, blank=True)
     flag_tmp = models.IntegerField(null=True, blank=True)  # Sprint 1 - CI-2 - 11012021
+    flag_finalizada = models.IntegerField(null=True, blank=True)  # Sprint 1 - CI-2 - 11012021
 
 
 class Ges_Observaciones_valida (models.Model):
@@ -74,5 +75,6 @@ class Ges_Actividad_Historia(models.Model):
     id_periodo = models.ForeignKey(Glo_Periodos, on_delete=models.PROTECT, blank=True, null=True)
     justificacion= models.CharField(max_length=2000, blank=True, null=True)
     id_controlador = models.ForeignKey(Ges_Controlador, blank=True, null=True, on_delete=models.PROTECT)
+    validada = models.IntegerField(blank=True, null=True)
 
 

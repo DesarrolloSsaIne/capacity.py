@@ -129,20 +129,18 @@ Actividades Asociadas al Objetivo
 
 
 
+													{% if total_disponible.estado_seguimiento_id == 1 %}
 
 														<td  style="width:80px; text-align:center;  "   >
 
+															<button  {%if   objetivo.flag_finalizada == 1 and objetivo.id_estado_actividad_id == 7    or  objetivo.id_estado_actividad_id == 9 or total_disponible.id_controlador.id_estado_plan_id == 1 or total_disponible.id_controlador.id_estado_plan_id == 3 %} disabled="disabled" {%endif%} type="button" id="notification_ok" title="Reportar Avance de la Actividad" title="Fecha de Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" class="update btn btn-sm btn-primary" data-id="{% url 'RegistroActividadEditarSeguimiento' objetivo.id %}">
+																<span class="fa fa-check-square-o" ></span>
+															{%if objetivo.flag_reporta == 1%}<span class="badge" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" title="Actividad Reportada!"  >&#x2713;</span>{%endif%}
+															</button>
 
+														</td>
 
-
-														<button  {%if   objetivo.flag_tmp == 1 and objetivo.id_estado_actividad_id == 7    or  objetivo.id_estado_actividad_id == 9 or total_disponible.id_controlador.id_estado_plan_id == 1 or total_disponible.id_controlador.id_estado_plan_id == 3 %} disabled="disabled" {%endif%} type="button" id="notification_ok" title="Reportar Avance de la Actividad" title="Fecha de Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" class="update btn btn-sm btn-primary" data-id="{% url 'RegistroActividadEditarSeguimiento' objetivo.id %}">
-
-                                                            <span class="fa fa-check-square-o" ></span>
-                                                        {%if objetivo.flag_reporta == 1%}<span class="badge" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" title="Actividad Reportada!"  >&#x2713;</span>{%endif%}
-
-                                                        </button>
-
-													</td>
+													{% endif %}
 
 
 

@@ -4,6 +4,8 @@ from apps.periodos.models import Glo_Periodos, Glo_Seguimiento, Glo_validacion
 class DateInput(forms.DateInput):
     input_type = 'date'
 
+
+
 class periodosForm(forms.ModelForm):
     ANIO_CHOICES = (
         (2020, '2020'),
@@ -89,7 +91,7 @@ class validacion_abrirform(forms.ModelForm):
         widgets = {
             'descripcion_validacion': forms.TextInput(attrs={'class': 'form-control', 'required':'required'}),
             'fecha_termino': DateInput(
-                attrs={'class': 'form-control', 'required': 'required', 'id': 'id_fecha_termino'}),
+                attrs={'class': 'form-control', 'required': 'required'}),
             'id_periodo_seguimiento': forms.Select(attrs={'class': 'form-control', 'required':'required'}),
 
         }
@@ -99,6 +101,6 @@ class valida_cierreform(forms.ModelForm):
     class Meta:
         model = Glo_validacion
         fields = [
-            'fecha_termino',
+       #     'fecha_termino',
 
         ]

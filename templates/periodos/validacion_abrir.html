@@ -102,7 +102,10 @@
 
  $('#confirmar').click(function() {
     var fecha_actual= moment();
-    var fecha_termino= $('#id_fecha_termino').val()
+    var fecha_termino='';
+   var fecha_termino= $('#id_fecha_termino').val()
+
+
 
     if (moment(fecha_termino).isSameOrBefore(fecha_actual)) {
 
@@ -119,11 +122,12 @@
     if ($('#id_descripcion_validacion').val() != "" && $('#id_id_periodo_seguimiento').val() != "" && $('#id_fecha_termino').val() != ""){
 
 
+
                 $( this ).hide();
                 $( '#cancelar' ).hide();
                  $( '#enviar' ).fadeIn();
                  $("#mjeError").css("display","none");
-                 $('#id_fecha_termino').prop( "readonly", true );
+                $('#id_fecha_termino').prop( "readonly", true );
                  $('#id_id_periodo_seguimiento').prop( "readonly", true );
 
             }

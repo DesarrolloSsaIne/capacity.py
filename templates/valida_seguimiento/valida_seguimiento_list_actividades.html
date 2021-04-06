@@ -55,7 +55,15 @@ Actividades Asociadas al Objetivo
 				</thead>
 				<tbody>
 					{%  for objetivo in object_list %}
-					{% if objetivo.id_estado_actividad_id == 8 %} <!--c-42-->
+
+
+					{% if objetivo.id_estado_actividad_id == 9 and objetivo.validada == 0 %} <!--c-42-->
+
+					{% elif objetivo.id_estado_actividad_id == 7 %} <!--c-42-->
+
+					{% elif objetivo.id_estado_actividad_id == 1 and objetivo.validada == 0%} <!--c-42-->
+
+					{% elif objetivo.id_estado_actividad_id == 8 and objetivo.validada == 0 %} <!--c-42-->
 
 					{% elif objetivo.id_estado_actividad_id == 3 and objetivo.fecha_reprogramacion_termino == None %} <!--c-42-->
 
