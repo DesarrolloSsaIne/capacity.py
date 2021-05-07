@@ -354,6 +354,7 @@ class ValidacionAbrirPeriodo(SuccessMessageMixin, CreateView):
 
 
 def PeriodoActual():
+
     try:
         periodo_actual = Glo_Periodos.objects.get(id_estado=1)
     except Glo_Periodos.DoesNotExist:
@@ -366,7 +367,7 @@ def EnviarCorreoCierreValidacion():
     controladorPlan = Ges_Jefatura.objects.values_list('id_user__email' , flat=True).filter(id_periodo=PeriodoActual())
 
     ahora = datetime.now()
-    fecha = ahora.strftime("%d" + " de " + "%B" + " de " + "%Y" + " a las " + "%H:%M")
+    fecha = ahora.strftime("%d" + " de " + "%B" + " de " + "%Y")
 
     idcorreoJefatura=list(controladorPlan)
 
@@ -383,7 +384,7 @@ def EnviarCorreoCierreSeguimiento():
     controladorPlan = Ges_Jefatura.objects.values_list('id_user__email' , flat=True).filter(id_periodo=PeriodoActual())
 
     ahora = datetime.now()
-    fecha = ahora.strftime("%d" + " de " + "%B" + " de " + "%Y" + " a las " + "%H:%M")
+    fecha = ahora.strftime("%d" + " de " + "%B" + " de " + "%Y")
 
     idcorreoJefatura=list(controladorPlan)
 
@@ -404,7 +405,7 @@ def EnviarCorreoAbrirValidacion():
         id_periodo=PeriodoActual())
 
     ahora = datetime.now()
-    fecha = ahora.strftime("%d" + " de " + "%B" + " de " + "%Y" + " a las " + "%H:%M")
+    fecha = ahora.strftime("%d" + " de " + "%B" + " de " + "%Y")
 
     idcorreoJefatura=list(controladorPlan)
 
@@ -424,7 +425,7 @@ def EnviarCorreoAbrirSeguimiento():
         id_periodo=PeriodoActual())
 
     ahora = datetime.now()
-    fecha = ahora.strftime("%d" + " de " + "%B" + " de " + "%Y" + " a las " + "%H:%M")
+    fecha = ahora.strftime("%d" + " de " + "%B" + " de " + "%Y")
 
     idcorreoJefatura=list(controladorPlan)
 

@@ -72,12 +72,12 @@ if __name__=='__main__':
     # Entity: Lo entrega Segpres
     # Run: Rut del firmante
     # Expiration: En caso de ser atendida es el tiempo que dura el token activo
-    # Purpose: Atentido / Desatendido
+    # Purpose: Este campo se llena en relación al tipo de certificado que se quiera utilizar (Resolución Exenta, Propósito General, Desatendido)
     # a08253d568bf46f2a5ef8217dbb06da7 : Secreto entregado por Segpres para la aplicación que se solicita
 
 
     tokenDesatendido = jwt.encode({'entity': 'Instituto Nacional de Estadísticas',
-                        'run':'10685080',
+                        'run':'14202112',
                         'expiration': exp,
                         'purpose':'Desatendido'},
                         'a08253d568bf46f2a5ef8217dbb06da7', algorithm='HS256').decode('utf-8')

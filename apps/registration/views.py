@@ -10,6 +10,7 @@ from apps.registration.models import logAcceso
 from django.views.generic import ListView
 
 def login(request):
+
     if request.method == 'POST':
         form = AuthenticationForm(request=request, data=request.POST)
 

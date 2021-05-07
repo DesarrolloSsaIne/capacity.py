@@ -74,7 +74,7 @@ class UnidadesList(ListView): #Modificado por JR- sprint 8 - OK
                     count_id_actividad=Count('id'))
 
                 count_actividades = Ges_Actividad.objects.values('id_controlador').filter(Q(
-                    id_controlador=OuterRef('pk')) & Q(id_estado_actividad__in=[2, 3, 5, 10])).annotate(
+                    id_controlador=OuterRef('pk')) & Q(id_estado_actividad__in=[2, 4, 8, 9, 3, 5, 10])).annotate(
                     count_id_actividad_valida=Count('id'))
 
                 id_controlador = Ges_Controlador.objects.filter(
@@ -691,10 +691,10 @@ def export_users_xls_valida_seguimiento(request, *args, **kwargs):
 
     # Define the titles for columns
 
-    columns = ['Unidad',
+    columns = ['Id',
+               'Unidad',
                'Objetivo Vinculado',
                'Actividad',
-
                'Periodicidad',
                'Producto Estadístico',
                'Hora x Actividad',
@@ -737,7 +737,7 @@ def export_users_xls_valida_seguimiento(request, *args, **kwargs):
             else:
                 validadaStr='Rechazada'
 
-            row = [
+            row = [actividad.id,
                 str(actividad.id_objetivo_operativo.id_cuarto_nivel),
                 str(actividad.id_objetivo_operativo),
                 actividad.descripcion_actividad,
@@ -768,9 +768,9 @@ def export_users_xls_valida_seguimiento(request, *args, **kwargs):
             if (actividad.validada == 1):
                 validadaStr= 'Aceptada'
             else:
-                validadaStr='Rechazada'
+                validadaStr= 'Rechazada'
 
-            row = [
+            row = [actividad.id,
                 str(actividad.id_objetivo_tacticotn.id_tercer_nivel),
                 str(actividad.id_objetivo_tacticotn),
                 actividad.descripcion_actividad,
@@ -789,7 +789,7 @@ def export_users_xls_valida_seguimiento(request, *args, **kwargs):
                 actividad.fecha_reprogramacion_inicio,
                 actividad.fecha_reprogramacion_termino,
                 actividad.justificacion,
-                actividad.validada,
+                validadaStr,
                 actividad.fecha_registro,
 
 
@@ -805,7 +805,7 @@ def export_users_xls_valida_seguimiento(request, *args, **kwargs):
             else:
                 validadaStr='Rechazada'
 
-            row = [
+            row = [actividad.id,
                 str(actividad.id_objetivo_tactico.id_segundo_nivel),
                 str(actividad.id_objetivo_tactico),
                 actividad.descripcion_actividad,
@@ -824,7 +824,7 @@ def export_users_xls_valida_seguimiento(request, *args, **kwargs):
                 actividad.fecha_reprogramacion_inicio,
                 actividad.fecha_reprogramacion_termino,
                 actividad.justificacion,
-                actividad.validada,
+                validadaStr,
                 actividad.fecha_registro,
 
             ]

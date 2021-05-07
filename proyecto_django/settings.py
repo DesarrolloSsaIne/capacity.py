@@ -186,11 +186,22 @@ WSGI_APPLICATION = 'proyecto_django.wsgi.application'
 #        'PORT': 3306,
 #    }
 # }
+#
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'mysql_cymysql',
+#         'NAME': 'django_local_uno_desa',
+#         'USER': 'root',
+#         'PASSWORD': 'admin',
+#         'HOST': 'localhost',
+#         'PORT': 3306,
+#     }
+# }
 
 DATABASES = {
     'default': {
         'ENGINE': 'mysql_cymysql',
-        'NAME': 'django_local_uno_desa',
+        'NAME': 'prueba_16042021',
         'USER': 'root',
         'PASSWORD': 'admin',
         'HOST': 'localhost',
@@ -213,9 +224,9 @@ DATABASES = {
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'mysql_cymysql',
-#         'NAME': 'CAPACITY_DB_PRDx',
-#         'USER': 'jasonx',
-#         'PASSWORD': '1SUMU79Sx',
+#         'NAME': 'CAPACITY_DB_PRD',
+#         'USER': 'jason',
+#         'PASSWORD': '1SUMU79S',
 #         'HOST': '10.91.163.94',
 #         'PORT': 3306,
 #     }

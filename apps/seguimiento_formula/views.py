@@ -643,7 +643,7 @@ def UpdateFlag(id_controlador,periodo_actual):
 
 def UpdateFlagCierre(id_controlador,periodo_actual):
     Ges_Actividad.objects.filter(Q(id_controlador=id_controlador) & Q(id_periodo=periodo_actual) & (
-                ~Q(id_estado_actividad=7) & ~Q(id_estado_actividad=9))).update(validada=0)
+                ~Q(id_estado_actividad=7) | ~Q(id_estado_actividad=9))).update(validada=0)
     Ges_Actividad.objects.filter(Q(id_controlador=id_controlador) & Q(id_periodo=periodo_actual) & (
                 Q(id_estado_actividad=3) & (~Q(fecha_real_inicio__isnull=True) & Q(fecha_reprogramacion_termino__isnull=True)))).update(flag_tmp=1)
 
