@@ -1,0 +1,8 @@
+Sistema desarrollado en Python 3 con framework Django 2.2 con base de datos MariaDb
+
+Recordar que para implementar este sistema primero se debe crear el proyecto python con su respectivo proyecto django, luego solo traspasar las carpetas de apps, static y templates. Además de configurar el settings. Es importante recalcar que para el correcto funcionamiento de cada complemento, estos deben ser instalados en la versión utilizada, para lo cual se utiliza el archivo requirement.txt
+
+
+Las instrucciones para levantar un servidor en Centos 7 con su respectivo sitio se encuentra en la carpeta Docs
+
+Para levantar un sitio en local revisar Proyecto Pyhton+Django en Docs
