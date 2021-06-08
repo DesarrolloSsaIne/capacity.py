@@ -201,7 +201,7 @@ WSGI_APPLICATION = 'proyecto_django.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'mysql_cymysql',
-        'NAME': 'prueba_16042021',
+        'NAME': 'prueba_11052021',
         'USER': 'root',
         'PASSWORD': 'admin',
         'HOST': 'localhost',
