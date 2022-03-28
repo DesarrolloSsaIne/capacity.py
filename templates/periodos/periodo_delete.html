@@ -2,7 +2,7 @@
 				<div class="panel-actions">
 				<a class="fa fa-times" data-dismiss="modal"></a>
 				</div>
-				<h2 class="panel-title">Cerrar Periodo</h2>
+				<h2 class="panel-title">Cerrar Periodo Anual en Curso</h2>
 			</header>
 <form method="post" action="">
   {% csrf_token %}
@@ -14,8 +14,10 @@
             <i class="fa fa-warning"></i>
                 </div>
             <div class="modal-text">
-                <h4>Cerrar Periodo</h4>
-                <p> </p>
+                <p style="font-size:16px;font-weight:bold; color:grey;"> Usuario Usuario:</p>
+                    <p style="color:red; font-size:16px;">¿Está seguro que desea cerrar el periodo en curso?.</p>
+                    <p style="color:red; font-size:16px; font-weight:bold;">¡Al realizar esta acción no podrá volver a abrir el mismo periodo!.</p>
+
 
 
 
@@ -24,8 +26,26 @@
     </div>
 
   <div class="modal-footer">
-    <button class="btn btn-danger" type="submit" >Eliminar</button>
-     <button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
+      			<div id="enviar" style="display:none; text-align:left; " class="alert alert-info" role="alert">
+            Creando Respaldo y Enviando Correos, favor espere...
+            </div>
+    <button class="btn btn-danger" id="confirmar"  type="submit" >Cerrar Periodo en Curso</button>
+     <button class="btn btn-default" type="button" id="cancelar" data-dismiss="modal">Cancelar</button>
   </div>
 
 </form>
+<script>
+
+ $('#confirmar').click(function() {
+  //  if (($('#id_fecha_inicio_corte').val() != "")  && ($('#id_fecha_termino_corte').val() != "")){
+
+
+                $( this ).hide();
+                $( '#cancelar' ).hide();
+                 $( '#enviar' ).fadeIn();
+                 $('#id_fecha_inicio_corte').prop( "readonly", true );
+                 $('#id_fecha_termino_corte').prop( "readonly", true );
+
+            //}
+ });
+</script>

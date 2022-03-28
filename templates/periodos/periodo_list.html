@@ -63,16 +63,19 @@
 
 
     												 <td style="width:120px; text-align:center;">
-<!--														{% if periodo.id_estado.id == 1  %}  <button type="button" title="Actualizar Registro" class="update btn btn-sm btn-primary" data-id="{% url 'periodo_editar' periodo.id %}" >-->
+<!--														{% if periodo.id_estado.id == 1  %}  <button type="button" title="Actualizar Registro" class="update btn btn-sm btn-primary"  >-->
 <!--														<span class="fa fa-pencil"></span></button>{%endif%}-->
-<!--														 <button type="button" title="Eliminar Registro" class="delete btn btn-sm btn-danger" data-id="{% url 'periodo_delete' periodo.id %}">-->
+<!--														 <button type="button" title="Eliminar Registro" class="delete btn btn-sm btn-danger" >-->
 <!--      													  <span class="fa fa-trash-o"></span></button>-->
-														 {% if periodo.id_estado.id == 1  %}  <button type="button" title="Cerrar Periodo" class="delete btn btn-sm btn-danger" data-id="{% url 'periodo_delete' periodo.id %}">
+														 {% if periodo.id_estado.id == 1  %}  <button type="button" title="Cerrar Periodo" class="delete btn btn-sm btn-danger" data-id="{% url 'periodo_anual_cerrar' periodo.id %}">
       													  <span class="fa fa-lock"></span></button>{%endif%}
 														 {% if periodo.id_estado.id == 1  %} <a type="button"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" title="Administrar Periodos de Seguimiento" class="objetivo btn btn-sm btn-success" href="{% url 'seguimiento_listar' periodo.id %}">
       													  <span class="fa fa-flag-checkered"></span></a>{%endif%}
 															{% if periodo.id_estado.id == 1  %} <a type="button"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" title="Administrar Periodos de Validación" class="objetivo btn btn-sm btn-success" href="{% url 'validacion_listar' periodo.id %}">
       													  <span class="fa fa-check-square-o"></span></a>{%endif%}
+
+														 	{% if periodo.id_estado.id == 3  %} <a type="button"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" title="Descargar Respaldo del Proceso" class="objetivo btn btn-sm btn-success" href="{% url 'exportarBackup' periodo.id %}">
+      													  <span class="fa fa-file-excel-o"></span></a>{%endif%}
                                                     </td>
                                                 </tr>
                                             {% endfor %}
@@ -89,7 +92,7 @@
 
 <!--Cabecera del modal -->
 <div class="modal fade" tabindex="-1" role="dialog" id="modalCreate">
-  <div class="modal-dialog modal-lg" role="document">
+  <div class="modal-dialog modal-md" role="document">
 	<div class="modal-content">
 
     </div>
@@ -134,6 +137,7 @@
   	 $(".create").modalForm(  {formURL: "{% url 'periodos_crear' %}", modalID: $("#modalCreate")});
 
 
+
    	 // JS modal actualiza Registro
    $(".update").each(function () {
    $(this).modalForm({formURL: $(this).data('id'),  modalID: $("#modalUpdate")});
@@ -148,7 +152,7 @@
 
 
      // Js Muestra/Oculta Mensaje Success
-   	 $(".alert").fadeTo(5000, 500).slideUp( "slow", function() {
+   	 $(".alert").fadeTo(15000, 500).slideUp( "slow", function() {
      $(this).remove();
   });
 

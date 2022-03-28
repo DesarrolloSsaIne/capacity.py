@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from apps.periodos.models import Glo_Seguimiento
 # Create your views here.
-from apps.actividades.models import Ges_Actividad, Ges_log_reportes, Ges_Actividad_Historia
+from apps.actividades.models import Ges_Actividad, Ges_log_reportes, Ges_Actividad_Historia, Ges_Observaciones_valida
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.db.models import Case, CharField, Value, When
 from apps.controlador.models import Ges_Controlador
@@ -146,6 +146,8 @@ class ActividadesObjetivosList(ListView): #clase modificada por JR- sprint 8 - O
             context['estado_seguimiento'] = 0
             return context
 
+
+
 class ActividadesDetail(ListView): #clase modificada por JR- sprint 8 - Ok
     model = Ges_Actividad
     template_name = 'seguimiento_formula/seguimiento_actividades_detalle.html'
@@ -160,7 +162,6 @@ class ActividadesDetail(ListView): #clase modificada por JR- sprint 8 - Ok
         except Glo_Periodos.DoesNotExist:
             return None
 
-
         try:
             #periodo_seguimiento = Glo_Seguimiento.objects.get(Q(id_estado_seguimiento=1) & Q(id_periodo=periodo_actual.id))
             periodo_seguimiento = Glo_Seguimiento.objects.filter(
@@ -168,7 +169,6 @@ class ActividadesDetail(ListView): #clase modificada por JR- sprint 8 - Ok
         except:
             periodo_seguimiento=None
             pass
-
 
         nombre = ""
         if self.request.session['id_orden']==2:
@@ -225,6 +225,12 @@ class ActividadesDetail(ListView): #clase modificada por JR- sprint 8 - Ok
 
         self.request.session['id_objetivo']=self.kwargs['pk']
         return context
+
+
+
+
+
+
 
 
 class ActividadEdit(SuccessMessageMixin, UpdateView ):
@@ -370,6 +376,33 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
             messages.error(self.request,
                            "Error interno: No se ha creado el registro. Comuníquese con el administrador.")
             return HttpResponseRedirect('/seguimiento_formula/detalle/' + str(self.request.session['id_objetivo']))
+
+
+class ObservacionesListar(ListView):
+    model = Ges_Observaciones_valida
+    template_name = 'seguimiento_formula/seguimiento_listar_comentarios.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ObservacionesListar, self).get_context_data(**kwargs)
+
+        try:
+            periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+        except Glo_Periodos.DoesNotExist:
+            return None
+
+        try:
+            lista_comentarios = Ges_Observaciones_valida.objects.filter(id_actividad=self.kwargs['pk'])
+        except:
+            lista_comentarios = None
+            pass
+
+        nombre = ""
+
+        nombre = Ges_Actividad.objects.get(id=self.kwargs['pk'])
+        context['object_list'] = lista_comentarios
+        context['nombre_actividad'] = {'nombre': nombre}
+
+        return context
 
 
 class ActividadDetallesVer(SuccessMessageMixin, UpdateView):
@@ -595,6 +628,9 @@ def ActividadesHistoria(id_periodo_seguimiento, id_actividad,fecha_reprogramacio
 
         )
         return None
+
+
+
 
 def CopiarActividades_a_Historial(id_periodo_seguimiento, id_controlador, periodo_actual):
 
@@ -829,6 +865,105 @@ def export_users_xls_seguimiento(request, *args, **kwargs):
                 actividad.validada,
 
             ]
+
+        # Assign the data for each cell of the row
+        for col_num, cell_value in enumerate(row, 1):
+            cell = worksheet.cell(row=row_num, column=col_num)
+            cell.value = cell_value
+
+            if col_num == 12:
+                cell.number_format = 'dd/mm/yyyy'
+            if col_num == 13:
+                cell.number_format = 'dd/mm/yyyy'
+            if col_num == 15:
+                cell.number_format = 'dd/mm/yyyy'
+            if col_num == 16:
+                cell.number_format = 'dd/mm/yyyy'
+            if col_num == 17:
+                cell.number_format = 'dd/mm/yyyy'
+            if col_num == 18:
+                cell.number_format = 'dd/mm/yyyy'
+
+            if col_num == 20:
+                if cell.value == 0:
+                    cell.value='No Reportado'
+                if cell.value == 1:
+                    cell.value='Aceptado'
+                if cell.value == 2:
+                    cell.value='Rechazado'
+
+
+    workbook.save(response)
+
+
+    return response
+
+
+def export_users_xls_seguimiento_comentarios(request, *args, **kwargs):
+    try:
+        periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+    except Glo_Periodos.DoesNotExist:
+        return None
+
+    id_controlador = kwargs['pk']
+
+
+    nivel=Ges_Controlador.objects.get(Q(id=id_controlador) & Q(id_periodo=periodo_actual))
+
+    nivel= nivel.nivel_inicial
+
+
+    observaciones = Ges_Observaciones_valida.objects.filter(Q(id_controlador=id_controlador) &
+                                                            Q(id_periodo=periodo_actual))
+
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
+    response['Content-Disposition'] = 'attachment; filename={date}-Plan_de_Gestion.xlsx'.format(
+        date=datetime.now().strftime('%d/%m/%Y'),
+    )
+    workbook = Workbook()
+
+
+    # Get active worksheet/tab
+    worksheet = workbook.active
+    worksheet.title = 'reporte_seguimiento'
+
+    # Define the titles for columns
+
+    columns = ['Id Actividad',
+               'Actividad',
+               'Observación',
+               'Fecha Registro',
+               'Periodo',
+               'Periodo Validación',
+               'Jefatura',
+               'Area'
+               ]
+
+    row_num = 1
+
+    # Assign the titles for each cell of the header
+    for col_num, column_title in enumerate(columns, 1):
+        cell = worksheet.cell(row=row_num, column=col_num)
+        cell.value = column_title
+
+    # Iterate through all movies
+    for observacion in observaciones:
+        row_num += 1
+
+        row =''
+
+        row = [str(observacion.id_actividad.id),
+               observacion.id_actividad.descripcion_actividad,
+               observacion.descripcion_observacion,
+               observacion.fecha_registro,
+               observacion.id_periodo.descripcion_periodo,
+               observacion.id_periodo_valida.descripcion_validacion,
+               observacion.jefatura_primerarevision.id_user.username,
+               str(observacion.id_controlador.id_jefatura.id_nivel.descripcion_nivel),
+
+               ]
 
         # Assign the data for each cell of the row
         for col_num, cell_value in enumerate(row, 1):

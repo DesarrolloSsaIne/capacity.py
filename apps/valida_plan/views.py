@@ -35,6 +35,8 @@ from apps.gestion_horas.models import Ges_Registro_Horas
 from apps.eje.models import Ges_Ejes
 from django.contrib import messages
 from django.core.mail import EmailMessage,send_mass_mail
+from openpyxl import Workbook
+from django.http import HttpResponse
 
 
 
@@ -783,7 +785,9 @@ class SeguimientoUnidadesList(ListView): #Modificado por JR- sprint 10
 
         try:
              estado= Glo_Seguimiento.objects.filter(id_periodo=PeriodoActual()).order_by('-id')[0]
-        except Glo_Seguimiento.DoesNotExist:
+
+
+        except IndexError:
              estado = 0
 
         context['estado_seguimiento'] = estado
@@ -1255,4 +1259,186 @@ def PeriodoActual():
         return None
     return periodo_actual
 
+
+def export_users_xls(request, *args, **kwargs):
+    try:
+        periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+    except Glo_Periodos.DoesNotExist:
+        return None
+
+    id_controlador = kwargs['pk']
+
+
+    nivel=Ges_Controlador.objects.get(Q(id=id_controlador) & Q(id_periodo=periodo_actual))
+
+    nivel= nivel.nivel_inicial
+
+
+    actividades = Ges_Actividad.objects.filter(Q(id_controlador=id_controlador) &
+                                                            Q(id_periodo=periodo_actual))
+
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
+    response['Content-Disposition'] = 'attachment; filename={date}-Plan_de_Gestion.xlsx'.format(
+        date=datetime.now().strftime('%d/%m/%Y'),
+    )
+    workbook = Workbook()
+
+
+    # Get active worksheet/tab
+    worksheet = workbook.active
+    worksheet.title = 'reporte_seguimiento'
+
+    # Define the titles for columns
+
+    columns = ['Unidad',
+               'id Actividad',
+               'Actividad',
+               'Objetivo Vinculado',
+               'Periodicidad',
+               'Producto Estadístico',
+               'Hora x Actividad',
+               'Volumen',
+               'N° Personas Asignadas',
+               'Total Horas',
+               'Cargo',
+               'Fecha Incio Actividad',
+               'Fecha Término Actividad',
+               'Estado Actividad',
+               'Fecha Real Inicio',
+               'Fecha Real Finalización',
+               'Reprogramación Fecha Inicio',
+               'Reprogramación Fecha Término',
+               'Justificación Desviación',
+               'Respuesta Jefatura'
+
+               ]
+
+    row_num = 1
+
+    # Assign the titles for each cell of the header
+    for col_num, column_title in enumerate(columns, 1):
+        cell = worksheet.cell(row=row_num, column=col_num)
+        cell.value = column_title
+
+    # Iterate through all movies
+    for actividad in actividades:
+        row_num += 1
+
+        row =''
+
+        if nivel==4:
+
+            row = [
+                actividad.id_controlador.id_jefatura.id_nivel.descripcion_nivel,
+                actividad.id,
+                actividad.descripcion_actividad,
+                str(actividad.id_objetivo_operativo) ,
+                str(actividad.id_periodicidad),
+                str(actividad.id_producto_estadistico),
+                actividad.horas_actividad,
+                actividad.volumen,
+                actividad.personas_asignadas,
+                actividad.total_horas,
+                str(actividad.id_familia_cargo),
+                actividad.fecha_inicio_actividad,
+                actividad.fecha_termino_actividad,
+                str(actividad.id_estado_actividad),
+                actividad.fecha_real_inicio,
+                actividad.fecha_real_termino,
+                actividad.fecha_reprogramacion_inicio,
+                actividad.fecha_reprogramacion_termino,
+                actividad.justificacion,
+                actividad.validada,
+
+
+            ]
+
+        if nivel==3:
+
+            row = [
+                actividad.id_controlador.id_jefatura.id_nivel.descripcion_nivel,
+                actividad.id,
+                actividad.descripcion_actividad,
+                str(actividad.id_objetivo_tacticotn) ,
+                str(actividad.id_periodicidad),
+                str(actividad.id_producto_estadistico),
+                actividad.horas_actividad,
+                actividad.volumen,
+                actividad.personas_asignadas,
+                actividad.total_horas,
+                str(actividad.id_familia_cargo),
+                actividad.fecha_inicio_actividad,
+                actividad.fecha_termino_actividad,
+                str(actividad.id_estado_actividad),
+                actividad.fecha_real_inicio,
+                actividad.fecha_real_termino,
+                actividad.fecha_reprogramacion_inicio,
+                actividad.fecha_reprogramacion_termino,
+                actividad.justificacion,
+                actividad.validada,
+
+
+
+            ]
+
+
+
+        if nivel==2:
+
+            row = [
+                actividad.id_controlador.id_jefatura.id_nivel.descripcion_nivel,
+                actividad.id,
+                actividad.descripcion_actividad,
+                str(actividad.id_objetivo_tactico) ,
+                str(actividad.id_periodicidad),
+                str(actividad.id_producto_estadistico),
+                actividad.horas_actividad,
+                actividad.volumen,
+                actividad.personas_asignadas,
+                actividad.total_horas,
+                str(actividad.id_familia_cargo),
+                actividad.fecha_inicio_actividad,
+                actividad.fecha_termino_actividad,
+                str(actividad.id_estado_actividad),
+                actividad.fecha_real_inicio,
+                actividad.fecha_real_termino,
+                actividad.fecha_reprogramacion_inicio,
+                actividad.fecha_reprogramacion_termino,
+                actividad.justificacion,
+                actividad.validada,
+
+            ]
+
+        # Assign the data for each cell of the row
+        for col_num, cell_value in enumerate(row, 1):
+            cell = worksheet.cell(row=row_num, column=col_num)
+            cell.value = cell_value
+
+
+            if col_num == 12:
+                cell.number_format = 'dd/mm/yyyy'
+            if col_num == 13:
+                cell.number_format = 'dd/mm/yyyy'
+            if col_num == 15:
+                cell.number_format = 'dd/mm/yyyy'
+            if col_num == 16:
+                cell.number_format = 'dd/mm/yyyy'
+            if col_num == 17:
+                cell.number_format = 'dd/mm/yyyy'
+            if col_num == 18:
+                cell.number_format = 'dd/mm/yyyy'
+            if col_num == 20:
+                if cell.value == 0:
+                    cell.value='No Reportado'
+                if cell.value == 1:
+                    cell.value='Aceptado'
+                if cell.value == 2:
+                    cell.value='Rechazado'
+
+    workbook.save(response)
+
+
+    return response
 

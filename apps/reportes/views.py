@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 
 from apps.actividades.models import Ges_Actividad, Ges_Actividad_Historia
+from apps.estructura.models import Ges_Niveles
 from django.db.models import Q
 from django.views.generic import TemplateView
 from django.http import HttpResponse
@@ -11,83 +12,6 @@ from django.http import HttpResponseRedirect
 from django.db.models import Subquery, OuterRef, Count, Sum
 from django.db.models.functions import Extract
 from django.http import HttpResponse
-
-from django.shortcuts import render_to_response
-#
-# def GenerarReporte( request):
-#     template_name = 'reportes/report_seguimiento.html'
-#
-#     try:
-#         periodo_actual = Glo_Periodos.objects.get(id_estado=1)
-#     except Glo_Periodos.DoesNotExist:
-#         return None
-#
-#     lista_datos_unidades_select = Ges_Actividad_Historia.objects.annotate(
-#         month=Extract('id_periodo_seguimiento__fecha_termino_corte', 'month')).filter(
-#         Q(id_periodo=periodo_actual)).values(
-#         'id_controlador__nivel_inicial',
-#         'id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel__descripcion_nivel',
-#         # N4
-#         'id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__descripcion_nivel',  # N3
-#         'id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__descripcion_nivel',  # N2
-#
-#         'id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel__id',  # N4_id
-#         'id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__id',  # N3_id
-#         'id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__id',  # N2_id
-#     ).distinct()
-#
-#     # context['lista_datos_unidades'] = lista_datos_unidades_select
-#
-#     meses = Ges_Actividad_Historia.objects.annotate(
-#         month=Extract('id_periodo_seguimiento__fecha_termino_corte', 'month')).filter(
-#         Q(id_periodo=periodo_actual)).values('month').distinct().order_by('-month')
-#
-#
-#
-#     porcentaje_analista = ''
-#     if request.method=='POST':
-#
-#         unidad_filtro = request.POST['unidad_filtro']
-#         mes_filtro = request.POST['mes_filtro']
-#
-#         nivel = str(unidad_filtro[0:1])
-#         id_nivel = str(unidad_filtro[2:5])
-#
-#     return render(request, template_name, {'meses_periodo': meses,
-#                    'lista_datos_unidades': lista_datos_unidades_select,'porcentaje_analista': porcentaje_analista, } )
-#
-#
-#     try:
-#         periodo_actual = Glo_Periodos.objects.get(id_estado=1)
-#     except Glo_Periodos.DoesNotExist:
-#         return None
-#
-#     lista_datos_unidades = Ges_Actividad_Historia.objects.annotate(
-#         month=Extract('id_periodo_seguimiento__fecha_termino_corte', 'month')).filter(
-#         Q(id_periodo=periodo_actual)).values(
-#         'id_controlador__nivel_inicial',
-#         'id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel__descripcion_nivel',  # N4
-#         'id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__descripcion_nivel',  # N3
-#         'id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__descripcion_nivel',  # N2
-#
-#         'id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel__id',  # N4_id
-#         'id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__id',  # N3_id
-#         'id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__id',  # N2_id
-#     ).distinct()
-#     from django.http import JsonResponse
-#
-#     context = {"object_unidades": lista_datos_unidades}
-#
-#
-#
-#
-#
-#     return render(request, template_name, context)
-#
-#
-#
-# # # # # # # # # # # # # # # # # # # # # # #  FIN GRÁFICO CEAP  # # # # # # # # # # # # # # # # # # # # # #
-
 
 
 
@@ -136,13 +60,13 @@ class GeneraReportCurvaEjecucion(TemplateView):
         unidad_seleccionada=''
 
         if nivel == '2':
-            unidad_seleccionada= Ges_Actividad_Historia.objects.filter(id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel=id_nivel)
+            unidad_seleccionada= Ges_Actividad_Historia.objects.filter(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel=id_nivel)
 
         if nivel == '3':
-            unidad_seleccionada= Ges_Actividad_Historia.objects.filter(id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel=id_nivel)
+            unidad_seleccionada= Ges_Actividad_Historia.objects.filter(id_controlador__id_jefatura__id_nivel__id_tercer_nivel=id_nivel)
 
         if nivel == '4':
-            unidad_seleccionada= Ges_Actividad_Historia.objects.filter(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel=id_nivel)
+            unidad_seleccionada= Ges_Actividad_Historia.objects.filter(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel=id_nivel)
 
 
 
@@ -152,20 +76,26 @@ class GeneraReportCurvaEjecucion(TemplateView):
             return None
 
 
+        lista_datos_unidades = Ges_Niveles.objects.values(
+            'orden_nivel',
+            'id_cuarto_nivel__descripcion_nivel',
+            'id_tercer_nivel__descripcion_nivel',
+            'id_segundo_nivel__descripcion_nivel',
+            # 'id_primer_nivel__descripcion_nivel',
 
-        lista_datos_unidades_select = Ges_Actividad_Historia.objects.annotate(
-            month=Extract('id_periodo_seguimiento__fecha_termino_corte', 'month')).filter(
-            Q(id_periodo=periodo_actual)).values(
-            'id_controlador__nivel_inicial',
-            'id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel__descripcion_nivel',
-            # N4
-            'id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__descripcion_nivel',  # N3
-            'id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__descripcion_nivel',  # N2
+            'id_cuarto_nivel_id',
+            'id_tercer_nivel_id',
+            'id_segundo_nivel_id',
+            # 'id_primer_nivel_id',
+            # # N4
+            # 'id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__descripcion_nivel',  # N3
+            # 'id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__descripcion_nivel',  # N2
+            #
+            # 'id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel__id',  # N4_id
+            # 'id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__id',  # N3_id
+            # 'id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__id',  # N2_id
+        ).exclude(orden_nivel=1)
 
-            'id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel__id',  # N4_id
-            'id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__id',  # N3_id
-            'id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__id',  # N2_id
-        ).distinct()
 
 
         # # # # # # # # # # # # # # # # # # # # # #  INICIO GRÁFICO CEAP  # # # # # # # # # # # # # # # # # # # # # #
@@ -187,7 +117,7 @@ class GeneraReportCurvaEjecucion(TemplateView):
         if nivel == '2':
             for i in meses:
                 val = Ges_Actividad.objects.filter(
-                    Q(id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel=id_nivel) & Q(
+                    Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel=id_nivel) & Q(
                         fecha_termino_actividad__month=i) & Q(id_periodo=periodo_actual)).exclude(id_estado_actividad_id__in=estados_excluidos).count()
                 ValMeses.append(val)
 
@@ -195,14 +125,14 @@ class GeneraReportCurvaEjecucion(TemplateView):
         if nivel == '3':
             for i in meses:
                 val = Ges_Actividad.objects.filter(
-                    Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel=id_nivel) & Q(
+                    Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel=id_nivel) & Q(
                         fecha_termino_actividad__month=i) & Q(id_periodo=periodo_actual)).exclude(id_estado_actividad_id__in=estados_excluidos).count()
                 ValMeses.append(val)
 
         if nivel == '4':
             for i in meses:
                 val = Ges_Actividad.objects.filter(
-                    Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel=id_nivel) & Q(
+                    Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel=id_nivel) & Q(
                         fecha_termino_actividad__month=i) & Q(id_periodo=periodo_actual)).exclude(id_estado_actividad_id__in=estados_excluidos).count()
                 ValMeses.append(val)
 
@@ -217,21 +147,21 @@ class GeneraReportCurvaEjecucion(TemplateView):
 
         if nivel == '2':
             for i in meses:
-                val = Ges_Actividad.objects.filter(Q(id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel=id_nivel) & Q(fecha_termino_actividad__month=i) & Q(id_periodo=periodo_actual) & (
-                            Q(id_estado_actividad_id=9) | Q(id_estado_actividad_id=7))).exclude(id_estado_actividad_id__in=estados_excluidos).count()
+                val = Ges_Actividad.objects.filter(Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel=id_nivel) & Q(fecha_termino_actividad__month=i) & Q(id_periodo=periodo_actual) & (
+                            Q(id_estado_actividad_id=8) | Q(id_estado_actividad_id=7))).exclude(id_estado_actividad_id__in=estados_excluidos).count()
                 ValMesesEjec.append(val)
 
         if nivel == '3':
             for i in meses:
-                val = Ges_Actividad.objects.filter(Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel=id_nivel) & Q(fecha_termino_actividad__month=i) & Q(id_periodo=periodo_actual) & (
-                            Q(id_estado_actividad_id=9) | Q(id_estado_actividad_id=7))).exclude(id_estado_actividad_id__in=estados_excluidos).count()
+                val = Ges_Actividad.objects.filter(Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel=id_nivel) & Q(fecha_termino_actividad__month=i) & Q(id_periodo=periodo_actual) & (
+                            Q(id_estado_actividad_id=8) | Q(id_estado_actividad_id=7))).exclude(id_estado_actividad_id__in=estados_excluidos).count()
                 ValMesesEjec.append(val)
 
 
         if nivel == '4':
             for i in meses:
-                val = Ges_Actividad.objects.filter(Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel=id_nivel) & Q(fecha_termino_actividad__month=i) & Q(id_periodo=periodo_actual) & (
-                            Q(id_estado_actividad_id=9) | Q(id_estado_actividad_id=7))).exclude(id_estado_actividad_id__in=estados_excluidos).count()
+                val = Ges_Actividad.objects.filter(Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel=id_nivel) & Q(fecha_termino_actividad__month=i) & Q(id_periodo=periodo_actual) & (
+                            Q(id_estado_actividad_id=8) | Q(id_estado_actividad_id=7))).exclude(id_estado_actividad_id__in=estados_excluidos).count()
                 ValMesesEjec.append(val)
 
         for i in range(0, Mes):
@@ -284,576 +214,13 @@ class GeneraReportCurvaEjecucion(TemplateView):
         if nivel == '2':
 
             suma_total_unidad= list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel=id_nivel)  & Q(id_periodo=periodo_actual) &
+                Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel=id_nivel)  & Q(id_periodo=periodo_actual) &
                 Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
                 Sum('id_actividad__total_horas')).values())[
                 0]
             suma_total_unidad_finalizadas = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel=id_nivel)  & Q(id_periodo=periodo_actual) &
+                Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel=id_nivel)  & Q(id_periodo=periodo_actual) &
                 Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_estado_actividad_id=7)).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            if suma_total_unidad_finalizadas == None:
-                suma_total_unidad_finalizadas = 0
-
-            if suma_total_unidad != None:
-                porcentaje_total_unidad = "{0:.1f}".format((suma_total_unidad_finalizadas * 100) / suma_total_unidad)
-            else:
-                porcentaje_total_unidad = 0
-
-            suma_horas_jefe_departamento = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel=id_nivel) & Q(
-                    id_actividad__id_familia_cargo_id=1) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            suma_horas_jefe_departamento_finalizadas = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel=id_nivel) & Q(
-                    id_actividad__id_familia_cargo_id=1) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_estado_actividad_id=7)).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            if suma_horas_jefe_departamento_finalizadas == None:
-                suma_horas_jefe_departamento_finalizadas = 0
-
-            if suma_horas_jefe_departamento != None:
-                porcentaje_jefe_departamento = "{0:.1f}".format((suma_horas_jefe_departamento_finalizadas * 100) / suma_horas_jefe_departamento)
-            else:
-                porcentaje_jefe_departamento = 0
-
-
-           ########################################################################################
-
-
-
-            suma_horas_jefe_subdepartamento = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel=id_nivel) & Q(
-                    id_actividad__id_familia_cargo_id=2) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            suma_horas_jefe_subdepartamento_finalizadas = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel=id_nivel) & Q(
-                    id_actividad__id_familia_cargo_id=2) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_estado_actividad_id=7)).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            if suma_horas_jefe_subdepartamento_finalizadas == None:
-                suma_horas_jefe_subdepartamento_finalizadas = 0
-
-            if suma_horas_jefe_subdepartamento != None:
-                porcentaje_jefe_subdepartamento = "{0:.1f}".format(
-                    (suma_horas_jefe_subdepartamento_finalizadas * 100) / suma_horas_jefe_subdepartamento)
-            else:
-                porcentaje_jefe_subdepartamento = 0
-
-         ########################################################################################
-
-            suma_horas_coordinadores = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel=id_nivel) & Q(
-                    id_actividad__id_familia_cargo_id=3) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            suma_horas_coordinadores_finalizadas = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel=id_nivel) & Q(
-                    id_actividad__id_familia_cargo_id=3) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(
-                    id_estado_actividad_id=7)).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            if suma_horas_coordinadores_finalizadas == None:
-                suma_horas_coordinadores_finalizadas = 0
-
-            if suma_horas_coordinadores != None:
-                porcentaje_coordinadores = "{0:.1f}".format(
-                    (suma_horas_coordinadores_finalizadas * 100) / suma_horas_coordinadores)
-            else:
-                porcentaje_coordinadores = 0
-
-            ########################################################################################
-
-            suma_horas_supervisores = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel=id_nivel) & Q(
-                    id_actividad__id_familia_cargo_id=4) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            suma_horas_supervisores_finalizadas = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel=id_nivel) & Q(
-                    id_actividad__id_familia_cargo_id=4) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(
-                    id_estado_actividad_id=7)).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            if suma_horas_supervisores_finalizadas == None:
-                suma_horas_supervisores_finalizadas = 0
-
-            if suma_horas_supervisores != None:
-                porcentaje_supervisores = "{0:.1f}".format(
-                    (suma_horas_supervisores_finalizadas * 100) / suma_horas_supervisores)
-            else:
-                porcentaje_supervisores= 0
-
-            ########################################################################################
-
-
-            suma_horas_analistas_especialistas = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel=id_nivel) & Q(
-                    id_actividad__id_familia_cargo_id=5) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            suma_horas_analistas_especialistas_finalizadas = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel=id_nivel) & Q(
-                    id_actividad__id_familia_cargo_id=5) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(
-                    id_estado_actividad_id=7)).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            if suma_horas_analistas_especialistas_finalizadas == None:
-                suma_horas_analistas_especialistas_finalizadas = 0
-
-            if suma_horas_analistas_especialistas != None:
-                porcentaje_analistas_especialistas= "{0:.1f}".format(
-                    (suma_horas_analistas_especialistas_finalizadas * 100) / suma_horas_analistas_especialistas)
-            else:
-                porcentaje_analistas_especialistas= 0
-
-            ########################################################################################
-
-            suma_horas_analistas= list(Ges_Actividad_Historia.objects.filter(Q(id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel=id_nivel) & Q(id_actividad__id_familia_cargo_id=6) & Q(id_periodo=periodo_actual) &
-                                                                    Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
-                    Sum('id_actividad__total_horas')).values())[
-                0]
-
-            suma_horas_analistas_finalizadas = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel=id_nivel) & Q(
-                    id_actividad__id_familia_cargo_id=6) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_estado_actividad_id=7)).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            if suma_horas_analistas_finalizadas == None:
-                suma_horas_analistas_finalizadas=0
-
-            if suma_horas_analistas != None:
-                porcentaje_analista = "{0:.1f}".format((suma_horas_analistas_finalizadas * 100) / suma_horas_analistas)
-            else:
-                porcentaje_analista = 0
-
-
-             ################################################################
-
-            suma_horas_supervisores_operativos= list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel=id_nivel) &
-                Q(id_actividad__id_familia_cargo_id=7) & Q(id_periodo=periodo_actual) &
-                 Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
-                    Sum('id_actividad__total_horas')).values())[
-                0]
-
-            suma_horas_supervisores_operativos_finalizadas = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel=id_nivel) & Q(
-                    id_actividad__id_familia_cargo_id=7) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_estado_actividad_id=7)).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            if suma_horas_supervisores_operativos_finalizadas == None:
-                suma_horas_supervisores_operativos_finalizadas=0
-
-            if suma_horas_supervisores_operativos != None:
-                porcentaje_supervisores_operativos = "{0:.1f}".format((suma_horas_supervisores_operativos_finalizadas * 100) / suma_horas_supervisores_operativos)
-            else:
-                porcentaje_supervisores_operativos = 0
-
-
-             ################################################################
-
-            suma_horas_operativos= list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel=id_nivel) &
-                Q(id_actividad__id_familia_cargo_id=8) & Q(id_periodo=periodo_actual) &
-                 Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
-                    Sum('id_actividad__total_horas')).values())[
-                0]
-
-            suma_horas_operativos_finalizadas = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel=id_nivel) & Q(
-                    id_actividad__id_familia_cargo_id=8) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_estado_actividad_id=7)).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            if suma_horas_operativos_finalizadas == None:
-                suma_horas_operativos_finalizadas=0
-
-            if suma_horas_operativos != None:
-                porcentaje_operativos = "{0:.1f}".format((suma_horas_operativos_finalizadas * 100) / suma_horas_operativos)
-            else:
-                porcentaje_operativos = 0
-
-
-             ################################################################
-
-            suma_horas_asistentes= list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel=id_nivel) &
-                Q(id_actividad__id_familia_cargo_id=9) & Q(id_periodo=periodo_actual) &
-                 Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
-                    Sum('id_actividad__total_horas')).values())[
-                0]
-
-            suma_horas_asistentes_finalizadas = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel=id_nivel) & Q(
-                    id_actividad__id_familia_cargo_id=9) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_estado_actividad_id=7)).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            if suma_horas_asistentes_finalizadas == None:
-                suma_horas_asistentes_finalizadas=0
-
-            if suma_horas_asistentes != None:
-                porcentaje_asistentes = "{0:.1f}".format((suma_horas_asistentes_finalizadas * 100) / suma_horas_asistentes)
-            else:
-                porcentaje_asistentes = 0
-
-                ################################################################
-
-            suma_horas_auxiliares = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel=id_nivel) &
-                Q(id_actividad__id_familia_cargo_id=10) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            suma_horas_auxiliares_finalizadas = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel=id_nivel) & Q(
-                    id_actividad__id_familia_cargo_id=10) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(
-                    id_estado_actividad_id=7)).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            if suma_horas_auxiliares_finalizadas == None:
-                suma_horas_auxiliares_finalizadas = 0
-
-            if suma_horas_auxiliares != None:
-                porcentaje_auxiliares= "{0:.1f}".format(
-                    (suma_horas_auxiliares_finalizadas * 100) / suma_horas_auxiliares)
-            else:
-                porcentaje_auxiliares = 0
-
-
-             ################################################################################################################################
-            ################################################################################################################################
-            ################################################################################################################################
-
-        if nivel == '3':
-
-            suma_total_unidad = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel=id_nivel) & Q(
-                    id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-            suma_total_unidad_finalizadas = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel=id_nivel) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(
-                    id_estado_actividad_id=7)).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            if suma_total_unidad_finalizadas == None:
-                suma_total_unidad_finalizadas = 0
-
-            if suma_total_unidad != None:
-                porcentaje_total_unidad = "{0:.1f}".format((suma_total_unidad_finalizadas * 100) / suma_total_unidad)
-            else:
-                porcentaje_total_unidad = 0
-
-
-
-            suma_horas_jefe_departamento = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel=id_nivel) & Q(
-                    id_actividad__id_familia_cargo_id=1) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            suma_horas_jefe_departamento_finalizadas = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel=id_nivel) & Q(
-                    id_actividad__id_familia_cargo_id=1) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_estado_actividad_id=7)).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            if suma_horas_jefe_departamento_finalizadas == None:
-                suma_horas_jefe_departamento_finalizadas = 0
-
-            if suma_horas_jefe_departamento != None:
-                porcentaje_jefe_departamento = "{0:.1f}".format((suma_horas_jefe_departamento_finalizadas * 100) / suma_horas_jefe_departamento)
-            else:
-                porcentaje_jefe_departamento = 0
-
-
-           ########################################################################################
-
-
-
-            suma_horas_jefe_subdepartamento = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel=id_nivel) & Q(
-                    id_actividad__id_familia_cargo_id=2) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            suma_horas_jefe_subdepartamento_finalizadas = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel=id_nivel) & Q(
-                    id_actividad__id_familia_cargo_id=2) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_estado_actividad_id=7)).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            if suma_horas_jefe_subdepartamento_finalizadas == None:
-                suma_horas_jefe_subdepartamento_finalizadas = 0
-
-            if suma_horas_jefe_subdepartamento != None:
-                porcentaje_jefe_subdepartamento = "{0:.1f}".format(
-                    (suma_horas_jefe_subdepartamento_finalizadas * 100) / suma_horas_jefe_subdepartamento)
-            else:
-                porcentaje_jefe_subdepartamento = 0
-
-         ########################################################################################
-
-            suma_horas_coordinadores = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel=id_nivel) & Q(
-                    id_actividad__id_familia_cargo_id=3) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            suma_horas_coordinadores_finalizadas = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel=id_nivel) & Q(
-                    id_actividad__id_familia_cargo_id=3) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(
-                    id_estado_actividad_id=7)).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            if suma_horas_coordinadores_finalizadas == None:
-                suma_horas_coordinadores_finalizadas = 0
-
-            if suma_horas_coordinadores != None:
-                porcentaje_coordinadores = "{0:.1f}".format(
-                    (suma_horas_coordinadores_finalizadas * 100) / suma_horas_coordinadores)
-            else:
-                porcentaje_coordinadores = 0
-
-            ########################################################################################
-
-            suma_horas_supervisores = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel=id_nivel) & Q(
-                    id_actividad__id_familia_cargo_id=4) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            suma_horas_supervisores_finalizadas = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel=id_nivel) & Q(
-                    id_actividad__id_familia_cargo_id=4) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(
-                    id_estado_actividad_id=7)).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            if suma_horas_supervisores_finalizadas == None:
-                suma_horas_supervisores_finalizadas = 0
-
-            if suma_horas_supervisores != None:
-                porcentaje_supervisores = "{0:.1f}".format(
-                    (suma_horas_supervisores_finalizadas * 100) / suma_horas_supervisores)
-            else:
-                porcentaje_supervisores= 0
-
-            ########################################################################################
-
-
-            suma_horas_analistas_especialistas = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel=id_nivel) & Q(
-                    id_actividad__id_familia_cargo_id=5) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            suma_horas_analistas_especialistas_finalizadas = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel=id_nivel) & Q(
-                    id_actividad__id_familia_cargo_id=5) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(
-                    id_estado_actividad_id=7)).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            if suma_horas_analistas_especialistas_finalizadas == None:
-                suma_horas_analistas_especialistas_finalizadas = 0
-
-            if suma_horas_analistas_especialistas != None:
-                porcentaje_analistas_especialistas= "{0:.1f}".format(
-                    (suma_horas_analistas_especialistas_finalizadas * 100) / suma_horas_analistas_especialistas)
-            else:
-                porcentaje_analistas_especialistas= 0
-
-            ########################################################################################
-
-            suma_horas_analistas= list(Ges_Actividad_Historia.objects.filter(Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel=id_nivel) & Q(id_actividad__id_familia_cargo_id=6) & Q(id_periodo=periodo_actual) &
-                                                                    Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
-                    Sum('id_actividad__total_horas')).values())[
-                0]
-
-            suma_horas_analistas_finalizadas = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel=id_nivel) & Q(
-                    id_actividad__id_familia_cargo_id=6) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_estado_actividad_id=7)).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            if suma_horas_analistas_finalizadas == None:
-                suma_horas_analistas_finalizadas=0
-
-            if suma_horas_analistas != None:
-                porcentaje_analista = "{0:.1f}".format((suma_horas_analistas_finalizadas * 100) / suma_horas_analistas)
-            else:
-                porcentaje_analista = 0
-
-
-             ################################################################
-
-            suma_horas_supervisores_operativos= list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel=id_nivel) &
-                Q(id_actividad__id_familia_cargo_id=7) & Q(id_periodo=periodo_actual) &
-                 Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
-                    Sum('id_actividad__total_horas')).values())[
-                0]
-
-            suma_horas_supervisores_operativos_finalizadas = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel=id_nivel) & Q(
-                    id_actividad__id_familia_cargo_id=7) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_estado_actividad_id=7)).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            if suma_horas_supervisores_operativos_finalizadas == None:
-                suma_horas_supervisores_operativos_finalizadas=0
-
-            if suma_horas_supervisores_operativos != None:
-                porcentaje_supervisores_operativos = "{0:.1f}".format((suma_horas_supervisores_operativos_finalizadas * 100) / suma_horas_supervisores_operativos)
-            else:
-                porcentaje_supervisores_operativos = 0
-
-
-             ################################################################
-
-            suma_horas_operativos= list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel=id_nivel) &
-                Q(id_actividad__id_familia_cargo_id=8) & Q(id_periodo=periodo_actual) &
-                 Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
-                    Sum('id_actividad__total_horas')).values())[
-                0]
-
-            suma_horas_operativos_finalizadas = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel=id_nivel) & Q(
-                    id_actividad__id_familia_cargo_id=8) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_estado_actividad_id=7)).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            if suma_horas_operativos_finalizadas == None:
-                suma_horas_operativos_finalizadas=0
-
-            if suma_horas_operativos != None:
-                porcentaje_operativos = "{0:.1f}".format((suma_horas_operativos_finalizadas * 100) / suma_horas_operativos)
-            else:
-                porcentaje_operativos = 0
-
-
-             ################################################################
-
-            suma_horas_asistentes= list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel=id_nivel) &
-                Q(id_actividad__id_familia_cargo_id=9) & Q(id_periodo=periodo_actual) &
-                 Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
-                    Sum('id_actividad__total_horas')).values())[
-                0]
-
-            suma_horas_asistentes_finalizadas = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel=id_nivel) & Q(
-                    id_actividad__id_familia_cargo_id=9) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_estado_actividad_id=7)).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            if suma_horas_asistentes_finalizadas == None:
-                suma_horas_asistentes_finalizadas=0
-
-            if suma_horas_asistentes != None:
-                porcentaje_asistentes = "{0:.1f}".format((suma_horas_asistentes_finalizadas * 100) / suma_horas_asistentes)
-            else:
-                porcentaje_asistentes = 0
-
-                ################################################################
-
-            suma_horas_auxiliares = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel=id_nivel) &
-                Q(id_actividad__id_familia_cargo_id=10) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            suma_horas_auxiliares_finalizadas = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel=id_nivel) & Q(
-                    id_actividad__id_familia_cargo_id=10) & Q(id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(
-                    id_estado_actividad_id=7)).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-
-            if suma_horas_auxiliares_finalizadas == None:
-                suma_horas_auxiliares_finalizadas = 0
-
-            if suma_horas_auxiliares != None:
-                porcentaje_auxiliares= "{0:.1f}".format(
-                    (suma_horas_auxiliares_finalizadas * 100) / suma_horas_auxiliares)
-            else:
-                porcentaje_auxiliares = 0
-
-
-             ################################################################################################################################
-            ################################################################################################################################
-            ################################################################################################################################
-
-        if nivel == '4':
-
-            suma_total_unidad = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel=id_nivel) & Q(
-                    id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
-                Sum('id_actividad__total_horas')).values())[
-                0]
-            suma_total_unidad_finalizadas = list(Ges_Actividad_Historia.objects.filter(
-                Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel=id_nivel) & Q(
-                    id_periodo=periodo_actual) &
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(
-                    id_estado_actividad_id=7)).aggregate(
                 Sum('id_actividad__total_horas')).values())[
                 0]
 
@@ -889,6 +256,8 @@ class GeneraReportCurvaEjecucion(TemplateView):
 
 
            ########################################################################################
+
+
 
             suma_horas_jefe_subdepartamento = list(Ges_Actividad_Historia.objects.filter(
                 Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel=id_nivel) & Q(
@@ -1116,6 +485,567 @@ class GeneraReportCurvaEjecucion(TemplateView):
                 porcentaje_auxiliares = 0
 
 
+             ################################################################################################################################
+            ################################################################################################################################
+            ################################################################################################################################
+
+        if nivel == '3':
+
+            suma_total_unidad = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel=id_nivel) & Q(
+                    id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+            suma_total_unidad_finalizadas = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel=id_nivel) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(
+                    id_estado_actividad_id=7)).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            if suma_total_unidad_finalizadas == None:
+                suma_total_unidad_finalizadas = 0
+
+            if suma_total_unidad != None:
+                porcentaje_total_unidad = "{0:.1f}".format((suma_total_unidad_finalizadas * 100) / suma_total_unidad)
+            else:
+                porcentaje_total_unidad = 0
+
+
+
+            suma_horas_jefe_departamento = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=1) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            suma_horas_jefe_departamento_finalizadas = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=1) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_estado_actividad_id=7)).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            if suma_horas_jefe_departamento_finalizadas == None:
+                suma_horas_jefe_departamento_finalizadas = 0
+
+            if suma_horas_jefe_departamento != None:
+                porcentaje_jefe_departamento = "{0:.1f}".format((suma_horas_jefe_departamento_finalizadas * 100) / suma_horas_jefe_departamento)
+            else:
+                porcentaje_jefe_departamento = 0
+
+
+           ########################################################################################
+
+
+
+            suma_horas_jefe_subdepartamento = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=2) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            suma_horas_jefe_subdepartamento_finalizadas = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=2) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_estado_actividad_id=7)).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            if suma_horas_jefe_subdepartamento_finalizadas == None:
+                suma_horas_jefe_subdepartamento_finalizadas = 0
+
+            if suma_horas_jefe_subdepartamento != None:
+                porcentaje_jefe_subdepartamento = "{0:.1f}".format(
+                    (suma_horas_jefe_subdepartamento_finalizadas * 100) / suma_horas_jefe_subdepartamento)
+            else:
+                porcentaje_jefe_subdepartamento = 0
+
+         ########################################################################################
+
+            suma_horas_coordinadores = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=3) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            suma_horas_coordinadores_finalizadas = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=3) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(
+                    id_estado_actividad_id=7)).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            if suma_horas_coordinadores_finalizadas == None:
+                suma_horas_coordinadores_finalizadas = 0
+
+            if suma_horas_coordinadores != None:
+                porcentaje_coordinadores = "{0:.1f}".format(
+                    (suma_horas_coordinadores_finalizadas * 100) / suma_horas_coordinadores)
+            else:
+                porcentaje_coordinadores = 0
+
+            ########################################################################################
+
+            suma_horas_supervisores = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=4) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            suma_horas_supervisores_finalizadas = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=4) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(
+                    id_estado_actividad_id=7)).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            if suma_horas_supervisores_finalizadas == None:
+                suma_horas_supervisores_finalizadas = 0
+
+            if suma_horas_supervisores != None:
+                porcentaje_supervisores = "{0:.1f}".format(
+                    (suma_horas_supervisores_finalizadas * 100) / suma_horas_supervisores)
+            else:
+                porcentaje_supervisores= 0
+
+            ########################################################################################
+
+
+            suma_horas_analistas_especialistas = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=5) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            suma_horas_analistas_especialistas_finalizadas = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=5) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(
+                    id_estado_actividad_id=7)).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            if suma_horas_analistas_especialistas_finalizadas == None:
+                suma_horas_analistas_especialistas_finalizadas = 0
+
+            if suma_horas_analistas_especialistas != None:
+                porcentaje_analistas_especialistas= "{0:.1f}".format(
+                    (suma_horas_analistas_especialistas_finalizadas * 100) / suma_horas_analistas_especialistas)
+            else:
+                porcentaje_analistas_especialistas= 0
+
+            ########################################################################################
+
+            suma_horas_analistas= list(Ges_Actividad_Historia.objects.filter(Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel=id_nivel) & Q(id_actividad__id_familia_cargo_id=6) & Q(id_periodo=periodo_actual) &
+                                                                    Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
+                    Sum('id_actividad__total_horas')).values())[
+                0]
+
+            suma_horas_analistas_finalizadas = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=6) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_estado_actividad_id=7)).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            if suma_horas_analistas_finalizadas == None:
+                suma_horas_analistas_finalizadas=0
+
+            if suma_horas_analistas != None:
+                porcentaje_analista = "{0:.1f}".format((suma_horas_analistas_finalizadas * 100) / suma_horas_analistas)
+            else:
+                porcentaje_analista = 0
+
+
+             ################################################################
+
+            suma_horas_supervisores_operativos= list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel=id_nivel) &
+                Q(id_actividad__id_familia_cargo_id=7) & Q(id_periodo=periodo_actual) &
+                 Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
+                    Sum('id_actividad__total_horas')).values())[
+                0]
+
+            suma_horas_supervisores_operativos_finalizadas = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=7) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_estado_actividad_id=7)).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            if suma_horas_supervisores_operativos_finalizadas == None:
+                suma_horas_supervisores_operativos_finalizadas=0
+
+            if suma_horas_supervisores_operativos != None:
+                porcentaje_supervisores_operativos = "{0:.1f}".format((suma_horas_supervisores_operativos_finalizadas * 100) / suma_horas_supervisores_operativos)
+            else:
+                porcentaje_supervisores_operativos = 0
+
+
+             ################################################################
+
+            suma_horas_operativos= list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel=id_nivel) &
+                Q(id_actividad__id_familia_cargo_id=8) & Q(id_periodo=periodo_actual) &
+                 Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
+                    Sum('id_actividad__total_horas')).values())[
+                0]
+
+            suma_horas_operativos_finalizadas = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=8) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_estado_actividad_id=7)).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            if suma_horas_operativos_finalizadas == None:
+                suma_horas_operativos_finalizadas=0
+
+            if suma_horas_operativos != None:
+                porcentaje_operativos = "{0:.1f}".format((suma_horas_operativos_finalizadas * 100) / suma_horas_operativos)
+            else:
+                porcentaje_operativos = 0
+
+
+             ################################################################
+
+            suma_horas_asistentes= list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel=id_nivel) &
+                Q(id_actividad__id_familia_cargo_id=9) & Q(id_periodo=periodo_actual) &
+                 Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
+                    Sum('id_actividad__total_horas')).values())[
+                0]
+
+            suma_horas_asistentes_finalizadas = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=9) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_estado_actividad_id=7)).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            if suma_horas_asistentes_finalizadas == None:
+                suma_horas_asistentes_finalizadas=0
+
+            if suma_horas_asistentes != None:
+                porcentaje_asistentes = "{0:.1f}".format((suma_horas_asistentes_finalizadas * 100) / suma_horas_asistentes)
+            else:
+                porcentaje_asistentes = 0
+
+                ################################################################
+
+            suma_horas_auxiliares = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel=id_nivel) &
+                Q(id_actividad__id_familia_cargo_id=10) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            suma_horas_auxiliares_finalizadas = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=10) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(
+                    id_estado_actividad_id=7)).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            if suma_horas_auxiliares_finalizadas == None:
+                suma_horas_auxiliares_finalizadas = 0
+
+            if suma_horas_auxiliares != None:
+                porcentaje_auxiliares= "{0:.1f}".format(
+                    (suma_horas_auxiliares_finalizadas * 100) / suma_horas_auxiliares)
+            else:
+                porcentaje_auxiliares = 0
+
+
+             ################################################################################################################################
+            ################################################################################################################################
+            ################################################################################################################################
+
+        if nivel == '4':
+
+            suma_total_unidad = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel=id_nivel) & Q(
+                    id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+            suma_total_unidad_finalizadas = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel=id_nivel) & Q(
+                    id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(
+                    id_estado_actividad_id=7)).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            if suma_total_unidad_finalizadas == None:
+                suma_total_unidad_finalizadas = 0
+
+            if suma_total_unidad != None:
+                porcentaje_total_unidad = "{0:.1f}".format((suma_total_unidad_finalizadas * 100) / suma_total_unidad)
+            else:
+                porcentaje_total_unidad = 0
+
+            suma_horas_jefe_departamento = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=1) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            suma_horas_jefe_departamento_finalizadas = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=1) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_estado_actividad_id=7)).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            if suma_horas_jefe_departamento_finalizadas == None:
+                suma_horas_jefe_departamento_finalizadas = 0
+
+            if suma_horas_jefe_departamento != None:
+                porcentaje_jefe_departamento = "{0:.1f}".format((suma_horas_jefe_departamento_finalizadas * 100) / suma_horas_jefe_departamento)
+            else:
+                porcentaje_jefe_departamento = 0
+
+
+           ########################################################################################
+
+            suma_horas_jefe_subdepartamento = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=2) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            suma_horas_jefe_subdepartamento_finalizadas = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=2) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_estado_actividad_id=7)).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            if suma_horas_jefe_subdepartamento_finalizadas == None:
+                suma_horas_jefe_subdepartamento_finalizadas = 0
+
+            if suma_horas_jefe_subdepartamento != None:
+                porcentaje_jefe_subdepartamento = "{0:.1f}".format(
+                    (suma_horas_jefe_subdepartamento_finalizadas * 100) / suma_horas_jefe_subdepartamento)
+            else:
+                porcentaje_jefe_subdepartamento = 0
+
+         ########################################################################################
+
+            suma_horas_coordinadores = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=3) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            suma_horas_coordinadores_finalizadas = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=3) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(
+                    id_estado_actividad_id=7)).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            if suma_horas_coordinadores_finalizadas == None:
+                suma_horas_coordinadores_finalizadas = 0
+
+            if suma_horas_coordinadores != None:
+                porcentaje_coordinadores = "{0:.1f}".format(
+                    (suma_horas_coordinadores_finalizadas * 100) / suma_horas_coordinadores)
+            else:
+                porcentaje_coordinadores = 0
+
+            ########################################################################################
+
+            suma_horas_supervisores = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=4) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            suma_horas_supervisores_finalizadas = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=4) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(
+                    id_estado_actividad_id=7)).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            if suma_horas_supervisores_finalizadas == None:
+                suma_horas_supervisores_finalizadas = 0
+
+            if suma_horas_supervisores != None:
+                porcentaje_supervisores = "{0:.1f}".format(
+                    (suma_horas_supervisores_finalizadas * 100) / suma_horas_supervisores)
+            else:
+                porcentaje_supervisores= 0
+
+            ########################################################################################
+
+
+            suma_horas_analistas_especialistas = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=5) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            suma_horas_analistas_especialistas_finalizadas = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=5) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(
+                    id_estado_actividad_id=7)).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            if suma_horas_analistas_especialistas_finalizadas == None:
+                suma_horas_analistas_especialistas_finalizadas = 0
+
+            if suma_horas_analistas_especialistas != None:
+                porcentaje_analistas_especialistas= "{0:.1f}".format(
+                    (suma_horas_analistas_especialistas_finalizadas * 100) / suma_horas_analistas_especialistas)
+            else:
+                porcentaje_analistas_especialistas= 0
+
+            ########################################################################################
+
+            suma_horas_analistas= list(Ges_Actividad_Historia.objects.filter(Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel=id_nivel) & Q(id_actividad__id_familia_cargo_id=6) & Q(id_periodo=periodo_actual) &
+                                                                    Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
+                    Sum('id_actividad__total_horas')).values())[
+                0]
+
+            suma_horas_analistas_finalizadas = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=6) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_estado_actividad_id=7)).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            if suma_horas_analistas_finalizadas == None:
+                suma_horas_analistas_finalizadas=0
+
+            if suma_horas_analistas != None:
+                porcentaje_analista = "{0:.1f}".format((suma_horas_analistas_finalizadas * 100) / suma_horas_analistas)
+            else:
+                porcentaje_analista = 0
+
+
+             ################################################################
+
+            suma_horas_supervisores_operativos= list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel=id_nivel) &
+                Q(id_actividad__id_familia_cargo_id=7) & Q(id_periodo=periodo_actual) &
+                 Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
+                    Sum('id_actividad__total_horas')).values())[
+                0]
+
+            suma_horas_supervisores_operativos_finalizadas = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=7) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_estado_actividad_id=7)).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            if suma_horas_supervisores_operativos_finalizadas == None:
+                suma_horas_supervisores_operativos_finalizadas=0
+
+            if suma_horas_supervisores_operativos != None:
+                porcentaje_supervisores_operativos = "{0:.1f}".format((suma_horas_supervisores_operativos_finalizadas * 100) / suma_horas_supervisores_operativos)
+            else:
+                porcentaje_supervisores_operativos = 0
+
+
+             ################################################################
+
+            suma_horas_operativos= list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel=id_nivel) &
+                Q(id_actividad__id_familia_cargo_id=8) & Q(id_periodo=periodo_actual) &
+                 Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
+                    Sum('id_actividad__total_horas')).values())[
+                0]
+
+            suma_horas_operativos_finalizadas = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=8) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_estado_actividad_id=7)).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            if suma_horas_operativos_finalizadas == None:
+                suma_horas_operativos_finalizadas=0
+
+            if suma_horas_operativos != None:
+                porcentaje_operativos = "{0:.1f}".format((suma_horas_operativos_finalizadas * 100) / suma_horas_operativos)
+            else:
+                porcentaje_operativos = 0
+
+
+             ################################################################
+
+            suma_horas_asistentes= list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel=id_nivel) &
+                Q(id_actividad__id_familia_cargo_id=9) & Q(id_periodo=periodo_actual) &
+                 Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
+                    Sum('id_actividad__total_horas')).values())[
+                0]
+
+            suma_horas_asistentes_finalizadas = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=9) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_estado_actividad_id=7)).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            if suma_horas_asistentes_finalizadas == None:
+                suma_horas_asistentes_finalizadas=0
+
+            if suma_horas_asistentes != None:
+                porcentaje_asistentes = "{0:.1f}".format((suma_horas_asistentes_finalizadas * 100) / suma_horas_asistentes)
+            else:
+                porcentaje_asistentes = 0
+
+                ################################################################
+
+            suma_horas_auxiliares = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel=id_nivel) &
+                Q(id_actividad__id_familia_cargo_id=10) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro)).exclude(id_estado_actividad_id__in=estados_excluidos).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            suma_horas_auxiliares_finalizadas = list(Ges_Actividad_Historia.objects.filter(
+                Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel=id_nivel) & Q(
+                    id_actividad__id_familia_cargo_id=10) & Q(id_periodo=periodo_actual) &
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(
+                    id_estado_actividad_id=7)).aggregate(
+                Sum('id_actividad__total_horas')).values())[
+                0]
+
+            if suma_horas_auxiliares_finalizadas == None:
+                suma_horas_auxiliares_finalizadas = 0
+
+            if suma_horas_auxiliares != None:
+                porcentaje_auxiliares= "{0:.1f}".format(
+                    (suma_horas_auxiliares_finalizadas * 100) / suma_horas_auxiliares)
+            else:
+                porcentaje_auxiliares = 0
+
+
              ################################################################
 
 
@@ -1126,7 +1056,7 @@ class GeneraReportCurvaEjecucion(TemplateView):
                    "ValMesesAcumEjec": ValMesesAcumEjec,
                    "ValDesviacion": ValDesviacion,
                    'ValDesviacion_mes_anterior':ValDesviacion_mes_anterior,
-                   "lista_datos_unidades": lista_datos_unidades_select,
+                   "lista_datos_unidades": lista_datos_unidades,
                    'unidad':unidad_seleccionada,
                    'nivel':nivel, 'mes_seleccionado':mes_seleccionado,
                    'porcentaje_analista': porcentaje_analista,
@@ -1151,20 +1081,20 @@ class GeneraReportCurvaEjecucion(TemplateView):
 
         # lista_datos = Ges_Actividad.objects.filter(id_periodo=periodo_actual)
         if nivel == '4':
-            lista_datos = Ges_Actividad_Historia.objects.filter(Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel=id_nivel) &
+            lista_datos = Ges_Actividad_Historia.objects.filter(Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel=id_nivel) &
                                                                 Q(id_periodo=periodo_actual) &
                                                                 Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro))
             context['object_list'] = lista_datos
 
 
         if nivel == '3':
-            lista_datos = Ges_Actividad_Historia.objects.filter(Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel=id_nivel) &
+            lista_datos = Ges_Actividad_Historia.objects.filter(Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel=id_nivel) &
                                                                 Q(id_periodo=periodo_actual) &
                                                                 Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro))
             context['object_list'] = lista_datos
 
         if nivel == '2':
-            lista_datos = Ges_Actividad_Historia.objects.filter(Q(id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel=id_nivel) &
+            lista_datos = Ges_Actividad_Historia.objects.filter(Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel=id_nivel) &
                                                                 Q(id_periodo=periodo_actual) &
                                                                 Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro))
             context['object_list'] = lista_datos
@@ -1179,7 +1109,7 @@ class GeneraReportCurvaEjecucion(TemplateView):
         if nivel == '2':
             lista_datos_count = Ges_Actividad_Historia.objects.annotate(
                 month=Extract('id_periodo_seguimiento__fecha_termino_corte', 'month')).filter(
-                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel=id_nivel) & Q(
+                Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel=id_nivel) & Q(
                     id_periodo=periodo_actual)).values(
                 'month',
                 'id_controlador__nivel_inicial',
@@ -1201,7 +1131,7 @@ class GeneraReportCurvaEjecucion(TemplateView):
             lista_datos_count = Ges_Actividad_Historia.objects.annotate(
                 month=Extract('id_periodo_seguimiento__fecha_termino_corte', 'month')).filter(
                 Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) &
-                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel=id_nivel) & Q(
+                Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel=id_nivel) & Q(
                     id_periodo=periodo_actual)).values(
                 'month',
                 'id_controlador__nivel_inicial',
@@ -1220,7 +1150,7 @@ class GeneraReportCurvaEjecucion(TemplateView):
             )
 
         if nivel == '4':
-            lista_datos_count = Ges_Actividad_Historia.objects.annotate(month=Extract('id_periodo_seguimiento__fecha_termino_corte', 'month')).filter( Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel=id_nivel) & Q(id_periodo=periodo_actual) ).values(
+            lista_datos_count = Ges_Actividad_Historia.objects.annotate(month=Extract('id_periodo_seguimiento__fecha_termino_corte', 'month')).filter( Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro) & Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel=id_nivel) & Q(id_periodo=periodo_actual) ).values(
                 'month',
                 'id_controlador__nivel_inicial',
 
@@ -1266,22 +1196,40 @@ class GeneraReportCurvaEjecucion(TemplateView):
             return None
 
 
-        lista_datos_unidades_select = Ges_Actividad_Historia.objects.annotate(
-            month=Extract('id_periodo_seguimiento__fecha_termino_corte', 'month')).filter(
-            Q(id_periodo=periodo_actual)).values(
-            'id_controlador__nivel_inicial',
-            'id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel__descripcion_nivel',
-            # N4
-            'id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__descripcion_nivel',  # N3
-            'id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__descripcion_nivel',  # N2
 
-            'id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel__id',  # N4_id
-            'id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__id',  # N3_id
-            'id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__id',  # N2_id
-        ).distinct()
+
+        lista_datos_unidades_select = Ges_Niveles.objects.values(
+            'orden_nivel',
+            'id_cuarto_nivel__descripcion_nivel',
+            'id_tercer_nivel__descripcion_nivel',
+            'id_segundo_nivel__descripcion_nivel',
+            # 'id_primer_nivel__descripcion_nivel',
+
+            'id_cuarto_nivel_id',
+            'id_tercer_nivel_id',
+            'id_segundo_nivel_id',
+            # 'id_primer_nivel_id',
+            # # N4
+            # 'id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__descripcion_nivel',  # N3
+            # 'id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__descripcion_nivel',  # N2
+            #
+            # 'id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel__id',  # N4_id
+            # 'id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__id',  # N3_id
+            # 'id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__id',  # N2_id
+        ).exclude(orden_nivel=1)
 
 
         context['lista_datos_unidades'] = lista_datos_unidades_select
+
+
+        seguimiento_cerrado= Ges_Actividad_Historia.objects.annotate(
+            month=Extract('id_periodo_seguimiento__fecha_termino_corte', 'month')).filter(
+            Q(id_periodo=periodo_actual)).values(
+            'id_controlador__nivel_inicial',
+
+        ).distinct()
+
+        context['seguimiento_cerrado'] = seguimiento_cerrado # Verifica que exista un periodo cerrado
 
 
         meses = Ges_Actividad_Historia.objects.annotate(month=Extract('id_periodo_seguimiento__fecha_termino_corte', 'month')).filter(Q(id_periodo=periodo_actual)).values('month').distinct().order_by('-month')
@@ -1311,13 +1259,13 @@ def export_users_xls(request):
                                                             Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro))
 
     if nivel=='3':
-        actividades = Ges_Actividad_Historia.objects.filter(Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel=id_nivel) &
+        actividades = Ges_Actividad_Historia.objects.filter(Q(id_controlador__id_jefatura__id_nivel__id_tercer_nivel=id_nivel) &
                                                             Q(id_periodo=periodo_actual) &
                                                             Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro))
 
 
     if nivel=='2':
-        actividades = Ges_Actividad_Historia.objects.filter(Q(id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel=id_nivel) &
+        actividades = Ges_Actividad_Historia.objects.filter(Q(id_controlador__id_jefatura__id_nivel__id_cuarto_nivel=id_nivel) &
                                                             Q(id_periodo=periodo_actual) &
                                                             Q(id_periodo_seguimiento__fecha_termino_corte__month=mes_filtro))
 

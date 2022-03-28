@@ -9,7 +9,7 @@ from django.db.models import Q
 from django.db.models import Case, CharField, Value, When
 from apps.periodos.models import Glo_Periodos
 from apps.objetivos.models import Ges_Objetivo_Estrategico, Ges_Objetivo_Operativo, Ges_Objetivo_Tactico, Ges_Objetivo_TacticoTN
-from apps.actividades.models import Ges_Actividad, Ges_Actividad_Historia
+from apps.actividades.models import Ges_Actividad, Ges_Actividad_Historia, Ges_log_reportes
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect
@@ -45,12 +45,14 @@ class ActividadesObjetivosList(ListView): #clase modificada por JR- sprint 8 - O
     def get_context_data(self,  **kwargs,):
         context = super(ActividadesObjetivosList, self).get_context_data(**kwargs)
         id_usuario_actual= self.request.user.id #obtiene id usuario actual
-        id_jefatura = Ges_Jefatura.objects.get(id_user=id_usuario_actual)
+
 
         try:
             periodo_actual = Glo_Periodos.objects.get(id_estado=1)
         except Glo_Periodos.DoesNotExist:
             return None
+
+        id_jefatura = Ges_Jefatura.objects.get(Q(id_user=id_usuario_actual) & Q(id_periodo=periodo_actual.id)) #CAM_PER#
 
         try:
             id_controlador = Ges_Controlador.objects.get(Q(id_jefatura=id_jefatura) & Q(id_periodo=periodo_actual.id))
@@ -305,7 +307,7 @@ class ActividadesDetail(ListView): #clase modificada por JR- sprint 8 - Ok
 
             count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(Q(
                 id_actividad=OuterRef('pk')) ).annotate(
-                count_id_actividad=Count('id'))
+                count_id_actividad=Count('id' , filter=Q(id_periodo=periodo_actual.id)))
 
             lista_actividades = Ges_Actividad.objects.filter(
                 Q(id_objetivo_tactico=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)).annotate(
@@ -322,15 +324,14 @@ class ActividadesDetail(ListView): #clase modificada por JR- sprint 8 - Ok
                 count_id_actividad=Count('id', filter=Q(observado=1)  & Q(id_periodo=periodo_actual.id) & (~Q(user_observa = id_usuario_actual)) ))
 
             count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(Q(
-                id_actividad=OuterRef('pk'))).annotate(
-                count_id_actividad=Count('id'))
+                id_actividad=OuterRef('pk') )).annotate(
+                count_id_actividad=Count('id' , filter=Q(id_periodo=periodo_actual.id))) #CAM_PER#
 
             lista_actividades = Ges_Actividad.objects.filter(
                 Q(id_objetivo_tacticotn=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)).annotate(
                 count_no_vistos=Subquery(count_no_vistos.values('count_id_actividad')),
                 count_observaciones=Subquery(count_observaciones.values('count_id_actividad')[0:1])).order_by(
                 '-count_no_vistos', '-count_observaciones')
-
 
             nombre = Ges_Objetivo_TacticoTN.objects.get(id=self.kwargs['pk'])
         if self.request.session['id_orden']==4:
@@ -342,7 +343,7 @@ class ActividadesDetail(ListView): #clase modificada por JR- sprint 8 - Ok
 
             count_observaciones = Ges_Observaciones.objects.values('id_objetivo').filter(Q(
                 id_actividad=OuterRef('pk')) ).annotate(
-                count_id_actividad=Count('id'))
+                count_id_actividad=Count('id' , filter=Q(id_periodo=periodo_actual.id))) #CAM_PER#
 
             lista_actividades = Ges_Actividad.objects.filter(
                 Q(id_objetivo_operativo=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)).annotate(
@@ -350,12 +351,9 @@ class ActividadesDetail(ListView): #clase modificada por JR- sprint 8 - Ok
                 count_observaciones=Subquery(count_observaciones.values('count_id_actividad')[0:1])).order_by(
                 '-count_no_vistos', '-count_observaciones')
 
-
             nombre = Ges_Objetivo_Operativo.objects.get(id=self.kwargs['pk'])
 
         self.request.session['tv'] = nombre.transversal
-
-
 
 
         context['object_list'] = lista_actividades
@@ -983,6 +981,7 @@ def ObservacionesDelete(id_usuario_actual, id_objetivo, id_actividad):
 
     Ges_Observaciones.objects.filter(id_actividad=id_actividad).delete()
     Ges_Actividad_Historia.objects.filter(id_actividad=id_actividad).delete()
+    Ges_log_reportes.objects.filter(id_actividad=id_actividad).delete()
 
 
     return None

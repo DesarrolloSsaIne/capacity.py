@@ -49,6 +49,7 @@ Actividades Asociadas al Objetivo
 						<th style="display:none;">count NV</th>
 						<th style="font-size:11px;">Respuesta</th>
 						<th style="font-size:11px;">Validar</th>
+						<th style="font-size:11px;">Comentarios</th>
 
 
 					</tr>
@@ -71,7 +72,7 @@ Actividades Asociadas al Objetivo
 
 					{% elif objetivo.id_estado_actividad_id == 4 and  objetivo.validada == 0  %} <!--Para que aparezcan las que quedaron con estado no iniciadas despúes de la validación-->
 
-					{% else %}git clone http://git.ine.gob.cl/DevUser/proyectoprueba.git
+					{% else %}
 					<tr>
 						<td style="font-size:11px;"> {{ objetivo.id }}</td>
 						<td  style="font-size:11px;">
@@ -97,6 +98,10 @@ Actividades Asociadas al Objetivo
 						<button {% if periodo_valida.activo == 0 %} disabled="disabled" class="update btn btn-sm btn-primary" {% else %} type="button"  title="Validar Avance de la Actividad"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" class="update btn btn-sm btn-primary" data-id="{% url 'RegistroActividadEditarSeguimientoValidar' objetivo.id %}" {% endif %}>
 						<span class="fa fa-check-square-o"></span></button>
 						</td>
+						 <td  style="width:80px; text-align:center;"  >
+						<button  class="list btn btn-sm btn-primary"  type="button"  title="Historial Comentarios"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top"  data-id="{% url 'ListarComentariosActividad' objetivo.id %}" >
+						<span class="fa fa-comment-o"></span></button>
+						</td>
 
 
 					</tr>
@@ -118,6 +123,15 @@ Actividades Asociadas al Objetivo
 			</div>
 		</div>
 	</div>
+
+	<div class="modal fade" tabindex="-1" role="dialog" id="modaList">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+
+			</div>
+		</div>
+	</div>
+
 	<div class="modal fade" data-backdrop="static"
   data-keyboard="false" tabindex="-1" role="dialog" id="modalUpdate">
 		<div class="modal-dialog modal-lg" role="document">
@@ -184,6 +198,12 @@ Actividades Asociadas al Objetivo
 			// JS modal elimina Registro
 			$(".delete").each(function () {
 				$(this).modalForm({formURL: $(this).data('id'),  modalID: $("#modalDelete")});
+			});
+
+
+			// JS modal lista comentarios
+			$(".list").each(function () {
+				$(this).modalForm({formURL: $(this).data('id'),  modalID: $("#modaList")});
 			});
 
 			// Js Muestra/Oculta Mensaje Success

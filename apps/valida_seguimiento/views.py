@@ -30,6 +30,7 @@ class UnidadesList(ListView): #Modificado por JR- sprint 8 - OK
         context = super(UnidadesList, self).get_context_data(**kwargs)
         id_usuario_actual = self.request.user.id  # obtiene id usuario actual
         id_jefatura = Ges_Jefatura.objects.get(id_user=id_usuario_actual)
+
         try:
             periodo_actual = Glo_Periodos.objects.get(id_estado=1)
         except Glo_Periodos.DoesNotExist:
@@ -37,9 +38,17 @@ class UnidadesList(ListView): #Modificado por JR- sprint 8 - OK
 
         try:
             periodo_valida = Glo_validacion.objects.filter(id_periodo=periodo_actual.id).order_by('-id')[0]
-        except:
+        except IndexError:
             periodo_valida = None
             pass
+
+        if periodo_valida == None:
+            periodo_valida_id_estado_periodo = 0
+        else:
+            periodo_valida_id_estado_periodo = periodo_valida.id_estado_periodo_id
+
+
+
 
         if periodo_valida:
             periodo_valida_activo=1
@@ -87,12 +96,14 @@ class UnidadesList(ListView): #Modificado por JR- sprint 8 - OK
 
                 id_controladorfiltrado = id_controlador.filter(count_actividad__gte=1)
 
+
                 context['jefatura_primerarevision'] = {'id': id_jefatura.id}
+
 
                 # id_jefatura = Ges_Jefatura.objects.filter(id_user=id_usuario_actual)
 
                 context['object_list'] = id_controladorfiltrado
-                context['periodo_validacion'] = {'estado':periodo_valida.id_estado_periodo_id}
+                context['periodo_validacion'] = {'estado':periodo_valida_id_estado_periodo}
 
 
 
@@ -356,6 +367,48 @@ class Actividades(ListView): # Modificado por JR- sprint 8 - OK
 
         return context
 
+
+
+
+class ListarComentarios(ListView):
+    model = Ges_Observaciones_valida
+    template_name = 'valida_seguimiento/seguimiento_listar_comentarios.html'
+
+    def get_context_data(self,  **kwargs):
+        context = super(ListarComentarios, self).get_context_data(**kwargs)
+
+
+        try:
+            periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+        except Glo_Periodos.DoesNotExist:
+            return None
+
+        try:
+            periodo_valida = Glo_validacion.objects.get(
+                Q(id_estado_periodo=1) & Q(id_periodo=periodo_actual.id))
+        except:
+            periodo_valida = None
+            pass
+
+
+
+        try:
+            lista_comentarios =  Ges_Observaciones_valida.objects.filter(
+                Q(id_actividad=self.kwargs['pk']) & Q(id_periodo_valida=periodo_valida.id))
+        except:
+            lista_comentarios = None
+            pass
+
+
+        nombre = ""
+
+        nombre = Ges_Actividad.objects.get(id=self.kwargs['pk'])
+        context['object_list'] = lista_comentarios
+        context['nombre_actividad'] = {'nombre': nombre}
+
+
+        return context
+
 class ActividadEdit(SuccessMessageMixin, UpdateView ):
     model = Ges_Actividad
     form_class = ValidaActividadesUpdateForm
@@ -463,6 +516,9 @@ class ActividadEdit(SuccessMessageMixin, UpdateView ):
             return HttpResponseRedirect('/seguimiento_formula/detalle/' + str(self.request.session['id_objetivo']))
 
 
+
+
+
 def update_actividad(request):
     id_actividad = request.POST.get('id')
     response_data = {}
@@ -524,7 +580,7 @@ def update_actividad(request):
             pass
 
 
-        agregarObservacion(observacion, int(id_actividad), int(periodo_valida.id) )
+       # agregarObservacion(observacion, int(id_actividad), int(periodo_valida.id) )
         Log_valida(int(periodo_valida.id),  int(id_actividad),  fecha_inicio, fecha_termino, None, int(estado_final))
         #
         ActividadesHistoria(id_periodo_seguimiento, id_actividad,  periodo_actual)
@@ -539,7 +595,7 @@ class ValidaSeguimientoActividadDetallesVer(SuccessMessageMixin, UpdateView):
     template_name = 'valida_seguimiento/valida_seguimiento_ver_detalle.html'
 
 
-def update_actividad_rechaza(request):
+def update_actividad_rechaza( request):
     id_actividad = request.POST.get('id')
     response_data = {}
     if request.POST.get('action') == 'post':
@@ -591,7 +647,13 @@ def update_actividad_rechaza(request):
             periodo_valida = None
             pass
 
-        agregarObservacion(observacion, int(id_actividad), int(periodo_valida.id))
+        jefatura_revision  = Ges_Jefatura.objects.get(id_user_id = request.user.id)
+        id_controlador = request.session['id_controlador_real']
+
+        try:
+            agregarObservacion(observacion, int(id_actividad), int(periodo_valida.id), int(periodo_actual.id), int(jefatura_revision.id), id_controlador)
+        except Exception as e: print(e)
+
         Log_valida(int(periodo_valida.id), int(id_actividad),  None, None, None, int(estado_final))
         ActividadesHistoria(int(id_periodo_seguimiento.id), id_actividad, periodo_actual)
 
@@ -601,12 +663,15 @@ def update_actividad_rechaza(request):
     return render(request, 'valida_seguimiento/listarActividades/' + str(id_actividad), {'success': 'true'})
 
 
-def agregarObservacion(descripcion , id_actividad, id_valida):
+def agregarObservacion(descripcion , id_actividad, id_valida, id_periodo, id_jefatura, id_controlador):
 
     Ges_Observaciones_valida.objects.create(
         descripcion_observacion=descripcion,
         id_actividad_id=id_actividad,
         id_periodo_valida_id =id_valida,
+        id_periodo_id=id_periodo,
+        jefatura_primerarevision_id=id_jefatura,
+        id_controlador_id = id_controlador,
     )
     return None
 
@@ -712,9 +777,6 @@ def export_users_xls_valida_seguimiento(request, *args, **kwargs):
                'Justificación Desviación',
                'Resultado Validación',
                'Fecha_Reg'
-
-
-
                ]
 
     row_num = 1
@@ -761,7 +823,7 @@ def export_users_xls_valida_seguimiento(request, *args, **kwargs):
 
 
 
-            ]
+                   ]
 
         if nivel==3:
 
@@ -791,6 +853,7 @@ def export_users_xls_valida_seguimiento(request, *args, **kwargs):
                 actividad.justificacion,
                 validadaStr,
                 actividad.fecha_registro,
+
 
 
 
@@ -827,6 +890,7 @@ def export_users_xls_valida_seguimiento(request, *args, **kwargs):
                 validadaStr,
                 actividad.fecha_registro,
 
+
             ]
 
         # Assign the data for each cell of the row
@@ -847,6 +911,94 @@ def export_users_xls_valida_seguimiento(request, *args, **kwargs):
                 cell.number_format = 'dd/mm/yyyy'
             if col_num == 17:
                 cell.number_format = 'dd/mm/yyyy:HH:MM:SS'
+
+    workbook.save(response)
+
+
+    return response
+
+
+def export_users_xls_valida_seguimiento_comentarios(request, *args, **kwargs):
+    try:
+        periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+    except Glo_Periodos.DoesNotExist:
+        return None
+
+    id_jefatura_primera = kwargs['pk']
+
+
+
+    nivel=Ges_Controlador.objects.filter(Q(jefatura_primerarevision=id_jefatura_primera) & Q(id_periodo=periodo_actual)).order_by('-id')[0]
+
+
+    nivel= nivel.nivel_inicial
+
+    controladores = Ges_Controlador.objects.filter(Q(jefatura_primerarevision=id_jefatura_primera) & Q(id_periodo=periodo_actual))
+
+
+    observaciones = Ges_Observaciones_valida.objects.filter(Q(jefatura_primerarevision=id_jefatura_primera) &
+                                                            Q(id_periodo=periodo_actual))
+
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
+    response['Content-Disposition'] = 'attachment; filename={date}-Plan_de_Gestion_comentarios.xlsx'.format(
+        date=datetime.now().strftime('%d/%m/%Y'),
+    )
+    workbook = Workbook()
+
+
+    # Get active worksheet/tab
+    worksheet = workbook.active
+    worksheet.title = 'reporte_seguimiento'
+
+    # Define the titles for columns
+
+    columns = ['Id Actividad',
+                'Actividad',
+               'Observación',
+               'Fecha Registro',
+               'Periodo',
+               'Periodo Validación',
+               'Jefatura',
+               'Area'
+               ]
+
+    row_num = 1
+
+    # Assign the titles for each cell of the header
+    for col_num, column_title in enumerate(columns, 1):
+        cell = worksheet.cell(row=row_num, column=col_num)
+        cell.value = column_title
+
+    # Iterate through all
+    for observacion in observaciones:
+        row_num += 1
+
+        row =''
+
+
+
+        row = [str(observacion.id_actividad.id),
+            observacion.id_actividad.descripcion_actividad,
+            observacion.descripcion_observacion,
+            observacion.fecha_registro,
+            observacion.id_periodo.descripcion_periodo,
+            observacion.id_periodo_valida.descripcion_validacion,
+            observacion.jefatura_primerarevision.id_user.username,
+            str(observacion.id_controlador.id_jefatura.id_nivel.descripcion_nivel),
+
+        ]
+
+        # Assign the data for each cell of the row
+        for col_num, cell_value in enumerate(row, 1):
+            cell = worksheet.cell(row=row_num, column=col_num)
+            cell.value = cell_value
+
+
+            if col_num == 3:
+                cell.number_format = 'dd/mm/yyyy'
+
 
     workbook.save(response)
 

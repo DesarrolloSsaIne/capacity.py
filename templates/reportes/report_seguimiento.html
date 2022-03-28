@@ -419,14 +419,18 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 								<select class="form-control" name="unidad_filtro" id="list_seleccion_unidad" style=" margin-left:-15px; width:400px;">
 
   							{% for actividad_count in lista_datos_unidades %}
-                           	  <option  value=		{% if actividad_count.id_controlador__nivel_inicial == 4 %}4_{{actividad_count.id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel__id}}{% endif %}
-														{% if actividad_count.id_controlador__nivel_inicial == 3 %} 3_{{actividad_count.id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__id}}{% endif %}
-														{% if actividad_count.id_controlador__nivel_inicial == 2 %} 2_{{actividad_count.id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__id}}{% endif %}>
+                           	  <option  value=
+													  {% if actividad_count.orden_nivel == 2 %}2_{{actividad_count.id_segundo_nivel_id}}{% endif %}
+							  							{% if actividad_count.orden_nivel == 3 %}3_{{actividad_count.id_tercer_nivel_id}}{% endif %}
+							 							 {% if actividad_count.orden_nivel == 4 %}4_{{actividad_count.id_cuarto_nivel_id}}{% endif %}>
 
 
-	                                        	{% if actividad_count.id_controlador__nivel_inicial == 4 %}{{ actividad_count.id_controlador__id_jefatura__id_nivel__id_cuarto_nivel__tercer_nivel__segundo_nivel__descripcion_nivel }} {% endif %}
-														{% if actividad_count.id_controlador__nivel_inicial == 3 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_tercer_nivel__segundo_nivel__descripcion_nivel }} {% endif %}
-														{% if actividad_count.id_controlador__nivel_inicial == 2 %} {{ actividad_count.id_controlador__id_jefatura__id_nivel__id_segundo_nivel__primer_nivel__descripcion_nivel }} {% endif %}
+
+
+	                                        	{% if actividad_count.orden_nivel == 2 %}{{ actividad_count.id_segundo_nivel__descripcion_nivel }} {% endif %}
+												  {% if actividad_count.orden_nivel == 3 %}{{ actividad_count.id_tercer_nivel__descripcion_nivel }} {% endif %}
+												  {% if actividad_count.orden_nivel == 4 %}{{ actividad_count.id_cuarto_nivel__descripcion_nivel }} {% endif %}
+
 
 
 
@@ -481,27 +485,30 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 									</div>
 									</form>
 												</div>
+
+
 <div  id="mensaje" style="margin-left:15px; color:green; display:none;">Reporte Generado Correctamente para:
+
 
 
 			{% if nivel == '2' %}
 
 							{% for unidads in unidad|slice:":1"  %}
-							 <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_segundo_nivel.primer_nivel}}</b> | Mes: <b>{{mes_seleccionado}}</b>
+							 <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_cuarto_nivel.tercer_nivel.segundo_nivel}}</b> | Mes: <b>{{mes_seleccionado}}</b>
 							{% endfor %}
 
 							{% endif %}
 							{% if nivel == '3' %}
 
 							{% for unidads in unidad|slice:":1"  %}
-							<b>{{unidads.id_controlador.id_jefatura.id_nivel.id_tercer_nivel.segundo_nivel}}</b> | Mes: <b>{{mes_seleccionado}}</b>
+							<b>{{unidads.id_controlador.id_jefatura.id_nivel}}</b> | Mes: <b>{{mes_seleccionado}}</b>
 							{% endfor %}
 
 							{% endif %}
 							{% if nivel == '4' %}
 
 							{% for unidads in unidad|slice:":1"  %}
-							<b>{{unidads.id_controlador.id_jefatura.id_nivel.id_cuarto_nivel.tercer_nivel.segundo_nivel}}</b> | Mes: <b>{{mes_seleccionado}}</b>
+							<b>{{unidads.id_controlador.id_jefatura.id_nivel}}</b> | Mes: <b>{{mes_seleccionado}}</b>
 							{% endfor %}
 
 
@@ -552,21 +559,21 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 							{% if nivel == '2' %}
 
 							{% for unidads in unidad|slice:":1"  %}
-							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_segundo_nivel.primer_nivel}}</b></span>
+							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_cuarto_nivel.tercer_nivel.segundo_nivel}}</b></span>
 							{% endfor %}
 
 							{% endif %}
 							{% if nivel == '3' %}
 
 							{% for unidads in unidad|slice:":1"  %}
-							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_tercer_nivel.segundo_nivel}}</b></span>
+							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel}}</b></span>
 							{% endfor %}
 
 							{% endif %}
 							{% if nivel == '4' %}
 
 							{% for unidads in unidad|slice:":1"  %}
-							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_cuarto_nivel.tercer_nivel.segundo_nivel}}</b> </span>
+							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel}}</b> </span>
 							{% endfor %}
 
 							{% endif %}
@@ -613,21 +620,21 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 							{% if nivel == '2' %}
 
 							{% for unidads in unidad|slice:":1"  %}
-							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_segundo_nivel.primer_nivel}}</b> | Mes Seleccionado: <b>{{mes_seleccionado}}</b></span>
+							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_cuarto_nivel.tercer_nivel.segundo_nivel}}</b> | Mes Seleccionado: <b>{{mes_seleccionado}}</b></span>
 							{% endfor %}
 
 							{% endif %}
 							{% if nivel == '3' %}
 
 							{% for unidads in unidad|slice:":1"  %}
-							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_tercer_nivel.segundo_nivel}}</b> | Mes Seleccionado: <b>{{mes_seleccionado}}</b></span>
+							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel}}</b> | Mes Seleccionado: <b>{{mes_seleccionado}}</b></span>
 							{% endfor %}
 
 							{% endif %}
 							{% if nivel == '4' %}
 
 							{% for unidads in unidad|slice:":1"  %}
-							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_cuarto_nivel.tercer_nivel.segundo_nivel}}</b> | Mes Seleccionado: <b>{{mes_seleccionado}}</b></span>
+							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel}}</b> | Mes Seleccionado: <b>{{mes_seleccionado}}</b></span>
 							{% endfor %}
 
 
@@ -678,7 +685,7 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
                                             {% for actividad in object_list %}
                                                 <tr style="font-size:11px;">
 													<td> {{ forloop.counter }}</td>
-                                                    <td class="descripcion_actividad"  style="cursor:pointer; max-width: 100px; overflow: hidden;  display: table-cell;  text-overflow: ellipsis;  border: solid 1px #dddddd; white-space: nowrap;"> {{ actividad.id_actividad.descripcion_actividad }} </td>
+                                                    <td class="descripcion_actividad"  style="cursor:pointer; max-width: 100px;   display: table-cell;  text-overflow: ellipsis;  border: solid 1px #dddddd; white-space: nowrap;"> {{ actividad.id_actividad.descripcion_actividad }} </td>
 													 <td class="descripcion_objetivo"  style="cursor:pointer; max-width: 100px; overflow: hidden;  display: table-cell;  text-overflow: ellipsis;  border: solid 1px #dddddd; white-space: nowrap;"> {% if actividad.id_actividad.id_objetivo_operativo != None %} {{actividad.id_actividad.id_objetivo_operativo}} {% elif actividad.id_actividad.id_objetivo_tactico != None %} {{actividad.id_actividad.id_objetivo_tactico}} {% elif actividad.id_actividad.id_objetivo_tacticotn != None %} {{actividad.id_actividad.id_objetivo_tacticotn}} {% endif %} </td>
 													<td> {{ actividad.id_actividad.id_periodicidad}} </td>
 													<td> {{ actividad.id_actividad.id_producto_estadistico}} </td>
@@ -761,21 +768,21 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 							{% if nivel == '2' %}
 
 							{% for unidads in unidad|slice:":1"  %}
-							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_segundo_nivel.primer_nivel}}</b> | Mes Seleccionado: <b>{{mes_seleccionado}}</b></span>
+							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_cuarto_nivel.tercer_nivel.segundo_nivel}}</b> | Mes Seleccionado: <b>{{mes_seleccionado}}</b></span>
 							{% endfor %}
 
 							{% endif %}
 							{% if nivel == '3' %}
 
 							{% for unidads in unidad|slice:":1"  %}
-							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_tercer_nivel.segundo_nivel}}</b> | Mes Seleccionado: <b>{{mes_seleccionado}}</b></span>
+							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel}}</b> | Mes Seleccionado: <b>{{mes_seleccionado}}</b></span>
 							{% endfor %}
 
 							{% endif %}
 							{% if nivel == '4' %}
 
 							{% for unidads in unidad|slice:":1"  %}
-							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_cuarto_nivel.tercer_nivel.segundo_nivel}}</b> | Mes Seleccionado: <b>{{mes_seleccionado}}</b></span>
+							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel}}</b> | Mes Seleccionado: <b>{{mes_seleccionado}}</b></span>
 							{% endfor %}
 
 							{% endif %}
@@ -839,11 +846,11 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 
 													<td> {{ actividad_count.id_controlador__id_jefatura__id_nivel__descripcion_nivel }} </td>
 													<td><span class="CountNoIniciadas"> {{ actividad_count.CountNoIniciadas }}</span></td><td>{% if actividad_count.CountTotal == 0 %}0%{% else %}{{ actividad_count.CountNoIniciadas|mul:100 |div:actividad_count.CountTotal|floatformat:2 }}% {% endif %}</td>
-													<td><span class="CountFinalizadas">{{ actividad_count.CountFinalizadas }}</span> </td><td>{% if actividad_count.CountTotal == 0 %}0%{% else %}{{ actividad_count.CountNoIniciadas|mul:100 |div:actividad_count.CountTotal|floatformat:2 }}% {% endif %}</td>
-													<td><span class="CountEnCurso">{{ actividad_count.CountEnCurso }}</span> </td><td>{% if actividad_count.CountTotal == 0 %}0%{% else %}{{ actividad_count.CountNoIniciadas|mul:100 |div:actividad_count.CountTotal|floatformat:2 }}% {% endif %} </td>
-													<td><span class="CountConRetraso">{{ actividad_count.CountConRetraso }}</span> </td><td>{% if actividad_count.CountTotal == 0 %}0%{% else %}{{ actividad_count.CountNoIniciadas|mul:100 |div:actividad_count.CountTotal|floatformat:2 }}% {% endif %}</td>
-													<td><span class="CountSinMovimiento">{{ actividad_count.CountSinMovimiento }}</span> </td><td>{% if actividad_count.CountTotal == 0 %}0%{% else %}{{ actividad_count.CountNoIniciadas|mul:100 |div:actividad_count.CountTotal|floatformat:2 }}% {% endif %} </td>
-													<td><span class="CountEliminadas">{{ actividad_count.CountEliminadas }} </span></td><td>{% if actividad_count.CountTotal == 0 %}0%{% else %}{{ actividad_count.CountNoIniciadas|mul:100 |div:actividad_count.CountTotal|floatformat:2 }}% {% endif %} </td>
+													<td><span class="CountFinalizadas">{{ actividad_count.CountFinalizadas }}</span> </td><td>{% if actividad_count.CountTotal == 0 %}0%{% else %}{{ actividad_count.CountFinalizadas|mul:100 |div:actividad_count.CountTotal|floatformat:2 }}% {% endif %}</td>
+													<td><span class="CountEnCurso">{{ actividad_count.CountEnCurso }}</span> </td><td>{% if actividad_count.CountTotal == 0 %}0%{% else %}{{ actividad_count.CountEnCurso|mul:100 |div:actividad_count.CountTotal|floatformat:2 }}% {% endif %} </td>
+													<td><span class="CountConRetraso">{{ actividad_count.CountConRetraso }}</span> </td><td>{% if actividad_count.CountTotal == 0 %}0%{% else %}{{ actividad_count.CountConRetraso|mul:100 |div:actividad_count.CountTotal|floatformat:2 }}% {% endif %}</td>
+													<td><span class="CountSinMovimiento">{{ actividad_count.CountSinMovimiento }}</span> </td><td>{% if actividad_count.CountTotal == 0 %}0%{% else %}{{ actividad_count.CountSinMovimiento|mul:100 |div:actividad_count.CountTotal|floatformat:2 }}% {% endif %} </td>
+													<td><span class="CountEliminadas">{{ actividad_count.CountEliminadas }} </span></td><td>{% if actividad_count.CountTotal == 0 %}0%{% else %}{{ actividad_count.CountEliminadas|mul:100 |div:actividad_count.CountTotal|floatformat:2 }}% {% endif %} </td>
 													<td><span class="countTotal">{{ actividad_count.CountTotal }} </span></td>
 
                                                 </tr>
@@ -908,21 +915,21 @@ $('#datatable-default').on('click', '.descripcion_justificacion', function () {
 							{% if nivel == '2' %}
 
 							{% for unidads in unidad|slice:":1"  %}
-							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_segundo_nivel.primer_nivel}}</b> | Mes Seleccionado: <b>{{mes_seleccionado}}</b></span>
+							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_cuarto_nivel.tercer_nivel.segundo_nivel}}</b> | Mes Seleccionado: <b>{{mes_seleccionado}}</b></span>
 							{% endfor %}
 
 							{% endif %}
 							{% if nivel == '3' %}
 
 							{% for unidads in unidad|slice:":1"  %}
-							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_tercer_nivel.segundo_nivel}}</b> | Mes Seleccionado: <b>{{mes_seleccionado}}</b></span>
+							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel}}</b> | Mes Seleccionado: <b>{{mes_seleccionado}}</b></span>
 							{% endfor %}
 
 							{% endif %}
 							{% if nivel == '4' %}
 
 							{% for unidads in unidad|slice:":1"  %}
-							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel.id_cuarto_nivel.tercer_nivel.segundo_nivel}}</b> | Mes Seleccionado: <b>{{mes_seleccionado}}</b></span>
+							<span class="panel-title" style="font-size:14px;"   >Área Seleccionada: <b>{{unidads.id_controlador.id_jefatura.id_nivel}}</b> | Mes Seleccionado: <b>{{mes_seleccionado}}</b></span>
 							{% endfor %}
 
 							{% endif %}

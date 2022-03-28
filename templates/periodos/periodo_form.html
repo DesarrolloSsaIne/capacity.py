@@ -3,7 +3,7 @@
 				<div class="panel-actions">
 				<a class="fa fa-times" data-dismiss="modal"></a>
 				</div>
-				<h2 class="panel-title">Registro Periodos</h2>
+				<h2 class="panel-title">Gestión de Periodos</h2>
 			</header>
 
 			<form  method="post"  action="" >
@@ -18,7 +18,32 @@
     				</div>
 
 
-				<div class="col-md-6">
+
+{% if estado_periodos.periodoAnual != 0 or estado_periodos.periodoSeguimiento != 0  or estado_periodos.periodoValidacion != 0 %}
+
+<div class="panel-body">
+    <div class="modal-wrapper">
+        <div class="modal-icon">
+            <i class="fa fa-warning"></i>
+                </div>
+            <div class="modal-text">
+
+                <h4>Atención</h4>
+				<p>Estimado Usuario, para abrir un nuevo periodo debe <b>cerrar</b> todos los periodos <b>(Anual, Seguimiento o Validación)</b> que se encuentra abierto(s). </p>
+
+			</div>
+        </div>
+    </div>
+
+
+  <div class="modal-footer">
+
+     <button class="btn btn-default" type="button" data-dismiss="modal">Cerrar</button>
+  </div>
+
+{%else %}
+
+				<div class="col-md-12">
 					<div  class="form-group">
 					<label >Año</label>
 					{{ form.anio_periodo }}
@@ -35,20 +60,45 @@
 					{{ form.estado }}
 				    </div>
 
+ <div class="modal-text">
 
+                <h4 style="color:red;">¡Atención!</h4>
+	 <p style="color:red;">¿Está seguro que desea abrir un nuevo periodo? <b>¡ Una vez abierto no podrá eliminarlo. !</b> </p>
+
+  </div>
 
 
 				</div>
 
-			</div>
+						</div>
+
+
 
 			<div class="modal-footer">
-				<button class="btn btn-primary" type="submit" id="confirmar"  >Confirmar</button>
+
+			<div id="enviar" style="display:none; text-align:left; " class="alert alert-info" role="alert">
+            Enviando correos, favor espere...
+            </div>
+
+
+				<button class="btn btn-primary" type="submit" id="confirmar"  >Abrir Periodo</button>
 				<button class="btn btn-default" type="button" data-dismiss="modal">Cancelar</button>
 			</div>
-
+{% endif %}
 			</form>
 
+<script>
+
+ $('#confirmar').click(function() {
+  //  if (($('#id_fecha_inicio_corte').val() != "")  && ($('#id_fecha_termino_corte').val() != "")){
 
 
+                $( this ).hide();
+                $( '#cancelar' ).hide();
+                 $( '#enviar' ).fadeIn();
+                 $('#id_fecha_inicio_corte').prop( "readonly", true );
+                 $('#id_fecha_termino_corte').prop( "readonly", true );
 
+            //}
+ });
+</script>

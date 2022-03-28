@@ -31,7 +31,7 @@ Actividades Asociadas al Objetivo
 				<thead>
 					<tr>
 						<!--<th>id</th>-->
-						<th>N°</th>
+						<th>Id</th>
 						<th>Actividad</th>
 
 						<th >Fecha Inicio</th>
@@ -45,7 +45,7 @@ Actividades Asociadas al Objetivo
 				<tbody>
 					{%  for objetivo in object_list %}
 					<tr>
-						<td> {{ forloop.counter }}</td>
+						<td> {{ objetivo.id }}</td>
 						<td class="MitextoGrande"  style="height:65px; width:100%; border-bottom:1px; border-left:0px; border-right:0px;  padding-top:-5px;" >{{ objetivo.descripcion_actividad }}</td>
 
 
@@ -169,7 +169,7 @@ $('#datatable-default').on('click', '.MitextoGrande', function () {
 
 $('#datatable-default').DataTable({
 stateSave: true,
-"ordering": false, //desactiva el ordenamiento de la tabla para que el order_by del queryset funcione. ("order": [[ 3, "desc" ]]) para ordenar desde jquery.
+//"ordering": false, //desactiva el ordenamiento de la tabla para que el order_by del queryset funcione. ("order": [[ 3, "desc" ]]) para ordenar desde jquery.
 "pageLength": 50 // cambio a 50 sprint 1 - CI-11 - 070121
 });
 

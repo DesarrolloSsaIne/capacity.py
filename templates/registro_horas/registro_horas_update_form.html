@@ -106,21 +106,16 @@ $(function() {
 
 $("#confirmar").click(function(){
 
-
 var anio_actual= moment().year();
-var anio_actual = anio_actual ;
-
+var anio_actual = 2022 ;
 
 fecha_inicio = $("#fecha_inicio").val();
 fecha_termino = $("#fecha_termino").val();
 
-
-
-
-    var valuesStart = fecha_inicio.split("-");
+var valuesStart = fecha_inicio.split("-");
 var anio_inicio = valuesStart[0];
 
-    var valuesStart = fecha_termino.split("-");
+var valuesStart = fecha_termino.split("-");
 var anio_termino = valuesStart[0];
 
 
@@ -143,17 +138,6 @@ return false
 
 
 });
-
-
-
-
-
-
-
-
-
-
-
 
 
 //var sel = $('#siteID');

@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.utils.module_loading import import_string
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
-from apps.actividades.models import Ges_Actividad
+from apps.actividades.models import Ges_Actividad, Ges_Observaciones_valida
 from apps.controlador.models import Ges_Controlador
 from apps.estructura.models import Ges_Niveles
 from apps.objetivos.models import Ges_Objetivo_Tactico, Ges_Objetivo_TacticoTN, Ges_Objetivo_Operativo
@@ -1235,6 +1235,103 @@ def UpdateFlag(id_controlador,periodo_actual):
 
 
 
+def export_users_xls_seguimiento_comentarios_analista(request, *args, **kwargs):
+    try:
+        periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+    except Glo_Periodos.DoesNotExist:
+        return None
+
+    id_controlador = kwargs['pk']
+
+
+    nivel=Ges_Controlador.objects.get(Q(id=id_controlador) & Q(id_periodo=periodo_actual))
+
+    nivel= nivel.nivel_inicial
+
+
+    observaciones = Ges_Observaciones_valida.objects.filter(Q(id_controlador=id_controlador) &
+                                                            Q(id_periodo=periodo_actual))
+
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
+    response['Content-Disposition'] = 'attachment; filename={date}-Plan_de_Gestion_comentarios.xlsx'.format(
+        date=datetime.now().strftime('%d/%m/%Y'),
+    )
+    workbook = Workbook()
+
+
+    # Get active worksheet/tab
+    worksheet = workbook.active
+    worksheet.title = 'reporte_seguimiento'
+
+    # Define the titles for columns
+
+    columns = ['Id Actividad',
+               'Actividad',
+               'Observación',
+               'Fecha Registro',
+               'Periodo',
+               'Periodo Validación',
+               'Jefatura',
+               'Area'
+               ]
+
+    row_num = 1
+
+    # Assign the titles for each cell of the header
+    for col_num, column_title in enumerate(columns, 1):
+        cell = worksheet.cell(row=row_num, column=col_num)
+        cell.value = column_title
+
+    # Iterate through all movies
+    for observacion in observaciones:
+        row_num += 1
+
+        row =''
+
+        row = [str(observacion.id_actividad.id),
+               observacion.id_actividad.descripcion_actividad,
+               observacion.descripcion_observacion,
+               observacion.fecha_registro,
+               observacion.id_periodo.descripcion_periodo,
+               observacion.id_periodo_valida.descripcion_validacion,
+               observacion.jefatura_primerarevision.id_user.username,
+               str(observacion.id_controlador.id_jefatura.id_nivel.descripcion_nivel),
+
+               ]
+
+        # Assign the data for each cell of the row
+        for col_num, cell_value in enumerate(row, 1):
+            cell = worksheet.cell(row=row_num, column=col_num)
+            cell.value = cell_value
+
+            if col_num == 12:
+                cell.number_format = 'dd/mm/yyyy'
+            if col_num == 13:
+                cell.number_format = 'dd/mm/yyyy'
+            if col_num == 15:
+                cell.number_format = 'dd/mm/yyyy'
+            if col_num == 16:
+                cell.number_format = 'dd/mm/yyyy'
+            if col_num == 17:
+                cell.number_format = 'dd/mm/yyyy'
+            if col_num == 18:
+                cell.number_format = 'dd/mm/yyyy'
+
+            if col_num == 20:
+                if cell.value == 0:
+                    cell.value='No Reportado'
+                if cell.value == 1:
+                    cell.value='Aceptado'
+                if cell.value == 2:
+                    cell.value='Rechazado'
+
+
+    workbook.save(response)
+
+
+    return response
 
 
 

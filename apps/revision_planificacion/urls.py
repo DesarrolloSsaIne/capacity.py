@@ -4,7 +4,7 @@ from django.urls import path
 from apps.revision_planificacion.views import UnidadesListar, ObjetivosListar, ActividadesListar,\
     RechazaPlan, AceptaPlan, GestionObservacionesActividades, \
     GestionObservacionesObjetivosVp2,ActividadDetalle, UnidadesListarNoFinalizadas, \
-    ActividadesListarNoFinalizadas, ObjetivosListarNoFinalizadas, EnviarPlanAdministrador, export_users_xls
+    ActividadesListarNoFinalizadas, ObjetivosListarNoFinalizadas, EnviarPlanAdministrador, export_users_xls, export_users_xls_seguimiento_comentarios_analista
 
 
 urlpatterns = [
@@ -32,6 +32,6 @@ urlpatterns = [
 
     path(r'ExportarPlanXls/<int:pk>', export_users_xls, name='exporta_plan_analista_xls'),
 
-
+    path(r'DescargarPlanXlsAnalistaComentarios/<int:pk>', export_users_xls_seguimiento_comentarios_analista, name='exporta_plan_seguimiento_xls_comentarios_analista'),
 
 ]

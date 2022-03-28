@@ -34,7 +34,7 @@ Actividades Asociadas al Objetivo
 				<thead>
 					<tr>
 						<!--<th>id</th>-->
-						<th style="font-size:11px;">N°</th>
+						<th style="font-size:11px;">id</th>
 						<th style="font-size:11px; "> <div style="color:white;">......................................</div> <br> Descripción Actividad </th>
 						<th style="font-size:11px;" >Horas</th>
 						<th style="font-size:11px;">Volumen</th>
@@ -46,6 +46,8 @@ Actividades Asociadas al Objetivo
 						<th style="font-size:11px;">Periodicidad</th>
 						<th style="display:none;">count NV</th>
 <!--                        <th title="Total Observaciones Asociadas a la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">Obs. Totales</th>-->
+
+						<th style="font-size:11px;">Nro.Obs.</th>
 						<th style="font-size:11px;">Obs.</th>
 
 					</tr>
@@ -53,7 +55,7 @@ Actividades Asociadas al Objetivo
 				<tbody>
 					{%  for objetivo in object_list %}
 					<tr>
-						<td style="font-size:11px;"> {{ forloop.counter }}</td>
+						<td style="font-size:11px;"> {{ objetivo.id }}</td>
 						<td class="Mitexto"  style="height:70px; width:100%; border-bottom:1px; border-left:0px; border-right:0px; font-size:11px; padding-top:-5px;" >{{ objetivo.descripcion_actividad }}</td>
 						<td style="font-size:11px;" >{{ objetivo.horas_actividad }}</td>
 						<td style="font-size:11px;">{{ objetivo.volumen }}</td>
@@ -65,6 +67,8 @@ Actividades Asociadas al Objetivo
 
 						<td style="font-size:11px; ">{{ objetivo.id_periodicidad }}</td>
 						<td style="display:none;>">{{ objetivo.count_no_vistos }}</td>
+
+						<td style=" font-size:11px;">  {% if objetivo.count_observaciones == none %} 0 {% else %} {{ objetivo.count_observaciones}} {%endif%}</td>
 
 <!--						   <td> {% if objetivo.count_observaciones == none %} 0 {% else %} {{ objetivo.count_observaciones}} {%endif%}</td>-->
 
@@ -120,7 +124,7 @@ Actividades Asociadas al Objetivo
 				<div class="panel-actions">
 				<a class="fa fa-times" data-dismiss="modal"></a>
 				</div>
-				<h2 class="panel-title">Detalle Observación</h2>
+				<h2 class="panel-title">Detalle Actividad</h2>
 			</header>
 
               <div class="modal-body">
@@ -169,14 +173,13 @@ Actividades Asociadas al Objetivo
 $('#datatable-default').on('click', '.Mitexto', function () {
     $('#txt_obs_campo_expand').val($(this).parents('tr').find('td:nth-child(2)').text())
     $('#observacion_center').modal('toggle');
-
-
 });
+
 
 
 $('#datatable-default').DataTable({
 stateSave: true,
-"ordering": false, //desactiva el ordenamiento de la tabla para que el order_by del queryset funcione. ("order": [[ 3, "desc" ]]) para ordenar desde jquery.
+//"ordering": false //desactiva el ordenamiento de la tabla para que el order_by del queryset funcione. ("order": [[ 3, "desc" ]]) para ordenar desde jquery.
 "pageLength": 50 // cambio a 50 sprint 1 - CI-11 - 070121
 });
 

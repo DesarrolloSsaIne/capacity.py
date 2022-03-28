@@ -1,0 +1,44 @@
+		<header class="panel-heading">
+				<div class="panel-actions">
+				<a class="fa fa-times" data-dismiss="modal"></a>
+				</div>
+				<h2 class="panel-title">Historial Comentarios Actividad  </h2>
+			</header>
+
+
+
+    <div class="panel-body">
+        <h5>{{ nombre_actividad.nombre.descripcion_actividad }}</h5>
+    <div class="modal-wrapper">
+
+         <table class="table table-bordered table-striped mb-none" id="datatable-default">
+            <thead>
+                <tr>
+
+                    <th>Comentario</th>
+                    <th>Fecha</th>
+
+
+                </tr>
+            </thead>
+            <tbody>
+
+                {% for comentarios in object_list %}
+                <tr>
+
+                    <td> {{ comentarios.descripcion_observacion}} </td>
+                    <td> {{ comentarios.fecha_registro }} </td>
+
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+  <div class="modal-footer">
+
+     <button class="btn btn-default" type="button" data-dismiss="modal">Cerrar</button>
+  </div>
+

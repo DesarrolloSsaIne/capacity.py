@@ -75,7 +75,7 @@ Listado de Planes
 														 </a>
 
                     </td>
-                    <td style="text-align:center; width:120px;">
+                    <td style="text-align:center; width:150px;">
 
                         <button type="button" title="Aceptar plan y enviar a revisión." data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" class="aceptar btn btn-sm btn-primary" data-id="{% url 'aceptaplanAnalista' planes.id %}"  {% if planes.estado_flujo_id == 11 or planes.estado_flujo_id == 7 %} disabled tabindex="-1"    {% endif %}>
                             <span class="fa fa-check-square"></span></button>
@@ -85,6 +85,9 @@ Listado de Planes
 
 
                         		 <a  type="button" style="width:30px; height:30px; "  class="create btn btn-sm btn-success" href="{% url 'exporta_plan_analista_xls' planes.id %}"  name="button" title="Descargar Plan en MS Excel" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
+									 <span style="margin-left:-1px; " class="fa fa-file-excel-o"></span></a>
+
+                        		 <a  type="button" style="width:30px; height:30px; "  class="create btn btn-sm btn-success" href="{% url 'exporta_plan_seguimiento_xls_comentarios_analista' planes.id %}"  name="button" title="Descargar Comentarios en MS Excel" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
 									 <span style="margin-left:-1px; " class="fa fa-file-excel-o"></span></a>
 
                     </td>

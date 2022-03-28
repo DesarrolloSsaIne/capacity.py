@@ -2,7 +2,7 @@
 				<div class="panel-actions">
 				<a class="fa fa-times" data-dismiss="modal"></a>
 				</div>
-				<h2 class="panel-title">Gestión Actividades </h2>
+				<h2 class="panel-title">Gestión Actividades</h2>
 			</header>
 
 			<form  method="post"  action="" >
@@ -235,7 +235,6 @@
                 <h4>Atención</h4>
 				<p>¿Está seguro que desea <strong style="color:green;">ACEPTAR</strong> el estado de la actividad?. <br> <strong style="color:red;">Una vez aceptado no se podrá deshacer el cambio.</strong> </p>
 
-				<textarea id="id_observacion_acepta"  cols="40" rows="10" class="form-control" style="height:80px;display:none" maxlength="2000"  placeholder="Ingrese un observación a la validación"></textarea>
             </div>
         </div>
     </div>
@@ -273,7 +272,7 @@
                 <h4>Atención</h4>
 				<p>¿Está seguro que desea <strong style="color:red;">RECHAZAR</strong> el estado de la actividad?. <br> <strong style="color:red;">Una vez rechazado no se podrá deshacer el cambio.</strong> </p>
 
-            	<textarea  placeholder="Ingrese un observación a la validación"  cols="40" rows="10" class="form-control" style="height:80px;display:none" maxlength="2000" id="id_observacion_rechaza"></textarea>
+            	<textarea  placeholder="Ingrese un observación a la validación"  cols="40" rows="10" class="form-control" style="height:80px;" maxlength="2000" id="id_observacion_rechaza"></textarea>
 
 			</div>
         </div>
@@ -554,7 +553,6 @@ $(function() {
  $(document).on('submit', '#post-form-rechaza',function(e){
      e.preventDefault();
 
-
 	var estado_final_post = ""
 		var observacion = $('#id_observacion_rechaza').val()
 		var id_estado_actividad_actual = $('#id_id_estado_actividad').val()
@@ -719,6 +717,8 @@ if(estado == 0 || estado == ''){
  
 
 $("#confirmar").click(function(){
+
+
 
 var horas_actividad;
 var horas_disponibles;

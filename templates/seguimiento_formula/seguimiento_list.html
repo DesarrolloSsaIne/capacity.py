@@ -54,6 +54,8 @@
 
                                      <a  type="button" style="width:30px; height:30px; "  class="create btn btn-sm btn-success" href="{% url 'exporta_plan_seguimiento_xls' total_disponible.id_controlador.id %}"  name="button" title="Descargar Plan en MS Excel" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
 									 <span style="margin-left:-1px; " class="fa fa-file-excel-o"></span></a>
+                                    <a  type="button" style="width:30px; height:30px; "  class="create btn btn-sm btn-success" href="{% url 'exporta_plan_seguimiento_xls_comentarios' total_disponible.id_controlador.id %}"  name="button" title="Descargar Comentarios Plan en MS Excel" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top">
+									 <span style="margin-left:-1px; " class="fa fa-file-excel-o"></span></a>
 {% if total_disponible.estado_seguimiento_id == 1 %}
 								 <button type="button" class="aceptar btn btn-sm btn-warning" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top"  name="button" title="Iniciar Reporte"  data-id="{% url 'iniciaEjecucion' total_disponible.id_controlador.id  %}"  {% if total_disponible.id_controlador.id_estado_plan_id == 2 or total_disponible.id_controlador.id_estado_plan_id == 3 %} disabled   {% endif %} >
       								<span class="fa fa-coffee"></span></button>

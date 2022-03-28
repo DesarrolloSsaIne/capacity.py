@@ -189,7 +189,7 @@ fecha_termino = $("#fecha_termino_actividad").val();
 
 $( "#fecha_termino_actividad, #fecha_inicio_actividad" )
   .focusout(function() {
-  var anio_actual= 2021
+  var anio_actual= 2022
 
 	fecha_inicio = $("#fecha_inicio_actividad").val();
 	fecha_termino = $("#fecha_termino_actividad").val();
@@ -203,7 +203,7 @@ $( "#fecha_termino_actividad, #fecha_inicio_actividad" )
 	if (anio_inicio!=anio_actual && anio_termino!=anio_actual){
 
 	$("#mjeAdver").css("display","block");
-	$("#textAdver").text("Advertencia : El sistema se encuentra habilitado para el periodo 2021.")
+	$("#textAdver").text("Advertencia : El sistema se encuentra habilitado para el periodo 2022.")
 	}
 	else
 	{$("#mjeAdver").css("display","none");}
@@ -297,7 +297,7 @@ return false
 
 
 //var anio_actual= moment().year();
-var anio_actual= 2021
+var anio_actual= 2022
 
 fecha_inicio = $("#fecha_inicio_actividad").val();
 fecha_termino = $("#fecha_termino_actividad").val();
@@ -313,7 +313,7 @@ if (anio_inicio==anio_actual && anio_termino==anio_actual){
 	//alert('ok');
 }else{
 	$("#mjeError").css("display","block");
-	$("#textError").text("Error : Las fechas seleccionadas deben corresponder al año 2021.");
+	$("#textError").text("Error : Las fechas seleccionadas deben corresponder al año 2022.");
 return false
 }
 
@@ -517,9 +517,9 @@ $(function() {
 			var termino = $('#fecha_termino_actividad').val()
 			var dia_semana0 = checkWeek($('#fecha_inicio_actividad').val())
 			var dia_semana1 = checkWeek($('#fecha_termino_actividad').val())
-			if(inicio == "2021-01-01")
+			if(inicio == "2022-01-01")
 			{dia_semana0 = 1 }
-			if(termino == "2021-01-01")
+			if(termino == "2022-01-01")
 			{dia_semana1 = 1 }
 			var num_semana = (dia_semana1- dia_semana0) + 1
  			total = parseInt((+horas) * (+volumen) * (+personas) * (+num_semana)) || 0;

@@ -36,7 +36,7 @@ if __name__=='__main__':
 
     }
 
-    imgkit.from_file('mihtml.html', 'out2.png', config=config, options=options)
+    # imgkit.from_file('mihtml.html', 'out2.png', config=config, options=options)
     #####//Código en caso que se requiera información adicional dinámica en la imagen de lo contrario no es necesario####
 
 
@@ -80,7 +80,7 @@ if __name__=='__main__':
                         'run':'14202112',
                         'expiration': exp,
                         'purpose':'Desatendido'},
-                        'a08253d568bf46f2a5ef8217dbb06da7', algorithm='HS256').decode('utf-8')
+                        'a08253d568bf46f2a5ef8217dbb06da7', algorithm='HS256').decode('utf-8',errors='strict')
 
     tokenAtendido = jwt.encode({'entity': 'Instituto Nacional de Estadísticas',
                         'run':'14202112',

@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.conf.urls import url
 from django.urls import path
-from apps.valida_seguimiento.views import UnidadesList, Objetivos, Actividades, ActividadEdit, update_actividad, update_actividad_rechaza, ValidaSeguimientoActividadDetallesVer, export_users_xls_valida_seguimiento
+from apps.valida_seguimiento.views import UnidadesList, Objetivos, Actividades, ActividadEdit, update_actividad, update_actividad_rechaza, ValidaSeguimientoActividadDetallesVer, export_users_xls_valida_seguimiento, ListarComentarios, export_users_xls_valida_seguimiento_comentarios
 
 urlpatterns = [
 
@@ -10,9 +10,12 @@ urlpatterns = [
     url('listarActividades/(?P<pk>\d+)/', login_required(Actividades.as_view()), name='ActividadesValidar'),
     url('ver/(?P<pk>\d+)/$', login_required(ValidaSeguimientoActividadDetallesVer.as_view()), name='ValidaSeguimientoActividadesVer'),
     url('editar/(?P<pk>\d+)/$', login_required(ActividadEdit.as_view()), name='RegistroActividadEditarSeguimientoValidar'),
+    url('listarComentarios/(?P<pk>\d+)/$', login_required(ListarComentarios.as_view()), name='ListarComentariosActividad'),
 
     url(r'update_actividad/', update_actividad, name='update_actividad'),
     url(r'update_actividad_rechaza/', update_actividad_rechaza, name='update_actividad_rechaza'),
 
+
     path(r'ExportarPlanXlsValidaSeguimiento/<int:pk>', export_users_xls_valida_seguimiento, name='exporta_plan_valida_seguimiento_xls'),
+    path(r'DescargarPlanComentariosXlsValidaSeguimiento/<int:pk>', export_users_xls_valida_seguimiento_comentarios, name='descargar_plan_valida_seguimiento_xls'),
 ]

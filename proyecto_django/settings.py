@@ -103,6 +103,7 @@ INSTALLED_APPS = [
 
 
 
+
     'apps.eje',
     'apps.registration',
 
@@ -201,7 +202,7 @@ WSGI_APPLICATION = 'proyecto_django.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'mysql_cymysql',
-        'NAME': 'prueba_11052021',
+        'NAME': 'capacity_bd_local',
         'USER': 'root',
         'PASSWORD': 'admin',
         'HOST': 'localhost',
@@ -271,9 +272,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
+STATIC_ROOT = os.path.join(BASE_DIR, "static_root")
 
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 
 #LOGIN_REDIRECT_URL = reverse_lazy('solicitud_lista')
@@ -289,13 +290,10 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
 # DEFAULT_FROM_EMAIL = 'jasonrd2@gmail.com'
 
 EMAIL_USE_TLS = False
-EMAIL_HOST = '192.168.1.235x'
-EMAIL_PORT = 25
-# EMAIL_HOST_USER = 'capacity.planificacion@ine.cl'
-# EMAIL_HOST_PASSWORD = '(Morande_801)'
-EMAIL_HOST_USER = 'jmrodriguezc@ine.gob.clx'
-EMAIL_HOST_PASSWORD = 'JR14202112-9x'
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = '1XXXX9X2.1XXXXX6XXX8.1.2X3XXX5XXX'
+EMAIL_PORT = 25_15
+EMAIL_HOST_USER = 'XXXXXXXXXXcapacity.planXXXXXXificacion@iXXXXXnXe.clXXXXXXXXXXXXX'
+EMAIL_BACKEND = 'XXXXXdjangoXXXXXX.coreXXXXXX.mail.backendsXXXXXXXXXX.smtpXXXX.EmailBackend'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 EMAIL_USE_SSL = False
 

@@ -1,4 +1,6 @@
 from django.db import models
+
+from apps.jefaturas.models import Ges_Jefatura
 from apps.periodicidad.models import Glo_Periodicidad
 from apps.familia_cargo.models import Glo_FamiliaCargo
 from apps.productos.models import Glo_ProductosEstadisticos
@@ -48,9 +50,14 @@ class Ges_Observaciones_valida (models.Model):
     id_actividad = models.ForeignKey(Ges_Actividad, on_delete=models.PROTECT, null=True)
     id_periodo_valida = models.ForeignKey(Glo_validacion, on_delete=models.PROTECT, null=True)
     fecha_registro = models.DateTimeField(auto_now=True)
+    id_periodo = models.ForeignKey(Glo_Periodos, on_delete=models.PROTECT, blank=True, null=True)
+    jefatura_primerarevision = models.ForeignKey(Ges_Jefatura, on_delete=models.PROTECT, null=True)
+    id_controlador = models.ForeignKey(Ges_Controlador, on_delete=models.PROTECT, null=True)
 
     def __str__(self):
         return '{} | {}'.format(self.descripcion_observacion)
+
+
 
 class Ges_log_reportes(models.Model):
     id_periodo_valida = models.ForeignKey(Glo_validacion, on_delete=models.PROTECT, null=True, blank=True)

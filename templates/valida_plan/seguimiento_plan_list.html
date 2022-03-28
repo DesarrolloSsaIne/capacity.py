@@ -44,6 +44,8 @@ Vista Estado Seguimiento Planes
                     <th title="Estado actual en la etapa de seguimiento" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" >Estado Seguimiento</th>
 
 
+
+                    <th >Descargar</th>
                     <th >Objetivos</th>
 
 
@@ -65,6 +67,15 @@ Vista Estado Seguimiento Planes
 														 style="color:red;  "
 														 {%endif%} > {{ planes.id_estado_plan }} </td>
 
+
+                                  <td style="text-align:center;">
+
+                             		<a type="button" title="Descargar Plan en MsExcel" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom"  class="objetivos btn btn-sm btn-success"  href="{% url 'exporta_plan_jefatura_directa_xls'  planes.id %} ">
+			<span class="fa fa-file-excel-o" ></span>
+
+			</a>
+
+                    </td>
 
                       <td style="text-align:center;">
 

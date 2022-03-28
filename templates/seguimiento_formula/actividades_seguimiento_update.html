@@ -578,14 +578,19 @@ if (flag_tmp == 0){ // OP1 Si es su primer periodo de seguimiento
 			$(".hide-justificacion").css("display", "block");
 			$(".hide-real_inicio").css("display", "none");
 			$(".hide-real_termino").css("display", "none");
-			$(".hide-reprogramacion_inicio").css("display", "block");
-			$(".hide-reprogramacion_termino").css("display", "block");
+			$(".hide-reprogramacion_inicio").css("display", "none"); // se cambia a None el 09-02-22 Por requerimiento
+			$(".hide-reprogramacion_termino").css("display", "none"); // se cambia a None el 09-02-22 Por requerimiento
 
 
 			$('#fecha_real_inicio').removeAttr('required');
 			$('#fecha_real_termino').removeAttr('required');
 
 			if (periodicidad != 9  && periodicidad != 10 && periodicidad != 11){ // si tiene periodicidad semanal (7), quincenal (8) o anual (12) la f.r.i y la f.r.t son obligatorias
+
+			$(".hide-reprogramacion_inicio").css("display", "block");
+			$(".hide-reprogramacion_termino").css("display", "block");
+
+
 
 			$('#fecha_reprogramacion_inicio').prop('required',true);
 			$('#fecha_reprogramacion_termino').prop('required',true);
@@ -607,14 +612,16 @@ if (flag_tmp == 0){ // OP1 Si es su primer periodo de seguimiento
 
 if (fecha_real_inicio != 0 && flag_tmp == 1){ // OP2 Si  tiene fecha real de inicio y es un periodo posterior
 
+
+
 			var Mifecha_real_inicio= moment(fecha_real_inicio_str).format('YYYY-MM-DD');
 			$("#fecha_real_inicio").val(Mifecha_real_inicio);
 
 			$(".hide-justificacion").css("display", "block");
 			$(".hide-real_inicio").css("display", "none");
 			$(".hide-real_termino").css("display", "none");
-			$(".hide-reprogramacion_inicio").css("display", "none").val('');
-			$(".hide-reprogramacion_termino").css("display", "block");
+			$(".hide-reprogramacion_inicio").css("display", "none").val(''); // se cambia a None el 09-02-22 Por requerimiento
+			$(".hide-reprogramacion_termino").css("display", "none").val(''); // se cambia a None el 09-02-22 Por requerimiento
 
 
 			$('#fecha_real_inicio').removeAttr('required');
@@ -622,7 +629,10 @@ if (fecha_real_inicio != 0 && flag_tmp == 1){ // OP2 Si  tiene fecha real de ini
 
 			if (periodicidad != 9  && periodicidad != 10 && periodicidad != 11){ // si tiene periodicidad semanal (7), quincenal (8) o anual (12) la f.r.i y la f.r.t son obligatorias
 
-			$('#fecha_reprogramacion_inicio').prop('required',true);
+			$(".hide-reprogramacion_inicio").css("display", "block");
+			$(".hide-reprogramacion_termino").css("display", "block");
+
+			//$('#fecha_reprogramacion_inicio').prop('required',true);
 			$('#fecha_reprogramacion_termino').prop('required',true);
 
 			}else{
@@ -1163,14 +1173,17 @@ if (estado == 10) //habilita eliminada - validar
 			$(".hide-justificacion").css("display", "block");
 			$(".hide-real_inicio").css("display", "none");
 			$(".hide-real_termino").css("display", "none");
-			$(".hide-reprogramacion_inicio").css("display", "block");
-			$(".hide-reprogramacion_termino").css("display", "block");
+			$(".hide-reprogramacion_inicio").css("display", "none"); // se cambia a None el 09-02-22 Por requerimiento
+			$(".hide-reprogramacion_termino").css("display", "none"); // se cambia a None el 09-02-22 Por requerimiento
 
 
 			$('#fecha_real_inicio').removeAttr('required').val('');
 			$('#fecha_real_termino').removeAttr('required').val('');
 
 			if (periodicidad != 9  && periodicidad != 10 && periodicidad != 11){ // si tiene periodicidad semanal (7), quincenal (8) o anual (12) la f.r.i y la f.r.t son obligatorias
+
+			$(".hide-reprogramacion_inicio").css("display", "block");
+			$(".hide-reprogramacion_termino").css("display", "block");
 
 			$('#fecha_reprogramacion_inicio').prop('required',true).val('');
 			$('#fecha_reprogramacion_termino').prop('required',true).val('');
@@ -1200,8 +1213,8 @@ if (estado == 10) //habilita eliminada - validar
 			$(".hide-justificacion").css("display", "block");
 			$(".hide-real_inicio").css("display", "none");
 			$(".hide-real_termino").css("display", "none");
-			$(".hide-reprogramacion_inicio").css("display", "none").val('');
-			$(".hide-reprogramacion_termino").css("display", "block");
+			$(".hide-reprogramacion_inicio").css("display", "none").val(''); // se cambia a None el 09-02-22 Por requerimiento
+			$(".hide-reprogramacion_termino").css("display", "none").val(''); // se cambia a None el 09-02-22 Por requerimiento
 
 
 			$('#fecha_real_inicio').removeAttr('required');
@@ -1211,7 +1224,8 @@ if (estado == 10) //habilita eliminada - validar
 
 			if (periodicidad != 9  && periodicidad != 10 && periodicidad != 11){ // si tiene periodicidad semanal (7), quincenal (8) o anual (12) la f.r.i y la f.r.t son obligatorias
 
-
+			$(".hide-reprogramacion_inicio").css("display", "block");
+			$(".hide-reprogramacion_termino").css("display", "block");
 			$('#fecha_reprogramacion_termino').prop('required',true).val('');
 
 			}else{
@@ -1244,6 +1258,9 @@ if (estado == 10) //habilita eliminada - validar
 			$('#fecha_real_termino').removeAttr('required').val('');
 
 			if (periodicidad != 9  && periodicidad != 10 && periodicidad != 11){ // si tiene periodicidad semanal (7), quincenal (8) o anual (12) la f.r.i y la f.r.t son obligatorias
+
+			$(".hide-reprogramacion_inicio").css("display", "block");
+			$(".hide-reprogramacion_termino").css("display", "block");
 
 			$('#fecha_reprogramacion_inicio').prop('required',true).val('');
 			$('#fecha_reprogramacion_termino').prop('required',true).val('');
@@ -1460,6 +1477,8 @@ $('#fecha_real_inicio').prop('disabled', false);
 
 
 	   if (estado == 5){ //Sin movimiento
+
+
 
 	   var fecha_reprogramacion_inicio= $('#fecha_reprogramacion_inicio').val()
  		var fecha_reprogramacion_termino= $('#fecha_reprogramacion_termino').val()

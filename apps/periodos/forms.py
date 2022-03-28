@@ -1,6 +1,6 @@
 from django import forms
 from apps.periodos.models import Glo_Periodos, Glo_Seguimiento, Glo_validacion
-
+import datetime
 class DateInput(forms.DateInput):
     input_type = 'date'
 
@@ -8,13 +8,35 @@ class DateInput(forms.DateInput):
 
 class periodosForm(forms.ModelForm):
     ANIO_CHOICES = (
-        (2020, '2020'),
         (2021, '2021'),
         (2022, '2022'),
         (2023, '2023'),
         (2024, '2024'),
-        (2025, '2025')
+        (2025, '2025'),
+        (2026, '2026'),
+        (2027, '2027'),
+        (2028, '2028'),
+        (2029, '2029'),
+        (2030, '2030'),
+        (2031, '2031'),
+        (2032, '2032'),
+        (2033, '2033'),
+        (2034, '2034'),
+        (2035, '2035'),
+        (2036, '2036'),
+        (2037, '2037'),
+        (2038, '2038'),
+        (2039, '2039'),
+        (2040, '2040'),
+        (2041, '2041')
     )
+
+
+
+
+
+
+
 
     TRUE_FALSE_CHOICES = (
         (True, 'Activo'),
@@ -45,6 +67,16 @@ class periodosForm(forms.ModelForm):
             'descripcion_periodo': forms.TextInput(attrs={'class': 'form-control'}),
 
         }
+
+class PeriodoAnual_cierreform(forms.ModelForm):
+
+
+    class Meta:
+        model = Glo_Periodos
+        fields = [
+            'fecha_termino',
+
+        ]
 
 class Seguimiento_cierreform(forms.ModelForm):
 
