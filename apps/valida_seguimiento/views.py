@@ -394,7 +394,7 @@ class ListarComentarios(ListView):
 
         try:
             lista_comentarios =  Ges_Observaciones_valida.objects.filter(
-                Q(id_actividad=self.kwargs['pk']) & Q(id_periodo_valida=periodo_valida.id))
+                Q(id_actividad=self.kwargs['pk']) )
         except:
             lista_comentarios = None
             pass

@@ -178,6 +178,10 @@ class ActividadesDetail(ListView): #clase modificada por JR- sprint 8 - Ok
                 Q(id_objetivo_tactico=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)).order_by('id_estado_actividad__orden','fecha_termino_actividad')
 
             nombre=  Ges_Objetivo_Tactico.objects.get(id=self.kwargs['pk'])
+
+
+
+
         if self.request.session['id_orden']==3:
            # lista_actividades = Ges_Actividad.objects.filter(Q(id_objetivo_tacticotn=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id))
 
@@ -187,6 +191,7 @@ class ActividadesDetail(ListView): #clase modificada por JR- sprint 8 - Ok
 
 
             nombre = Ges_Objetivo_TacticoTN.objects.get(id=self.kwargs['pk'])
+
         if self.request.session['id_orden']==4:
             #lista_actividades = Ges_Actividad.objects.filter(Q(id_objetivo_operativo=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id))
 
@@ -195,6 +200,10 @@ class ActividadesDetail(ListView): #clase modificada por JR- sprint 8 - Ok
                 Q(id_objetivo_operativo=self.kwargs['pk']) & Q(id_periodo=periodo_actual.id)).order_by('id_estado_actividad__orden','fecha_termino_actividad')
 
             nombre = Ges_Objetivo_Operativo.objects.get(id=self.kwargs['pk'])
+
+
+
+
 
         self.request.session['tv'] = nombre.transversal
 
@@ -212,6 +221,8 @@ class ActividadesDetail(ListView): #clase modificada por JR- sprint 8 - Ok
 
         except Ges_Controlador.DoesNotExist:
             return None
+
+
 
         #estado_seguimiento_id = self.request.session['estado_seguimiento_id']
         context['object_list'] = lista_actividades
@@ -529,7 +540,7 @@ class cierraSeguimiento(UpdateView):
 
         total_actividades_reportadas = Ges_Actividad.objects.filter(
             Q(id_controlador=id_controlador) & Q(fecha_real_inicio__isnull=True) & Q(id_periodo=periodo_actual) & Q(fecha_inicio_actividad__range=(fecha_inicio_corte, fecha_termino_corte)) & Q(flag_reporta=0) & (
-                        ~Q(id_estado_actividad=7) & ~Q(id_estado_actividad=8) & ~Q(id_estado_actividad=9))).count()
+                        ~Q(id_estado_actividad=7) & ~Q(id_estado_actividad=8) & ~Q(id_estado_actividad=9) & ~Q(Q(id_estado_actividad=5) & Q(id_periodicidad=9)))).count()
 
         # try:
         #
@@ -675,7 +686,7 @@ def UpdateFlag(id_controlador,periodo_actual):
     Ges_Actividad.objects.filter(Q(id_controlador=id_controlador) & Q(id_periodo=periodo_actual) & (Q(id_estado_actividad=1) | Q(id_estado_actividad=6) | Q(id_estado_actividad=7) | Q(id_estado_actividad=8) | Q(id_estado_actividad=9))).update(flag_tmp=1)
 
     Ges_Actividad.objects.filter(Q(id_controlador=id_controlador) & Q(id_periodo=periodo_actual) & (
-                Q(id_estado_actividad=7)  | Q(id_estado_actividad=9))).update(flag_finalizada=1)
+                Q(id_estado_actividad=7)  | Q(id_estado_actividad=9) | (Q(id_estado_actividad=5) & (Q(id_periodicidad=9))) )).update(flag_finalizada=1)
 
 def UpdateFlagCierre(id_controlador,periodo_actual):
     Ges_Actividad.objects.filter(Q(id_controlador=id_controlador) & Q(id_periodo=periodo_actual) & (

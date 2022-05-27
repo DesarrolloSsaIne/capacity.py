@@ -30,7 +30,7 @@ from apps.gestion_horas.models import *
 from apps.estructura.models import *
 from apps.objetivos.models import *
 from apps.jefaturas.models import *
-
+from django.db import connection
 from django.core.mail import send_mail
 from django.conf import settings
 
@@ -109,7 +109,7 @@ class PeriodosCreate(SuccessMessageMixin, CreateView):
                 return HttpResponseRedirect('/periodos/listar')
 
             try:
-                EnviarCorreoAbrirPeriodoAnual()
+                # EnviarCorreoAbrirPeriodoAnual()
                # logEventosCreate('Cierre Periodo Anual', 'PeriodosAnualCerrar()', request.POST['id_user'], request.POST['id_user'])
                 request.session['message_class'] = "alert alert-success"
                 messages.success(self.request, "Estimado Usuario: El periodo anual fue abierto exitosamente, se realizó el reseteo de la información y el correo se envió a las jefaturas.!" )
@@ -143,18 +143,22 @@ class PeriodosAnualCerrar(SuccessMessageMixin, UpdateView ):
         form = self.form_class(request.POST, instance=instancia_nivel)
         id_nuevo_estado= Glo_EstadoPeriodo.objects.get(id=3)
 
+
+
         if form.is_valid():
             form.instance.id_estado=id_nuevo_estado
             form.instance.fecha_termino= datetime.now(tz=timezone.utc)
 
+            respalda_periodo()
 
-            try:
 
-                respalda_periodo()
-            except:
-                request.session['message_class'] = "alert alert-danger"
-                messages.error(self.request, "Error interno: Hubo un error al intentar realizar el respaldo, inténtelo nuevamente, si error persiste comuníquese con el administrador.")
-                return HttpResponseRedirect('/periodos/listar')
+            # try:
+            #
+            #     respalda_periodo()
+            # except:
+            #     request.session['message_class'] = "alert alert-danger"
+            #     messages.error(self.request, "Error interno: Hubo un error al intentar realizar el respaldo, inténtelo nuevamente, si error persiste comuníquese con el administrador.")
+            #     return HttpResponseRedirect('/periodos/listar')
 
             try:
 
@@ -166,7 +170,7 @@ class PeriodosAnualCerrar(SuccessMessageMixin, UpdateView ):
                 return HttpResponseRedirect('/periodos/listar')
 
             try:
-                EnviarCorreoCerrarPeriodoAnual()
+                # EnviarCorreoCerrarPeriodoAnual()
                # logEventosCreate('Cierre Periodo Anual', 'PeriodosAnualCerrar()', request.POST['id_user'], request.POST['id_user'])
                 request.session['message_class'] = "alert alert-success"
                 messages.success(self.request, "Estimado Usuario: El periodo anual fue cerrado exitosamente, se realizó el respaldo de la información y el correo se envió a las jefaturas.!" )
@@ -196,18 +200,369 @@ class SeguimientoList(ListView):
         context = super(SeguimientoList, self).get_context_data(**kwargs)
         #id_usuario_actual = self.request.user.id  # obtiene id usuario actual
         self.request.session['id_periodo']=self.kwargs['pk'] #guarda id  controlador
-
-
         queryset= Glo_Seguimiento.objects.filter(id_periodo=self.kwargs['pk'])
-
 
         context['object_list'] = queryset
         context['periodo'] = PeriodoActual()
 
-
-
-
         return context
+
+
+
+def export_periodo_seguimiento(request, *args, **kwargs):
+
+
+    id_periodo_seguimiento = kwargs['pk']
+    sql = """SELECT 
+            CURRENT_DATE fecha_extraccion,
+             ps.descripcion_seguimiento periodo_seguimiento,
+             ps.fecha_termino_corte,
+            pn.id id_pn,
+            pn.descripcion_nivel primer_nivel,
+            sn.id id_sn,
+             sn.descripcion_nivel segundo_nivel,
+             tni.id id_tni,
+             tni.descripcion_nivel tercer_nivel,
+             cn.id id_cn,
+             cn.descripcion_nivel cuarto_nivel,
+             (SELECT eje.descripcion_eje from eje_ges_ejes eje WHERE eje.id = oe.ges_eje_id) ejes,
+             oe.id id_oe,
+             oe.descripcion_objetivo objetivo_estrategico,
+             ot.id id_ot,
+             ot.descripcion_objetivo objetivo_tactico,
+             tn.id id_tn,
+             tn.descripcion_objetivo objetivo_tacticotn,
+             op.id id_op,
+             op.descripcion_objetivo objetivo_operativo,
+              ac.id id_actividad, 
+             ac.descripcion_actividad,
+             ac.horas_actividad,
+             ac.volumen,
+             ac.personas_asignadas,
+             ac.total_horas,
+             ac.fecha_inicio_actividad,
+             ac.fecha_termino_actividad,
+             ac.fecha_registro,
+             h.fecha_real_inicio fecha_real_inicio_seguimiento,
+             h.fecha_real_termino fecha_real_termino_seguimiento,
+             h.fecha_reprogramacion_inicio fecha_reprogramacion_inicio_seguimiento ,
+             h.fecha_reprogramacion_termino fecha_reprogramacion_termino_seguimiento,
+            h.justificacion justificacion_seguimiento,
+             ea.descripcion_estado estado_seguimiento,
+             fa.descripcion_familiacargo,
+             pe.descripcion_periodicidad,
+             gp.id id_gp,
+             gp.descripcion_periodo,
+             gp.anio_periodo anio_periodo,             
+             pes.descripcion_producto producto_estadistico,
+             CONCAT(usr.first_name, " ",usr.last_name) jefatura,
+             ef.descripcion_estado estado_flujo_controlador,
+             epl.descripcion_estado estado_plan_controlador
+            from objetivos_ges_objetivo_estrategico oe 
+            INNER JOIN estructura_ges_primernivel pn ON oe.ges_primer_nivel_id = pn.id
+            INNER JOIN objetivos_ges_objetivo_tactico ot ON ot.id_objetivo_estrategico_id = oe.id
+            INNER JOIN estructura_ges_segundonivel sn ON sn.id = ot.id_segundo_nivel_id
+            INNER JOIN objetivos_ges_objetivo_tacticotn tn ON tn.id_objetivo_tactico_id = ot.id
+            INNER JOIN estructura_ges_tercernivel tni ON tni.id = tn.id_tercer_nivel_id 
+            INNER JOIN objetivos_ges_objetivo_operativo op ON op.id_objetivo_tacticotn_id = tn.id
+            INNER JOIN estructura_ges_cuartonivel cn ON op.id_cuarto_nivel_id = cn.id
+            inner JOIN actividades_ges_actividad ac ON ac.id_objetivo_operativo_id = op.id
+            INNER JOIN controlador_ges_controlador con ON con.id = ac.id_controlador_id
+            INNER JOIN jefaturas_ges_jefatura je ON je.id = con.id_jefatura_id
+            INNER JOIN auth_user usr ON usr.id= je.id_user_id
+            
+            INNER JOIN familia_cargo_glo_familiacargo fa ON fa.id = ac.id_familia_cargo_id
+            INNER JOIN periodicidad_glo_periodicidad pe ON pe.id = ac.id_periodicidad_id
+            INNER JOIN periodos_glo_periodos gp ON gp.id = ac.id_periodo_id
+            LEFT JOIN productos_glo_productosestadisticos pes ON pes.id = ac.id_producto_estadistico_id
+            INNER JOIN estado_flujo_glo_estadoflujo ef ON  ef.id = con.estado_flujo_id
+            INNER JOIN estado_plan_glo_estadoplan epl ON epl.id = con.id_estado_plan_id
+            INNER JOIN actividades_ges_actividad_historia h ON h.id_actividad_id = ac.id
+            INNER JOIN estado_actividad_glo_estadoactividad ea ON ea.id = h.id_estado_actividad_id
+            INNER JOIN periodos_glo_seguimiento ps ON ps.id = h.id_periodo_seguimiento_id
+            WHERE ac.estado = 1 and h.id_periodo_seguimiento_id = """ + str(id_periodo_seguimiento) + """
+            UNION ALL
+            SELECT 
+            CURRENT_DATE fecha_extraccion,
+             ps.descripcion_seguimiento periodo_seguimiento,
+             ps.fecha_termino_corte,
+            pn.id id_pn,
+            pn.descripcion_nivel primer_nivel,
+            sn.id id_sn,
+             sn.descripcion_nivel segundo_nivel,
+             tni.id id_tni,
+             tni.descripcion_nivel tercer_nivel,
+             NULL id_cn, 
+            NULL cuarto_nivel,
+             (SELECT eje.descripcion_eje from eje_ges_ejes eje WHERE eje.id = oe.ges_eje_id) ejes,
+             oe.id id_oe,
+             oe.descripcion_objetivo objetivo_estrategico,
+             ot.id id_ot,
+             ot.descripcion_objetivo objetivo_tactico,
+             tn.id id_tn,
+             tn.descripcion_objetivo objetivo_tacticotn,
+             NULL id_op,
+            NULL objetivo_Operativo, 
+             ac.id id_actividad, 
+             ac.descripcion_actividad,
+             ac.horas_actividad,
+             ac.volumen,
+             ac.personas_asignadas,
+             ac.total_horas,
+             ac.fecha_inicio_actividad,
+             ac.fecha_termino_actividad,
+             ac.fecha_registro,
+             h.fecha_real_inicio fecha_real_inicio_seguimiento,
+             h.fecha_real_termino fecha_real_termino_seguimiento,
+             h.fecha_reprogramacion_inicio fecha_reprogramacion_inicio_seguimiento ,
+             h.fecha_reprogramacion_termino fecha_reprogramacion_termino_seguimiento,
+            h.justificacion justificacion_seguimiento,
+            
+             ea.descripcion_estado estado_seguimiento,
+             fa.descripcion_familiacargo,
+             pe.descripcion_periodicidad,
+             gp.id id_gp,
+             gp.descripcion_periodo,
+             gp.anio_periodo anio_periodo,            
+             pes.descripcion_producto producto_estadistico,
+            
+             CONCAT(usr.first_name, " ",usr.last_name) jefatura,
+             ef.descripcion_estado estado_flujo_controlador,
+             epl.descripcion_estado estado_plan_controlador
+            
+            from objetivos_ges_objetivo_estrategico oe
+            INNER JOIN estructura_ges_primernivel pn ON oe.ges_primer_nivel_id = pn.id
+            INNER JOIN objetivos_ges_objetivo_tactico ot ON ot.id_objetivo_estrategico_id = oe.id
+            INNER JOIN estructura_ges_segundonivel sn ON sn.id = ot.id_segundo_nivel_id
+            INNER JOIN objetivos_ges_objetivo_tacticotn tn ON tn.id_objetivo_tactico_id = ot.id
+            INNER JOIN estructura_ges_tercernivel tni ON tni.id = tn.id_tercer_nivel_id 
+            inner JOIN actividades_ges_actividad ac ON  ac.id_objetivo_tacticotn_id = tn.id
+            INNER JOIN controlador_ges_controlador con ON con.id = ac.id_controlador_id
+            INNER JOIN jefaturas_ges_jefatura je ON je.id = con.id_jefatura_id
+            INNER JOIN auth_user usr ON usr.id= je.id_user_id
+            
+            INNER JOIN familia_cargo_glo_familiacargo fa ON fa.id = ac.id_familia_cargo_id
+            INNER JOIN periodicidad_glo_periodicidad pe ON pe.id = ac.id_periodicidad_id
+            INNER JOIN periodos_glo_periodos gp ON gp.id = ac.id_periodo_id
+            LEFT JOIN productos_glo_productosestadisticos pes ON pes.id = ac.id_producto_estadistico_id
+            INNER JOIN estado_flujo_glo_estadoflujo ef ON  ef.id = con.estado_flujo_id
+            INNER JOIN estado_plan_glo_estadoplan epl ON epl.id = con.id_estado_plan_id
+            INNER JOIN actividades_ges_actividad_historia h ON h.id_actividad_id = ac.id
+            INNER JOIN estado_actividad_glo_estadoactividad ea ON ea.id = h.id_estado_actividad_id
+            INNER JOIN periodos_glo_seguimiento ps ON ps.id = h.id_periodo_seguimiento_id
+            WHERE ac.estado = 1 and h.id_periodo_seguimiento_id =""" + str(id_periodo_seguimiento) + """
+            UNION ALL 
+            SELECT 
+            CURRENT_DATE fecha_extraccion,
+            ps.descripcion_seguimiento periodo_seguimiento,
+            ps.fecha_termino_corte,
+            pn.id id_pn,
+            pn.descripcion_nivel primer_nivel,
+            sn.id id_sn,
+             sn.descripcion_nivel segundo_nivel,
+             NULL id_tni,
+             NULL  tercer_nivel,
+             NULL id_cn, 
+            NULL cuarto_nivel,
+             (SELECT eje.descripcion_eje from eje_ges_ejes eje WHERE eje.id = oe.ges_eje_id) ejes,
+             oe.id id_oe,
+             oe.descripcion_objetivo objetivo_estrategico,
+             ot.id id_ot,
+             ot.descripcion_objetivo objetivo_tactico,
+             NULL id_tn,
+             NULL  objetivo_tacticotn,
+             NULL id_op,
+            NULL objetivo_Operativo, 
+             ac.id id_actividad, 
+             ac.descripcion_actividad,
+             ac.horas_actividad,
+             ac.volumen,
+             ac.personas_asignadas,
+             ac.total_horas,
+             ac.fecha_inicio_actividad,
+             ac.fecha_termino_actividad,
+             ac.fecha_registro,
+            h.fecha_real_inicio fecha_real_inicio_seguimiento,
+             h.fecha_real_termino fecha_real_termino_seguimiento,
+             h.fecha_reprogramacion_inicio fecha_reprogramacion_inicio_seguimiento ,
+             h.fecha_reprogramacion_termino fecha_reprogramacion_termino_seguimiento,
+             h.justificacion justificacion_seguimiento,
+             ea.descripcion_estado estado_seguimiento,
+             fa.descripcion_familiacargo,
+             pe.descripcion_periodicidad,
+             gp.id id_gp,
+             gp.descripcion_periodo,
+             gp.anio_periodo anio_periodo,        
+             pes.descripcion_producto producto_estadistico,
+            
+              CONCAT(usr.first_name, " ",usr.last_name) jefatura,
+             ef.descripcion_estado estado_flujo_controlador,
+             epl.descripcion_estado estado_plan_controlador
+            
+            from objetivos_ges_objetivo_estrategico oe
+            INNER JOIN estructura_ges_primernivel pn ON oe.ges_primer_nivel_id = pn.id
+            INNER JOIN objetivos_ges_objetivo_tactico ot ON ot.id_objetivo_estrategico_id = oe.id
+            INNER JOIN estructura_ges_segundonivel sn ON sn.id = ot.id_segundo_nivel_id
+            inner JOIN actividades_ges_actividad ac ON  ot.id= ac.id_objetivo_tactico_id
+            INNER JOIN controlador_ges_controlador con ON con.id = ac.id_controlador_id
+            INNER JOIN jefaturas_ges_jefatura je ON je.id = con.id_jefatura_id
+            INNER JOIN auth_user usr ON usr.id= je.id_user_id
+            INNER JOIN familia_cargo_glo_familiacargo fa ON fa.id = ac.id_familia_cargo_id
+            INNER JOIN periodicidad_glo_periodicidad pe ON pe.id = ac.id_periodicidad_id
+            INNER JOIN periodos_glo_periodos gp ON gp.id = ac.id_periodo_id
+            LEFT JOIN productos_glo_productosestadisticos pes ON pes.id = ac.id_producto_estadistico_id
+            INNER JOIN estado_flujo_glo_estadoflujo ef ON  ef.id = con.estado_flujo_id
+            INNER JOIN estado_plan_glo_estadoplan epl ON epl.id = con.id_estado_plan_id
+            INNER JOIN actividades_ges_actividad_historia h ON h.id_actividad_id = ac.id
+            INNER JOIN estado_actividad_glo_estadoactividad ea ON ea.id = h.id_estado_actividad_id
+            INNER JOIN periodos_glo_seguimiento ps ON ps.id = h.id_periodo_seguimiento_id
+            WHERE ac.estado = 1 and h.id_periodo_seguimiento_id =""" + str(id_periodo_seguimiento)
+
+
+    cursor = connection.cursor()
+    try:
+        cursor.execute(sql)
+        actividades = cursor.fetchall()
+    except Exception as e:
+            cursor.close
+
+
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
+    response['Content-Disposition'] = 'attachment; filename={date}-Periodo_seguimiento.xlsx'.format(
+        date=datetime.now().strftime('%d/%m/%Y'),
+    )
+    workbook = Workbook()
+
+
+    # Get active worksheet/tab
+    worksheet = workbook.active
+    worksheet.title = 'reporte_seguimiento'
+
+    # Define the titles for columns
+
+    columns = ['Fecha Reporte',
+                'Periodo Seguimiento',
+               'Fecha Término Corte',
+               'Id pn',
+               'Primer Nivel',
+               'Id sn',
+               'Segundo Nivel',
+               'Id tni',
+               'Tercer Nivel',
+               'Id cn',
+               'Cuarto Nivel',
+               'Ejes',
+               'Id oe',
+               'Id Objetivo Estrategíco',
+               'Id ot',
+               'Objetivo Tactíco',
+               'Id tat',
+               'Objetivo Tactícotn',
+               'Id op',
+               'Objetivo Operativo',
+               'Id Actividad',
+               'Actividad',
+               'Horas',
+               'Volumen',
+               'Personas',
+               'Total Horas',
+               'Fecha Inicio Actividad',
+               'Fecha Termino Actividad',
+               'Fecha Creación Actividad',
+               'Fecha Real Inicio Seguimiento',
+               'Fecha Real Término Seguimiento',
+               'Fecha_Reprogramación Inicio Seguimiento',
+               'Fecha Reprogramación Término Seguimiento',
+               'Justificación Seguimiento',
+               'Estado Seguimiento',
+               'Familia Cargo',
+               'Periodicidad',
+               'Id Gp',
+               'Periodo',
+               'Anio Periodo',
+               'Producto Estadistico',
+               'Jefatura',
+               'Estado Flujo Controlador',
+               'Estado Plan Controlador'
+               ]
+
+    row_num = 1
+
+    # Assign the titles for each cell of the header
+    for col_num, column_title in enumerate(columns, 1):
+        cell = worksheet.cell(row=row_num, column=col_num)
+        cell.value = column_title
+
+    # Iterate through all
+    for observacion in actividades:
+        row_num += 1
+
+        row =''
+
+        row = [str(observacion[0]),
+            str(observacion[1]),
+            str(observacion[2]),
+            str(observacion[3]),
+            str(observacion[4]),
+            str(observacion[5]),
+            str(observacion[6]),
+               str(observacion[7]),
+               str(observacion[8]),
+               str(observacion[9]),
+               str(observacion[10]),
+               str(observacion[11]),
+               str(observacion[12]),
+               str(observacion[13]),
+               str(observacion[14]),
+               str(observacion[15]),
+               str(observacion[16]),
+               str(observacion[17]),
+               str(observacion[18]),
+               str(observacion[19]),
+               str(observacion[20]),
+               str(observacion[21]),
+               str(observacion[22]),
+               str(observacion[23]),
+               str(observacion[24]),
+               str(observacion[25]),
+               str(observacion[26]),
+               str(observacion[27]),
+               str(observacion[28]),
+               str(observacion[29]),
+               str(observacion[30]),
+               str(observacion[31]),
+               str(observacion[32]),
+               str(observacion[33]),
+               str(observacion[34]),
+               str(observacion[35]),
+               str(observacion[36]),
+               str(observacion[37]),
+               str(observacion[38]),
+               str(observacion[39]),
+               str(observacion[40]),
+               str(observacion[41]),
+               str(observacion[42]),
+               str(observacion[43])
+
+               ]
+
+        # Assign the data for each cell of the row
+        for col_num, cell_value in enumerate(row, 1):
+            cell = worksheet.cell(row=row_num, column=col_num)
+            cell.value = cell_value
+
+
+            if col_num == 3:
+                cell.number_format = 'dd/mm/yyyy'
+
+    cursor.close
+
+    workbook.save(response)
+
+
+    return response
 
 
 class SeguimientoCerrarPeriodo(UpdateView):
@@ -572,7 +927,6 @@ def ExportarBackupXls(request, *args, **kwargs):
 
     respaldo_periodo = RespaldoPeriodo.objects.filter(id_gp=id_periodo)
 
-
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     )
@@ -580,7 +934,6 @@ def ExportarBackupXls(request, *args, **kwargs):
         date=datetime.now().strftime('%d/%m/%Y'),
     )
     workbook = Workbook()
-
 
     # Get active worksheet/tab
     worksheet = workbook.active
@@ -757,12 +1110,12 @@ def AbrirPeriodoAnual(periodo_id):
          #get(id= ) Ges_Actividad.objects.all().update
         Ges_Actividad.objects.all().update(fecha_inicio_actividad= None, fecha_termino_actividad  = None, fecha_real_inicio  = None,  fecha_real_termino  = None,
                                        fecha_reprogramacion_termino  = None, fecha_reprogramacion_inicio = None, validada = 0, flag_tmp   = 0,
-                                       flag_reporta = 0, id_estado_actividad_id = 4, flag_finalizada  = 0, id_periodo_id = periodo_id, justificacion=None)
+                                       flag_reporta = 0, id_estado_actividad_id = 4, flag_finalizada  = 0, id_periodo_id = periodo_id)
 
         Ges_Controlador.objects.all().update(estado_flujo_id = 2, id_periodo_id= periodo_id, id_estado_plan_id = 1)
         Ges_Ejes.objects.all().update( id_periodo_id=periodo_id)
         #Ges_Feriados.objects.get(id=123).update( id_periodo=periodo_id)
-        Ges_Registro_Horas.objects.all().update(tiene_vacaciones= 0, fecha_inicio = None, fecha_termino=None,dias_habiles = 0, id_periodo_id=periodo_id)
+        Ges_Registro_Horas.objects.all().update( id_periodo_id=periodo_id)
         Ges_CuartoNivel.objects.all().update( id_periodo_id=periodo_id)
         Ges_TercerNivel.objects.all().update( id_periodo_id=periodo_id)
         Ges_SegundoNivel.objects.all().update( id_periodo_id=periodo_id)
@@ -791,463 +1144,453 @@ def AbrirPeriodoAnual(periodo_id):
 
 def respalda_periodo():
 
-
     try:
         resp= True
-        connection = mysql.connector.connect(host='10.91.160.53',
-                                             database='DJANGO_DES',
-                                             user='capacity_des',
-                                             password='2MOMO99L')
-        if connection.is_connected():
-            db_Info = connection.get_server_info()
-            print("Connected to MySQL Server version ", db_Info)
+        cursor = connection.cursor()
+        periodo_actual = Glo_Periodos.objects.get(id_estado=1)
+        RespaldoPeriodo.objects.filter(id_gp=periodo_actual.id).delete()
 
-            periodo_actual = Glo_Periodos.objects.get(id_estado=1)
-
-            RespaldoPeriodo.objects.filter(id_gp=periodo_actual.id).delete()
-            cursor = connection.cursor()
-            #cursor.execute("delete from periodos_respaldoperiodo where id_gp = (SELECT id from periodos_glo_periodos WHERE id_estado_id= 1 )")
-            print("respaldo periodo activo")
-            #respaldo periodo activo
-            cursor.execute("""INSERT into periodos_respaldoperiodo(
-                             id_pn  ,
-                            primer_nivel ,
-                            id_sn ,
-                             segundo_nivel ,
-                             id_tni ,
-                             tercer_nivel ,
-                             id_cn , 
-                            cuarto_nivel ,
-                             ejes ,
-                             id_oe  ,
-                            objetivo_estrategico ,
-                             id_ot  ,
-                             objetivo_tactico ,
-                             id_tn ,
-                             objetivo_tacticotn ,
-                             id_op ,
-                            objetivo_operativo , 
-                            id_actividad , 
-                            descripcion_actividad ,
-                            horas_actividad  ,
-                             volumen ,
-                             personas_asignadas  ,
-                             total_horas ,
-                             fecha_inicio_actividad ,
-                             fecha_termino_actividad ,
-                             fecha_registro ,
-                             estado ,
-                             fecha_real_inicio ,
-                             fecha_real_termino ,
-                             fecha_reprogramacion_termino ,
-                             justificacion ,
-                             validada ,
-                             flag_tmp  ,
-                             flag_reporta  ,
-                             descripcion_estado ,
-                             descripcion_familiacargo ,
-                             descripcion_periodicidad ,
-                              id_gp ,
-                             descripcion_periodo ,
-                             anio_periodo ,
-                              fecha_inicio_periodo ,
-                              fecha_termino_periodo , 
-                              producto_estadistico , 
-                             flag_finalizada ,
-                             jefatura ,
-                              estado_flujo_controlador ,
-                             estado_plan_controlador ,
-                            analista_asignado ,
-                            primera_revision ,
-                             segunda_revision )
-                            SELECT 
-                            pn.id id_pn,
-                            pn.descripcion_nivel primer_nivel,
-                            sn.id id_sn,
-                             sn.descripcion_nivel segundo_nivel,
-                             tni.id id_tni,
-                             tni.descripcion_nivel tercer_nivel,
-                             cn.id id_cn,
-                             cn.descripcion_nivel cuarto_nivel,
-                             (SELECT eje.descripcion_eje from eje_ges_ejes eje WHERE eje.id = oe.ges_eje_id) ejes,
-                             oe.id id_oe,
-                             oe.descripcion_objetivo objetivo_estrategico,
-                             ot.id id_ot,
-                             ot.descripcion_objetivo objetivo_tactico,
-                             tn.id id_tn,
-                             tn.descripcion_objetivo objetivo_tacticotn,
-                             op.id id_op,
-                             op.descripcion_objetivo objetivo_operativo,
-                              ac.id id_actividad, 
-                             ac.descripcion_actividad,
-                             ac.horas_actividad,
-                             ac.volumen,
-                             ac.personas_asignadas,
-                             ac.total_horas,
-                             ac.fecha_inicio_actividad,
-                             ac.fecha_termino_actividad,
-                             ac.fecha_registro,
-                             ac.estado,
-                             ac.fecha_real_inicio,
-                             ac.fecha_real_termino,
-                             ac.fecha_reprogramacion_termino,
-                             ac.justificacion,
-                             case
-                             when ac.validada= 0 then 'no validada'
-                             when ac.validada = 1 then 'validada'
-                             ELSE '' END validada,
-                             ac.flag_tmp,
-                             ac.flag_reporta,
-                             CONCAT(ea.descripcion_estado, IFNULL(ea.descripcion_validada, ''))descripcion_estado,
-                             fa.descripcion_familiacargo,
-                             pe.descripcion_periodicidad,
-                             gp.id id_gp,
-                             gp.descripcion_periodo,
-                             gp.anio_periodo anio_periodo,
-                             gp.fecha_inicio fecha_inicio_periodo,
-                             gp.fecha_termino fecha_termino_periodo, 
-                             pes.descripcion_producto producto_estadistico,
-                             ac.flag_finalizada,
-                             CONCAT(usr.first_name, " ",usr.last_name) jefatura,
-                             ef.descripcion_estado estado_flujo_controlador,
-                             epl.descripcion_estado estado_plan_controlador,
-                             
-                             (SELECT CONCAT(us.first_name, " ", us.last_name) analista_asignado FROM auth_user us
-                             where us.id = con.analista_asignado_id) analista_asignado,
-                             
-                              (SELECT CONCAT(us.first_name," ", us.last_name) primera_revision FROM auth_user us
-                             where us.id = (SELECT je.id_user_id from jefaturas_ges_jefatura je WHERE je.id = con.jefatura_primerarevision_id)) primera_revision,
-                             
-                              (SELECT CONCAT(us.first_name," ", us.last_name) segunda_revision FROM auth_user us
-                             where us.id = (SELECT je.id_user_id from jefaturas_ges_jefatura je WHERE je.id = con.jefatura_segundarevision_id)) segunda_revision
-                            from objetivos_ges_objetivo_estrategico oe
-                            INNER JOIN estructura_ges_primernivel pn ON oe.ges_primer_nivel_id = pn.id
-                            INNER JOIN objetivos_ges_objetivo_tactico ot ON ot.id_objetivo_estrategico_id = oe.id
-                            INNER JOIN estructura_ges_segundonivel sn ON sn.id = ot.id_segundo_nivel_id
-                            INNER JOIN objetivos_ges_objetivo_tacticotn tn ON tn.id_objetivo_tactico_id = ot.id
-                            INNER JOIN estructura_ges_tercernivel tni ON tni.id = tn.id_tercer_nivel_id 
-                            INNER JOIN objetivos_ges_objetivo_operativo op ON op.id_objetivo_tacticotn_id = tn.id
-                            INNER JOIN estructura_ges_cuartonivel cn ON op.id_cuarto_nivel_id = cn.id
-                            inner JOIN actividades_ges_actividad ac ON ac.id_objetivo_operativo_id = op.id
-                            INNER JOIN controlador_ges_controlador con ON con.id = ac.id_controlador_id
-                            INNER JOIN jefaturas_ges_jefatura je ON je.id = con.id_jefatura_id
-                            INNER JOIN auth_user usr ON usr.id= je.id_user_id
-                            INNER JOIN estado_actividad_glo_estadoactividad ea ON ea.id = ac.id_estado_actividad_id
-                            INNER JOIN familia_cargo_glo_familiacargo fa ON fa.id = ac.id_familia_cargo_id
-                            INNER JOIN periodicidad_glo_periodicidad pe ON pe.id = ac.id_periodicidad_id
-                            INNER JOIN periodos_glo_periodos gp ON gp.id = ac.id_periodo_id
-                            LEFT JOIN productos_glo_productosestadisticos pes ON pes.id = ac.id_producto_estadistico_id
-                            INNER JOIN estado_flujo_glo_estadoflujo ef ON  ef.id = con.estado_flujo_id
-                            INNER JOIN estado_plan_glo_estadoplan epl ON epl.id = con.id_estado_plan_id
-                            WHERE gp.id_estado_id = 1 
-                            UNION ALL
-                            SELECT 
-                            pn.id id_pn,
-                            pn.descripcion_nivel primer_nivel,
-                            sn.id id_sn,
-                             sn.descripcion_nivel segundo_nivel,
-                             tni.id id_tni,
-                             tni.descripcion_nivel tercer_nivel,
-                             NULL id_cn, 
-                            NULL cuarto_nivel,
-                             (SELECT eje.descripcion_eje from eje_ges_ejes eje WHERE eje.id = oe.ges_eje_id) ejes,
-                             oe.id id_oe,
-                             oe.descripcion_objetivo objetivo_estrategico,
-                             ot.id id_ot,
-                             ot.descripcion_objetivo objetivo_tactico,
-                             tn.id id_tn,
-                             tn.descripcion_objetivo objetivo_tacticotn,
-                             NULL id_op,
-                            NULL objetivo_Operativo, 
-                             ac.id id_actividad, 
-                             ac.descripcion_actividad,
-                             ac.horas_actividad,
-                             ac.volumen,
-                             ac.personas_asignadas,
-                             ac.total_horas,
-                             ac.fecha_inicio_actividad,
-                             ac.fecha_termino_actividad,
-                             ac.fecha_registro,
-                             ac.estado,
-                             ac.fecha_real_inicio,
-                             ac.fecha_real_termino,
-                             ac.fecha_reprogramacion_termino,
-                             ac.justificacion,
-                            case
-                             when ac.validada= 0 then 'no validada'
-                             when ac.validada = 1 then 'validada'
-                             ELSE '' END validada,
-                             ac.flag_tmp,
-                             ac.flag_reporta,
-                             CONCAT(ea.descripcion_estado, IFNULL(ea.descripcion_validada, ''))descripcion_estado,
-                             fa.descripcion_familiacargo,
-                             pe.descripcion_periodicidad,
-                             gp.id id_gp,
-                             gp.descripcion_periodo,
-                             gp.anio_periodo anio_periodo,
-                             gp.fecha_inicio fecha_inicio_periodo,
-                             gp.fecha_termino fecha_termino_periodo, 
-                             pes.descripcion_producto producto_estadistico,
-                             ac.flag_finalizada,
-                             CONCAT(usr.first_name, " ",usr.last_name) jefatura,
-                             ef.descripcion_estado estado_flujo_controlador,
-                             epl.descripcion_estado estado_plan_controlador,
-                             
-                               (SELECT CONCAT(us.first_name, " ",us.last_name) analista_asignado FROM auth_user us
-                             where us.id = con.analista_asignado_id) analista_asignado,
-                              (SELECT CONCAT(us.first_name, " ",us.last_name) primera_revision FROM auth_user us
-                             where us.id = (SELECT je.id_user_id from jefaturas_ges_jefatura je WHERE je.id = con.jefatura_primerarevision_id)) primera_revision,
-                             
-                              (SELECT CONCAT(us.first_name, " ",us.last_name) segunda_revision FROM auth_user us
-                             where us.id = (SELECT je.id_user_id from jefaturas_ges_jefatura je WHERE je.id = con.jefatura_segundarevision_id)) segunda_revision
-                            from objetivos_ges_objetivo_estrategico oe
-                            INNER JOIN estructura_ges_primernivel pn ON oe.ges_primer_nivel_id = pn.id
-                            INNER JOIN objetivos_ges_objetivo_tactico ot ON ot.id_objetivo_estrategico_id = oe.id
-                            INNER JOIN estructura_ges_segundonivel sn ON sn.id = ot.id_segundo_nivel_id
-                            INNER JOIN objetivos_ges_objetivo_tacticotn tn ON tn.id_objetivo_tactico_id = ot.id
-                            INNER JOIN estructura_ges_tercernivel tni ON tni.id = tn.id_tercer_nivel_id 
-                            inner JOIN actividades_ges_actividad ac ON  ac.id_objetivo_tacticotn_id = tn.id
-                            INNER JOIN controlador_ges_controlador con ON con.id = ac.id_controlador_id
-                            INNER JOIN jefaturas_ges_jefatura je ON je.id = con.id_jefatura_id
-                            INNER JOIN auth_user usr ON usr.id= je.id_user_id
-                            INNER JOIN estado_actividad_glo_estadoactividad ea ON ea.id = ac.id_estado_actividad_id
-                            INNER JOIN familia_cargo_glo_familiacargo fa ON fa.id = ac.id_familia_cargo_id
-                            INNER JOIN periodicidad_glo_periodicidad pe ON pe.id = ac.id_periodicidad_id
-                            INNER JOIN periodos_glo_periodos gp ON gp.id = ac.id_periodo_id
-                            LEFT JOIN productos_glo_productosestadisticos pes ON pes.id = ac.id_producto_estadistico_id
-                            INNER JOIN estado_flujo_glo_estadoflujo ef ON  ef.id = con.estado_flujo_id
-                            INNER JOIN estado_plan_glo_estadoplan epl ON epl.id = con.id_estado_plan_id
-                            WHERE gp.id_estado_id = 1 
-                            UNION ALL 
-                            SELECT 
-                            pn.id id_pn,
-                            pn.descripcion_nivel primer_nivel,
-                            sn.id id_sn,
-                             sn.descripcion_nivel segundo_nivel,
-                             NULL id_tni,
-                             NULL  tercer_nivel,
-                             NULL id_cn, 
-                            NULL cuarto_nivel,
-                             (SELECT eje.descripcion_eje from eje_ges_ejes eje WHERE eje.id = oe.ges_eje_id) ejes,
-                             oe.id id_oe,
-                             oe.descripcion_objetivo objetivo_estrategico,
-                             ot.id id_ot,
-                             ot.descripcion_objetivo objetivo_tactico,
-                             NULL id_tn,
-                             NULL  objetivo_tacticotn,
-                             NULL id_op,
-                            NULL objetivo_Operativo, 
-                             ac.id id_actividad, 
-                             ac.descripcion_actividad,
-                             ac.horas_actividad,
-                             ac.volumen,
-                             ac.personas_asignadas,
-                             ac.total_horas,
-                             ac.fecha_inicio_actividad,
-                             ac.fecha_termino_actividad,
-                             ac.fecha_registro,
-                             ac.estado,
-                             ac.fecha_real_inicio,
-                             ac.fecha_real_termino,
-                             ac.fecha_reprogramacion_termino,
-                             ac.justificacion,
-                            case
-                             when ac.validada= 0 then 'no validada'
-                             when ac.validada = 1 then 'validada'
-                             ELSE '' END validada,
-                             ac.flag_tmp,
-                             ac.flag_reporta,
-                             CONCAT(ea.descripcion_estado, IFNULL(ea.descripcion_validada, ''))descripcion_estado,
-                             fa.descripcion_familiacargo,
-                             pe.descripcion_periodicidad,
-                             gp.id id_gp,
-                             gp.descripcion_periodo,
-                             gp.anio_periodo anio_periodo,
-                             gp.fecha_inicio fecha_inicio_periodo,
-                             gp.fecha_termino fecha_termino_periodo, 
-                             pes.descripcion_producto producto_estadistico,
-                             ac.flag_finalizada,
-                              CONCAT(usr.first_name, " ",usr.last_name) jefatura,
-                             ef.descripcion_estado estado_flujo_controlador,
-                             epl.descripcion_estado estado_plan_controlador,
-                            
-                              (SELECT CONCAT(us.first_name, " ",us.last_name) analista_asignado FROM auth_user us
-                             where us.id = con.analista_asignado_id) analista_asignado,
-                              (SELECT CONCAT(us.first_name, " ",us.last_name) primera_revision FROM auth_user us
-                             where us.id = (SELECT je.id_user_id from jefaturas_ges_jefatura je WHERE je.id = con.jefatura_primerarevision_id))primera_revision,
-                             
-                              (SELECT CONCAT(us.first_name, " ",us.last_name) segunda_revision FROM auth_user us
-                             where us.id = (SELECT je.id_user_id from jefaturas_ges_jefatura je WHERE je.id = con.jefatura_segundarevision_id)) segunda_revision
-                            from objetivos_ges_objetivo_estrategico oe
-                            INNER JOIN estructura_ges_primernivel pn ON oe.ges_primer_nivel_id = pn.id
-                            INNER JOIN objetivos_ges_objetivo_tactico ot ON ot.id_objetivo_estrategico_id = oe.id
-                            INNER JOIN estructura_ges_segundonivel sn ON sn.id = ot.id_segundo_nivel_id
-                            inner JOIN actividades_ges_actividad ac ON  ot.id= ac.id_objetivo_tactico_id
-                            INNER JOIN controlador_ges_controlador con ON con.id = ac.id_controlador_id
-                            INNER JOIN jefaturas_ges_jefatura je ON je.id = con.id_jefatura_id
-                            INNER JOIN auth_user usr ON usr.id= je.id_user_id
-                            INNER JOIN estado_actividad_glo_estadoactividad ea ON ea.id = ac.id_estado_actividad_id
-                            INNER JOIN familia_cargo_glo_familiacargo fa ON fa.id = ac.id_familia_cargo_id
-                            INNER JOIN periodicidad_glo_periodicidad pe ON pe.id = ac.id_periodicidad_id
-                            INNER JOIN periodos_glo_periodos gp ON gp.id = ac.id_periodo_id
-                            LEFT JOIN productos_glo_productosestadisticos pes ON pes.id = ac.id_producto_estadistico_id
-                            INNER JOIN estado_flujo_glo_estadoflujo ef ON  ef.id = con.estado_flujo_id
-                            INNER JOIN estado_plan_glo_estadoplan epl ON epl.id = con.id_estado_plan_id       
-                            WHERE gp.id_estado_id = 1 
-                            
-                            
-                            """)
-
-            connection.commit()
-            cursor.execute("delete from actividades_ges_actividad_historia_respaldo where id_periodo_id = (SELECT id from periodos_glo_periodos WHERE id_estado_id= 1 ) ")
-            print("respaldo actividades_ges_actividad_historia_respaldo ")
-            cursor.execute(""" 
-            INSERT INTO actividades_ges_actividad_historia_respaldo  (
-                          id ,
-                          fecha_registro,
-                          fecha_reprogramacion_inicio,
-                          fecha_reprogramacion_termino,
-                          fecha_real_termino,
-                          justificacion,
-                          id_actividad_id ,
-                          id_estado_actividad_id,
-                          id_periodo_id,
-                          id_periodo_seguimiento_id,
-                          id_controlador_id,
-                          fecha_real_inicio,
-                          validada
+        #cursor.execute("delete from periodos_respaldoperiodo where id_gp = (SELECT id from periodos_glo_periodos WHERE id_estado_id= 1 )")
+        print("respaldo periodo activo")
+        #respaldo periodo activo
+        cursor.execute("""INSERT into periodos_respaldoperiodo(
+                         id_pn  ,
+                        primer_nivel ,
+                        id_sn ,
+                         segundo_nivel ,
+                         id_tni ,
+                         tercer_nivel ,
+                         id_cn , 
+                        cuarto_nivel ,
+                         ejes ,
+                         id_oe  ,
+                        objetivo_estrategico ,
+                         id_ot  ,
+                         objetivo_tactico ,
+                         id_tn ,
+                         objetivo_tacticotn ,
+                         id_op ,
+                        objetivo_operativo , 
+                        id_actividad , 
+                        descripcion_actividad ,
+                        horas_actividad  ,
+                         volumen ,
+                         personas_asignadas  ,
+                         total_horas ,
+                         fecha_inicio_actividad ,
+                         fecha_termino_actividad ,
+                         fecha_registro ,
+                         estado ,
+                         fecha_real_inicio ,
+                         fecha_real_termino ,
+                         fecha_reprogramacion_termino ,
+                         justificacion ,
+                         validada ,
+                         flag_tmp  ,
+                         flag_reporta  ,
+                         descripcion_estado ,
+                         descripcion_familiacargo ,
+                         descripcion_periodicidad ,
+                          id_gp ,
+                         descripcion_periodo ,
+                         anio_periodo ,
+                          fecha_inicio_periodo ,
+                          fecha_termino_periodo , 
+                          producto_estadistico , 
+                         flag_finalizada ,
+                         jefatura ,
+                          estado_flujo_controlador ,
+                         estado_plan_controlador ,
+                        analista_asignado ,
+                        primera_revision ,
+                         segunda_revision )
+                        SELECT 
+                        pn.id id_pn,
+                        pn.descripcion_nivel primer_nivel,
+                        sn.id id_sn,
+                         sn.descripcion_nivel segundo_nivel,
+                         tni.id id_tni,
+                         tni.descripcion_nivel tercer_nivel,
+                         cn.id id_cn,
+                         cn.descripcion_nivel cuarto_nivel,
+                         (SELECT eje.descripcion_eje from eje_ges_ejes eje WHERE eje.id = oe.ges_eje_id) ejes,
+                         oe.id id_oe,
+                         oe.descripcion_objetivo objetivo_estrategico,
+                         ot.id id_ot,
+                         ot.descripcion_objetivo objetivo_tactico,
+                         tn.id id_tn,
+                         tn.descripcion_objetivo objetivo_tacticotn,
+                         op.id id_op,
+                         op.descripcion_objetivo objetivo_operativo,
+                          ac.id id_actividad, 
+                         ac.descripcion_actividad,
+                         ac.horas_actividad,
+                         ac.volumen,
+                         ac.personas_asignadas,
+                         ac.total_horas,
+                         ac.fecha_inicio_actividad,
+                         ac.fecha_termino_actividad,
+                         ac.fecha_registro,
+                         ac.estado,
+                         ac.fecha_real_inicio,
+                         ac.fecha_real_termino,
+                         ac.fecha_reprogramacion_termino,
+                         ac.justificacion,
+                         case
+                         when ac.validada= 0 then 'no validada'
+                         when ac.validada = 1 then 'validada'
+                         ELSE '' END validada,
+                         ac.flag_tmp,
+                         ac.flag_reporta,
+                         CONCAT(ea.descripcion_estado, IFNULL(ea.descripcion_validada, ''))descripcion_estado,
+                         fa.descripcion_familiacargo,
+                         pe.descripcion_periodicidad,
+                         gp.id id_gp,
+                         gp.descripcion_periodo,
+                         gp.anio_periodo anio_periodo,
+                         gp.fecha_inicio fecha_inicio_periodo,
+                         gp.fecha_termino fecha_termino_periodo, 
+                         pes.descripcion_producto producto_estadistico,
+                         ac.flag_finalizada,
+                         CONCAT(usr.first_name, " ",usr.last_name) jefatura,
+                         ef.descripcion_estado estado_flujo_controlador,
+                         epl.descripcion_estado estado_plan_controlador,
+                         
+                         (SELECT CONCAT(us.first_name, " ", us.last_name) analista_asignado FROM auth_user us
+                         where us.id = con.analista_asignado_id) analista_asignado,
+                         
+                          (SELECT CONCAT(us.first_name," ", us.last_name) primera_revision FROM auth_user us
+                         where us.id = (SELECT je.id_user_id from jefaturas_ges_jefatura je WHERE je.id = con.jefatura_primerarevision_id)) primera_revision,
+                         
+                          (SELECT CONCAT(us.first_name," ", us.last_name) segunda_revision FROM auth_user us
+                         where us.id = (SELECT je.id_user_id from jefaturas_ges_jefatura je WHERE je.id = con.jefatura_segundarevision_id)) segunda_revision
+                        from objetivos_ges_objetivo_estrategico oe
+                        INNER JOIN estructura_ges_primernivel pn ON oe.ges_primer_nivel_id = pn.id
+                        INNER JOIN objetivos_ges_objetivo_tactico ot ON ot.id_objetivo_estrategico_id = oe.id
+                        INNER JOIN estructura_ges_segundonivel sn ON sn.id = ot.id_segundo_nivel_id
+                        INNER JOIN objetivos_ges_objetivo_tacticotn tn ON tn.id_objetivo_tactico_id = ot.id
+                        INNER JOIN estructura_ges_tercernivel tni ON tni.id = tn.id_tercer_nivel_id 
+                        INNER JOIN objetivos_ges_objetivo_operativo op ON op.id_objetivo_tacticotn_id = tn.id
+                        INNER JOIN estructura_ges_cuartonivel cn ON op.id_cuarto_nivel_id = cn.id
+                        inner JOIN actividades_ges_actividad ac ON ac.id_objetivo_operativo_id = op.id
+                        INNER JOIN controlador_ges_controlador con ON con.id = ac.id_controlador_id
+                        INNER JOIN jefaturas_ges_jefatura je ON je.id = con.id_jefatura_id
+                        INNER JOIN auth_user usr ON usr.id= je.id_user_id
+                        INNER JOIN estado_actividad_glo_estadoactividad ea ON ea.id = ac.id_estado_actividad_id
+                        INNER JOIN familia_cargo_glo_familiacargo fa ON fa.id = ac.id_familia_cargo_id
+                        INNER JOIN periodicidad_glo_periodicidad pe ON pe.id = ac.id_periodicidad_id
+                        INNER JOIN periodos_glo_periodos gp ON gp.id = ac.id_periodo_id
+                        LEFT JOIN productos_glo_productosestadisticos pes ON pes.id = ac.id_producto_estadistico_id
+                        INNER JOIN estado_flujo_glo_estadoflujo ef ON  ef.id = con.estado_flujo_id
+                        INNER JOIN estado_plan_glo_estadoplan epl ON epl.id = con.id_estado_plan_id
+                        WHERE gp.id_estado_id = 1 
+                        UNION ALL
+                        SELECT 
+                        pn.id id_pn,
+                        pn.descripcion_nivel primer_nivel,
+                        sn.id id_sn,
+                         sn.descripcion_nivel segundo_nivel,
+                         tni.id id_tni,
+                         tni.descripcion_nivel tercer_nivel,
+                         NULL id_cn, 
+                        NULL cuarto_nivel,
+                         (SELECT eje.descripcion_eje from eje_ges_ejes eje WHERE eje.id = oe.ges_eje_id) ejes,
+                         oe.id id_oe,
+                         oe.descripcion_objetivo objetivo_estrategico,
+                         ot.id id_ot,
+                         ot.descripcion_objetivo objetivo_tactico,
+                         tn.id id_tn,
+                         tn.descripcion_objetivo objetivo_tacticotn,
+                         NULL id_op,
+                        NULL objetivo_Operativo, 
+                         ac.id id_actividad, 
+                         ac.descripcion_actividad,
+                         ac.horas_actividad,
+                         ac.volumen,
+                         ac.personas_asignadas,
+                         ac.total_horas,
+                         ac.fecha_inicio_actividad,
+                         ac.fecha_termino_actividad,
+                         ac.fecha_registro,
+                         ac.estado,
+                         ac.fecha_real_inicio,
+                         ac.fecha_real_termino,
+                         ac.fecha_reprogramacion_termino,
+                         ac.justificacion,
+                        case
+                         when ac.validada= 0 then 'no validada'
+                         when ac.validada = 1 then 'validada'
+                         ELSE '' END validada,
+                         ac.flag_tmp,
+                         ac.flag_reporta,
+                         CONCAT(ea.descripcion_estado, IFNULL(ea.descripcion_validada, ''))descripcion_estado,
+                         fa.descripcion_familiacargo,
+                         pe.descripcion_periodicidad,
+                         gp.id id_gp,
+                         gp.descripcion_periodo,
+                         gp.anio_periodo anio_periodo,
+                         gp.fecha_inicio fecha_inicio_periodo,
+                         gp.fecha_termino fecha_termino_periodo, 
+                         pes.descripcion_producto producto_estadistico,
+                         ac.flag_finalizada,
+                         CONCAT(usr.first_name, " ",usr.last_name) jefatura,
+                         ef.descripcion_estado estado_flujo_controlador,
+                         epl.descripcion_estado estado_plan_controlador,
+                         
+                           (SELECT CONCAT(us.first_name, " ",us.last_name) analista_asignado FROM auth_user us
+                         where us.id = con.analista_asignado_id) analista_asignado,
+                          (SELECT CONCAT(us.first_name, " ",us.last_name) primera_revision FROM auth_user us
+                         where us.id = (SELECT je.id_user_id from jefaturas_ges_jefatura je WHERE je.id = con.jefatura_primerarevision_id)) primera_revision,
+                         
+                          (SELECT CONCAT(us.first_name, " ",us.last_name) segunda_revision FROM auth_user us
+                         where us.id = (SELECT je.id_user_id from jefaturas_ges_jefatura je WHERE je.id = con.jefatura_segundarevision_id)) segunda_revision
+                        from objetivos_ges_objetivo_estrategico oe
+                        INNER JOIN estructura_ges_primernivel pn ON oe.ges_primer_nivel_id = pn.id
+                        INNER JOIN objetivos_ges_objetivo_tactico ot ON ot.id_objetivo_estrategico_id = oe.id
+                        INNER JOIN estructura_ges_segundonivel sn ON sn.id = ot.id_segundo_nivel_id
+                        INNER JOIN objetivos_ges_objetivo_tacticotn tn ON tn.id_objetivo_tactico_id = ot.id
+                        INNER JOIN estructura_ges_tercernivel tni ON tni.id = tn.id_tercer_nivel_id 
+                        inner JOIN actividades_ges_actividad ac ON  ac.id_objetivo_tacticotn_id = tn.id
+                        INNER JOIN controlador_ges_controlador con ON con.id = ac.id_controlador_id
+                        INNER JOIN jefaturas_ges_jefatura je ON je.id = con.id_jefatura_id
+                        INNER JOIN auth_user usr ON usr.id= je.id_user_id
+                        INNER JOIN estado_actividad_glo_estadoactividad ea ON ea.id = ac.id_estado_actividad_id
+                        INNER JOIN familia_cargo_glo_familiacargo fa ON fa.id = ac.id_familia_cargo_id
+                        INNER JOIN periodicidad_glo_periodicidad pe ON pe.id = ac.id_periodicidad_id
+                        INNER JOIN periodos_glo_periodos gp ON gp.id = ac.id_periodo_id
+                        LEFT JOIN productos_glo_productosestadisticos pes ON pes.id = ac.id_producto_estadistico_id
+                        INNER JOIN estado_flujo_glo_estadoflujo ef ON  ef.id = con.estado_flujo_id
+                        INNER JOIN estado_plan_glo_estadoplan epl ON epl.id = con.id_estado_plan_id
+                        WHERE gp.id_estado_id = 1 
+                        UNION ALL 
+                        SELECT 
+                        pn.id id_pn,
+                        pn.descripcion_nivel primer_nivel,
+                        sn.id id_sn,
+                         sn.descripcion_nivel segundo_nivel,
+                         NULL id_tni,
+                         NULL  tercer_nivel,
+                         NULL id_cn, 
+                        NULL cuarto_nivel,
+                         (SELECT eje.descripcion_eje from eje_ges_ejes eje WHERE eje.id = oe.ges_eje_id) ejes,
+                         oe.id id_oe,
+                         oe.descripcion_objetivo objetivo_estrategico,
+                         ot.id id_ot,
+                         ot.descripcion_objetivo objetivo_tactico,
+                         NULL id_tn,
+                         NULL  objetivo_tacticotn,
+                         NULL id_op,
+                        NULL objetivo_Operativo, 
+                         ac.id id_actividad, 
+                         ac.descripcion_actividad,
+                         ac.horas_actividad,
+                         ac.volumen,
+                         ac.personas_asignadas,
+                         ac.total_horas,
+                         ac.fecha_inicio_actividad,
+                         ac.fecha_termino_actividad,
+                         ac.fecha_registro,
+                         ac.estado,
+                         ac.fecha_real_inicio,
+                         ac.fecha_real_termino,
+                         ac.fecha_reprogramacion_termino,
+                         ac.justificacion,
+                        case
+                         when ac.validada= 0 then 'no validada'
+                         when ac.validada = 1 then 'validada'
+                         ELSE '' END validada,
+                         ac.flag_tmp,
+                         ac.flag_reporta,
+                         CONCAT(ea.descripcion_estado, IFNULL(ea.descripcion_validada, ''))descripcion_estado,
+                         fa.descripcion_familiacargo,
+                         pe.descripcion_periodicidad,
+                         gp.id id_gp,
+                         gp.descripcion_periodo,
+                         gp.anio_periodo anio_periodo,
+                         gp.fecha_inicio fecha_inicio_periodo,
+                         gp.fecha_termino fecha_termino_periodo, 
+                         pes.descripcion_producto producto_estadistico,
+                         ac.flag_finalizada,
+                          CONCAT(usr.first_name, " ",usr.last_name) jefatura,
+                         ef.descripcion_estado estado_flujo_controlador,
+                         epl.descripcion_estado estado_plan_controlador,
                         
-                        )SELECT    id ,
-                          fecha_registro,
-                          fecha_reprogramacion_inicio,
-                          fecha_reprogramacion_termino,
-                          fecha_real_termino,
-                          justificacion,
-                          id_actividad_id ,
-                          id_estado_actividad_id,
-                          id_periodo_id,
-                          id_periodo_seguimiento_id,
-                          id_controlador_id,
-                          fecha_real_inicio,
-                          validada
-                        FROM actividades_ges_actividad_historia where id_periodo_id =(SELECT id from periodos_glo_periodos WHERE id_estado_id= 1 )
-            """)
-            connection.commit()
-            cursor.execute("delete from gestion_horas_ges_registro_horas_respaldo where id_periodo_id =(SELECT id from periodos_glo_periodos WHERE id_estado_id= 1 ) ")
-            print("respaldo gestion_horas_ges_registro_horas_respaldo ")
-            cursor.execute(""" 
-                    INSERT INTO gestion_horas_ges_registro_horas_respaldo (
-                                  id ,
-                                  tiene_vacaciones ,
-                                  fecha_inicio,
-                                  fecha_termino,
-                                  dias_habiles,
-                                  notas,
-                                  fecha_insercion ,
-                                  id_familiacargo_id,
-                                  id_nivel_id ,
-                                  id_periodo_id,
-                                  id_user_id 
-                                ) 
-                                SELECT id ,
-                                  tiene_vacaciones ,
-                                  fecha_inicio,
-                                  fecha_termino,
-                                  dias_habiles,
-                                  notas,
-                                  fecha_insercion ,
-                                  id_familiacargo_id,
-                                  id_nivel_id ,
-                                  id_periodo_id,
-                                  id_user_id
-                                   FROM gestion_horas_ges_registro_horas where id_periodo_id =(SELECT id from periodos_glo_periodos WHERE id_estado_id= 1 ) """)
-            connection.commit()
-            print("respaldo valida_plan2_ges_observaciones_sr_respaldo ")
-            cursor.execute( "delete from valida_plan2_ges_observaciones_sr_respaldo where id_periodo_id = (SELECT id from periodos_glo_periodos WHERE id_estado_id= 1 )")
-            cursor.execute("""INSERT into valida_plan2_ges_observaciones_sr_respaldo  (
-                                  id,
-                                  observacion ,
-                                  id_controlador ,
-                                  fecha_registro ,
-                                  observado ,
-                                  id_jefe_observa_id ,
-                                  id_periodo_id,
-                                  user_observa_id,
-                                  id_objetivo_operativo_id,
-                                  id_objetivo_tactico_id,
-                                  id_objetivo_tacticotn_id 
-                                
-                                ) 
-                                SELECT   id,
-                                  observacion ,
-                                  id_controlador ,
-                                  fecha_registro ,
-                                  observado ,
-                                  id_jefe_observa_id ,
-                                  id_periodo_id,
-                                  user_observa_id,
-                                  id_objetivo_operativo_id,
-                                  id_objetivo_tactico_id,
-                                  id_objetivo_tacticotn_id 
-                                  FROM valida_plan2_ges_observaciones_sr where id_periodo_id =(SELECT id from periodos_glo_periodos WHERE id_estado_id= 1 )""")
-            connection.commit()
-            print("respaldo valida_plan_ges_observaciones_respaldo ")
-            cursor.execute(
-                "delete from valida_plan_ges_observaciones_respaldo where id_periodo_id =(SELECT id from periodos_glo_periodos WHERE id_estado_id= 1 ) ")
-            cursor.execute("""INSERT INTO valida_plan_ges_observaciones_respaldo(
-                                      id  ,
-                                      observacion,
-                                      fecha_registro,
-                                      id_actividad_id ,
-                                      id_jefe_observa_id,
-                                      id_periodo_id,
-                                      user_observa_id,
-                                      observado ,
-                                      id_controlador,
-                                      id_objetivo
-                                    
-                                    )
-                                    SELECT   id  ,
-                                      observacion,
-                                      fecha_registro,
-                                      id_actividad_id ,
-                                      id_jefe_observa_id,
-                                      id_periodo_id,
-                                      user_observa_id,
-                                      observado ,
-                                      id_controlador,
-                                      id_objetivo
-                                    FROM valida_plan_ges_observaciones where id_periodo_id =(SELECT id from periodos_glo_periodos WHERE id_estado_id= 1 ) """)
-            connection.commit()
-            print("respaldo actividades_ges_observaciones_valida_respaldo ")
-            cursor.execute( "delete from actividades_ges_observaciones_valida_respaldo  WHERE id_periodo_valida_id IN (SELECT id from periodos_glo_validacion gv WHERE gv.id_periodo_id IN (SELECT id FROM periodos_glo_periodos gp WHERE gp.id_estado_id = 1  ) ) ")
-            cursor.execute("""INSERT INTO 
-                            actividades_ges_observaciones_valida_respaldo
-                            (                       
-                             id  ,
-                              descripcion_observacion,
-                              fecha_registro,
-                              id_actividad_id,
-                              id_periodo_valida_id
+                          (SELECT CONCAT(us.first_name, " ",us.last_name) analista_asignado FROM auth_user us
+                         where us.id = con.analista_asignado_id) analista_asignado,
+                          (SELECT CONCAT(us.first_name, " ",us.last_name) primera_revision FROM auth_user us
+                         where us.id = (SELECT je.id_user_id from jefaturas_ges_jefatura je WHERE je.id = con.jefatura_primerarevision_id))primera_revision,
+                         
+                          (SELECT CONCAT(us.first_name, " ",us.last_name) segunda_revision FROM auth_user us
+                         where us.id = (SELECT je.id_user_id from jefaturas_ges_jefatura je WHERE je.id = con.jefatura_segundarevision_id)) segunda_revision
+                        from objetivos_ges_objetivo_estrategico oe
+                        INNER JOIN estructura_ges_primernivel pn ON oe.ges_primer_nivel_id = pn.id
+                        INNER JOIN objetivos_ges_objetivo_tactico ot ON ot.id_objetivo_estrategico_id = oe.id
+                        INNER JOIN estructura_ges_segundonivel sn ON sn.id = ot.id_segundo_nivel_id
+                        inner JOIN actividades_ges_actividad ac ON  ot.id= ac.id_objetivo_tactico_id
+                        INNER JOIN controlador_ges_controlador con ON con.id = ac.id_controlador_id
+                        INNER JOIN jefaturas_ges_jefatura je ON je.id = con.id_jefatura_id
+                        INNER JOIN auth_user usr ON usr.id= je.id_user_id
+                        INNER JOIN estado_actividad_glo_estadoactividad ea ON ea.id = ac.id_estado_actividad_id
+                        INNER JOIN familia_cargo_glo_familiacargo fa ON fa.id = ac.id_familia_cargo_id
+                        INNER JOIN periodicidad_glo_periodicidad pe ON pe.id = ac.id_periodicidad_id
+                        INNER JOIN periodos_glo_periodos gp ON gp.id = ac.id_periodo_id
+                        LEFT JOIN productos_glo_productosestadisticos pes ON pes.id = ac.id_producto_estadistico_id
+                        INNER JOIN estado_flujo_glo_estadoflujo ef ON  ef.id = con.estado_flujo_id
+                        INNER JOIN estado_plan_glo_estadoplan epl ON epl.id = con.id_estado_plan_id       
+                        WHERE gp.id_estado_id = 1 
+                        
+                        
+                        """)
+
+        connection.commit()
+        cursor.execute("delete from actividades_ges_actividad_historia_respaldo where id_periodo_id = (SELECT id from periodos_glo_periodos WHERE id_estado_id= 1 ) ")
+        print("respaldo actividades_ges_actividad_historia_respaldo ")
+        cursor.execute(""" 
+        INSERT INTO actividades_ges_actividad_historia_respaldo  (
+                      id ,
+                      fecha_registro,
+                      fecha_reprogramacion_inicio,
+                      fecha_reprogramacion_termino,
+                      fecha_real_termino,
+                      justificacion,
+                      id_actividad_id ,
+                      id_estado_actividad_id,
+                      id_periodo_id,
+                      id_periodo_seguimiento_id,
+                      id_controlador_id,
+                      fecha_real_inicio,
+                      validada
+                    
+                    )SELECT    id ,
+                      fecha_registro,
+                      fecha_reprogramacion_inicio,
+                      fecha_reprogramacion_termino,
+                      fecha_real_termino,
+                      justificacion,
+                      id_actividad_id ,
+                      id_estado_actividad_id,
+                      id_periodo_id,
+                      id_periodo_seguimiento_id,
+                      id_controlador_id,
+                      fecha_real_inicio,
+                      validada
+                    FROM actividades_ges_actividad_historia where id_periodo_id =(SELECT id from periodos_glo_periodos WHERE id_estado_id= 1 )
+        """)
+        connection.commit()
+        cursor.execute("delete from gestion_horas_ges_registro_horas_respaldo where id_periodo_id =(SELECT id from periodos_glo_periodos WHERE id_estado_id= 1 ) ")
+        print("respaldo gestion_horas_ges_registro_horas_respaldo ")
+        cursor.execute(""" 
+                INSERT INTO gestion_horas_ges_registro_horas_respaldo (
+                              id ,
+                              tiene_vacaciones ,
+                              fecha_inicio,
+                              fecha_termino,
+                              dias_habiles,
+                              notas,
+                              fecha_insercion ,
+                              id_familiacargo_id,
+                              id_nivel_id ,
+                              id_periodo_id,
+                              id_user_id 
+                            ) 
+                            SELECT id ,
+                              tiene_vacaciones ,
+                              fecha_inicio,
+                              fecha_termino,
+                              dias_habiles,
+                              notas,
+                              fecha_insercion ,
+                              id_familiacargo_id,
+                              id_nivel_id ,
+                              id_periodo_id,
+                              id_user_id
+                               FROM gestion_horas_ges_registro_horas where id_periodo_id =(SELECT id from periodos_glo_periodos WHERE id_estado_id= 1 ) """)
+        connection.commit()
+        print("respaldo valida_plan2_ges_observaciones_sr_respaldo ")
+        cursor.execute( "delete from valida_plan2_ges_observaciones_sr_respaldo where id_periodo_id = (SELECT id from periodos_glo_periodos WHERE id_estado_id= 1 )")
+        cursor.execute("""INSERT into valida_plan2_ges_observaciones_sr_respaldo  (
+                              id,
+                              observacion ,
+                              id_controlador ,
+                              fecha_registro ,
+                              observado ,
+                              id_jefe_observa_id ,
+                              id_periodo_id,
+                              user_observa_id,
+                              id_objetivo_operativo_id,
+                              id_objetivo_tactico_id,
+                              id_objetivo_tacticotn_id 
                             
-                            )                        
-                            SELECT  id  ,
-                              descripcion_observacion,
-                              fecha_registro,
-                              id_actividad_id,
-                              id_periodo_valida_id FROM actividades_ges_observaciones_valida  WHERE id_periodo_valida_id IN (SELECT id from periodos_glo_validacion gv WHERE
-										gv.id_periodo_id IN (SELECT id FROM periodos_glo_periodos gp WHERE gp.id_estado_id = 1  ) ) """)
-            connection.commit()
-            print("periodo respaldado")
+                            ) 
+                            SELECT   id,
+                              observacion ,
+                              id_controlador ,
+                              fecha_registro ,
+                              observado ,
+                              id_jefe_observa_id ,
+                              id_periodo_id,
+                              user_observa_id,
+                              id_objetivo_operativo_id,
+                              id_objetivo_tactico_id,
+                              id_objetivo_tacticotn_id 
+                              FROM valida_plan2_ges_observaciones_sr where id_periodo_id =(SELECT id from periodos_glo_periodos WHERE id_estado_id= 1 )""")
+        connection.commit()
+        print("respaldo valida_plan_ges_observaciones_respaldo ")
+        cursor.execute(
+            "delete from valida_plan_ges_observaciones_respaldo where id_periodo_id =(SELECT id from periodos_glo_periodos WHERE id_estado_id= 1 ) ")
+        cursor.execute("""INSERT INTO valida_plan_ges_observaciones_respaldo(
+                                  id  ,
+                                  observacion,
+                                  fecha_registro,
+                                  id_actividad_id ,
+                                  id_jefe_observa_id,
+                                  id_periodo_id,
+                                  user_observa_id,
+                                  observado ,
+                                  id_controlador,
+                                  id_objetivo
+                                
+                                )
+                                SELECT   id  ,
+                                  observacion,
+                                  fecha_registro,
+                                  id_actividad_id ,
+                                  id_jefe_observa_id,
+                                  id_periodo_id,
+                                  user_observa_id,
+                                  observado ,
+                                  id_controlador,
+                                  id_objetivo
+                                FROM valida_plan_ges_observaciones where id_periodo_id =(SELECT id from periodos_glo_periodos WHERE id_estado_id= 1 ) """)
+        connection.commit()
+        print("respaldo actividades_ges_observaciones_valida_respaldo ")
+        cursor.execute( "delete from actividades_ges_observaciones_valida_respaldo  WHERE id_periodo_valida_id IN (SELECT id from periodos_glo_validacion gv WHERE gv.id_periodo_id IN (SELECT id FROM periodos_glo_periodos gp WHERE gp.id_estado_id = 1  ) ) ")
+        cursor.execute("""INSERT INTO 
+                        actividades_ges_observaciones_valida_respaldo
+                        (                       
+                         id  ,
+                          descripcion_observacion,
+                          fecha_registro,
+                          id_actividad_id,
+                          id_periodo_valida_id
+                        
+                        )                        
+                        SELECT  id  ,
+                          descripcion_observacion,
+                          fecha_registro,
+                          id_actividad_id,
+                          id_periodo_valida_id FROM actividades_ges_observaciones_valida  WHERE id_periodo_valida_id IN (SELECT id from periodos_glo_validacion gv WHERE
+                                    gv.id_periodo_id IN (SELECT id FROM periodos_glo_periodos gp WHERE gp.id_estado_id = 1  ) ) """)
+        connection.commit()
+        print("periodo respaldado")
 
     except Error as e:
         print("Error while connecting to MySQL", e)
         resp = False
         return resp
     finally:
-        if connection.is_connected():
-            cursor.close()
-            connection.close()
-            print("MySQL connection is closed")
-            return resp
+
+        cursor.close()
+        print("MySQL connection is closed")
+        return resp
 #resp = respalda_periodo()

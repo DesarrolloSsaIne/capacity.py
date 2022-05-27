@@ -75,6 +75,9 @@
 														 {% if seguimiento.id_estado_seguimiento.id == 1  %}  <button type="button" title="Cerrar Periodo Seguimiento" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" class="delete btn btn-sm btn-danger" data-id="{% url 'seguimiento_cerrar' seguimiento.id %}">
       													  <span class="fa fa-lock"></span></button>{%endif%}
 
+														 {% if seguimiento.id_estado_seguimiento.id == 2 %} <a type="button"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" title="Descargar Periodo Seguimiento" class="objetivo btn btn-sm btn-success" href="{% url 'descargarSeguimiento' seguimiento.id %}">
+      													  <span class="fa fa-file-excel-o"></span></a>{%endif%}
+
 
                                                     </td>
                                                 </tr>

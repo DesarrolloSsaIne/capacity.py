@@ -199,16 +199,16 @@ WSGI_APPLICATION = 'proyecto_django.wsgi.application'
 #     }
 # }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'mysql_cymysql',
-        'NAME': 'capacity_bd_local',
-        'USER': 'root',
-        'PASSWORD': 'admin',
-        'HOST': 'localhost',
-        'PORT': 3306,
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'mysql_cymysql',
+#         'NAME': 'capacity_bd_local',
+#         'USER': 'root',
+#         'PASSWORD': 'admin',
+#         'HOST': 'localhost',
+#         'PORT': 3306,
+#     }
+# }
 
 # DATABASES = {
 #     'default': {
@@ -222,16 +222,16 @@ DATABASES = {
 # }
 
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'mysql_cymysql',
-#         'NAME': 'CAPACITY_DB_PRD',
-#         'USER': 'jason',
-#         'PASSWORD': '1SUMU79S',
-#         'HOST': '10.91.163.94',
-#         'PORT': 3306,
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'mysql_cymysql',
+        'NAME': 'CAPACITY_DB_PRD',
+        'USER': 'jason',
+        'PASSWORD': '1SUMU79S',
+        'HOST': '10.91.163.94',
+        'PORT': 3306,
+    }
+}
 
 
 # Password validation

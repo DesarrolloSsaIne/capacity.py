@@ -10,7 +10,7 @@ urlpatterns = [
     url('listarActividades/(?P<pk>\d+)/', login_required(Actividades.as_view()), name='ActividadesValidar'),
     url('ver/(?P<pk>\d+)/$', login_required(ValidaSeguimientoActividadDetallesVer.as_view()), name='ValidaSeguimientoActividadesVer'),
     url('editar/(?P<pk>\d+)/$', login_required(ActividadEdit.as_view()), name='RegistroActividadEditarSeguimientoValidar'),
-    url('listarComentarios/(?P<pk>\d+)/$', login_required(ListarComentarios.as_view()), name='ListarComentariosActividad'),
+    url('listarComentarios/(?P<pk>\d+)/$', login_required(ListarComentarios.as_view()), name='ListarComentariosActividadvs'),
 
     url(r'update_actividad/', update_actividad, name='update_actividad'),
     url(r'update_actividad_rechaza/', update_actividad_rechaza, name='update_actividad_rechaza'),

@@ -53,6 +53,7 @@ Actividades Asociadas al Objetivo
 
 
 											<th style="font-size:11px;  width:100px;">Estado  </th>
+											<th style="font-size:11px;  width:100px;">Estado Validación </th>
 											<th style="font-size:11px; width:110px;">Inicio Real</th>
 											<th style="font-size:11px; width:110px;">Fin Real</th>
 											<th style="font-size:11px; width:110px;">Reprog. Inicio</th>
@@ -61,6 +62,7 @@ Actividades Asociadas al Objetivo
 											{% if total_disponible.estado_seguimiento_id == 1 %}
 											<th style="font-size:11px;">Reportar</th>
 											{% endif %}
+											<th style="font-size:11px; width:110px;">Comentarios Validación</th>
 <!--											<th>Justificación</th>-->
 <!--											<th>Detalle</th>-->
 
@@ -122,6 +124,14 @@ Actividades Asociadas al Objetivo
 
 														{{ objetivo.id_estado_actividad}} {%endif%}</td>
 
+													<td
+                                                     {% if objetivo.validada == 2 %}
+                                                      style="color: red;"
+                                                      {%endif%}
+                                                      >   {% if objetivo.validada == 2 %} Rechazada  {%endif%} {% if objetivo.validada == 1 %} Aceptada  {%endif%} {% if objetivo.validada == 0 %} -  {%endif%}</td>
+
+
+
 														<td style="font-size:11px; width:110px;"> <span style='display: none; '>{{objetivo.fecha_real_inicio|date:"Ymd"}}</span> {% if objetivo.fecha_real_inicio == none %} -  {%else%} {{ objetivo.fecha_real_inicio|date:"d-m-Y"}} {%endif%}</td>
 														<td style="font-size:11px; width:110px;"> <span style='display: none;'>{{objetivo.fecha_real_termino|date:"Ymd"}}</span> {% if objetivo.fecha_real_termino == none %} -  {%else%} {{ objetivo.fecha_real_termino|date:"d-m-Y"}} {%endif%}</td>
 														<td style="font-size:11px; width:110px;"> <span style='display: none;'>{{objetivo.fecha_reprogramacion_inicio|date:"Ymd"}}</span> {% if objetivo.fecha_reprogramacion_inicio == none %} -  {%else%} {{ objetivo.fecha_reprogramacion_inicio|date:"d-m-Y"}} {%endif%}</td>
@@ -131,14 +141,28 @@ Actividades Asociadas al Objetivo
 
 													{% if total_disponible.estado_seguimiento_id == 1 %}
 
+
 														<td  style="width:80px; text-align:center;  "   >
 
-															<button  {%if   objetivo.flag_finalizada == 1 and objetivo.id_estado_actividad_id == 7    or  objetivo.id_estado_actividad_id == 9 or total_disponible.id_controlador.id_estado_plan_id == 1 or total_disponible.id_controlador.id_estado_plan_id == 3 %} disabled="disabled" {%endif%} type="button" id="notification_ok" title="Reportar Avance de la Actividad" title="Fecha de Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" class="update btn btn-sm btn-primary" data-id="{% url 'RegistroActividadEditarSeguimiento' objetivo.id %}">
+															<button  {%if   objetivo.flag_finalizada == 1 and objetivo.id_estado_actividad_id == 7 or   objetivo.flag_finalizada == 1 and objetivo.id_estado_actividad_id == 5 or   objetivo.id_estado_actividad_id == 9 or total_disponible.id_controlador.id_estado_plan_id == 1 or total_disponible.id_controlador.id_estado_plan_id == 3 %} disabled="disabled" {%endif%} type="button" id="notification_ok" title="Reportar Avance de la Actividad" title="Fecha de Inicio de la Actividad" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" class="update btn btn-sm btn-primary" data-id="{% url 'RegistroActividadEditarSeguimiento' objetivo.id %}">
 																<span class="fa fa-check-square-o" ></span>
 															{%if objetivo.flag_reporta == 1%}<span class="badge" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" title="Actividad Reportada!"  >&#x2713;</span>{%endif%}
 															</button>
 
 														</td>
+
+
+
+														<td  style="width:80px; text-align:center;  "   >
+                                                          <button   type="button" id="notification_ok" title="Historial comentarios Rechazo"  data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="top" class="update2 btn btn-sm btn-primary" data-id="{% url 'ListarObservacionesActividad' objetivo.id %}">
+                                                                    <span class="fa fa-comment-o" ></span>
+
+
+<!--                                                                    {%if objetivo.flag_reporta == 1%}<span class="badge" data-toggle="tooltip" data-original-title="Tooltip on bottom" data-placement="bottom" title="Actividad Reportada!"  >&#x2713;</span>{%endif%}-->
+                                                           </button>
+                                                         </td>
+
+
 
 													{% endif %}
 
@@ -197,6 +221,15 @@ Actividades Asociadas al Objetivo
   </div>
 </div>
 
+<div class="modal fade" tabindex="-1" data-backdrop="static"
+  data-keyboard="false" role="dialog"  id="modalcomentarios">
+  <div class="modal-dialog modal-lg" role="document">
+	<div class="modal-content">
+
+    </div>
+  </div>
+</div>
+
 
 <div class="modal fade" tabindex="-1" role="dialog" id="modalDelete">
   <div class="modal-dialog modal-xs" role="document">
@@ -207,7 +240,14 @@ Actividades Asociadas al Objetivo
 </div>
 
 
+<div class="modal fade" tabindex="-1" data-backdrop="static"
+  data-keyboard="false" role="dialog"  id="modalUpdate2">
+  <div class="modal-dialog modal-lg" role="document">
+	<div class="modal-content">
 
+    </div>
+  </div>
+</div>
 
 <!--Fin cabecera del modal -->
         <div class="modal fade" id="observacion_center" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -282,7 +322,10 @@ $(".volver").click(function() {
      $(this).remove();
   });
 
+$(".update2").each(function () {
+   $(this).modalForm({formURL: $(this).data('id'),  modalID: $("#modalUpdate2")});
 
+    });
 
 $('#datatable-default').on('click', '.Mitexto', function () {
 
